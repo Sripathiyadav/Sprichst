@@ -1,0 +1,24 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+
+# Python AI server
+ai-server/.venv/
+__pycache__/
+*.py[cod]
+
+# Local secrets and Firebase project configuration
+.env
+ai-server/.env
+lib/firebase_options.dart
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+
+# Editors and operating system files
+.idea/
+.vscode/
+.DS_Store
