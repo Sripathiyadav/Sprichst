@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sprichst/features/auth/auth_view_model.dart';
 
 import '../features/ai_coach/ai_coach_view.dart';
 import '../features/home/home_view.dart';
@@ -9,6 +10,7 @@ import '../features/practice/practice_view.dart';
 import '../features/progress/progress_view.dart';
 import 'app_controller.dart';
 import 'theme/app_theme.dart';
+import '../features/auth/auth_view.dart';
 
 class SprichstApp extends ConsumerStatefulWidget {
   const SprichstApp({super.key});
@@ -29,17 +31,30 @@ class _SprichstAppState extends ConsumerState<SprichstApp> {
   @override
   Widget build(BuildContext context) {
     final app = ref.watch(appControllerProvider);
+
     return MaterialApp(
       title: 'Sprichst',
       debugShowCheckedModeBanner: false,
       theme: SprichstTheme.light,
       home: app.isLoading
           ? const _SplashView()
-          : app.isOnboarded
-              ? _LearningShell(
-                  selectedIndex: _selectedIndex,
-                  onSelect: (index) => setState(() => _selectedIndex = index))
-              : const OnboardingView(),
+          : ref.watch(authViewModelProvider).when(
+                loading: () => const _SplashView(),
+                error: (_, __) => const AuthView(),
+                data: (user) {
+                  if (user == null) {
+                    return const AuthView();
+                  }
+
+                  return app.isOnboarded
+                      ? _LearningShell(
+                          selectedIndex: _selectedIndex,
+                          onSelect: (index) =>
+                              setState(() => _selectedIndex = index),
+                        )
+                      : const OnboardingView();
+                },
+              ),
     );
   }
 }
