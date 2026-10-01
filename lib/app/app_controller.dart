@@ -3,14 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/services/review_scheduler.dart';
 import '../data/ai/mock_ai_repository.dart';
-import '../data/local/local_learning_repository.dart';
+import '../data/firestore/firestore_learning_repository.dart';
 import '../domain/models/learning_models.dart';
 import '../domain/repositories/learning_repository.dart';
 
 final learningRepositoryProvider = Provider<LearningRepository>((ref) {
-  return LocalLearningRepository();
+  return FirestoreLearningRepository();
 });
-
 final aiRepositoryProvider =
     Provider<AIRepository>((ref) => MockAIRepository());
 
