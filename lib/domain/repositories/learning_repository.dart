@@ -7,5 +7,23 @@ abstract class LearningRepository {
 }
 
 abstract class AIRepository {
-  Future<CoachReply> correctGerman(String text, LearningProfile profile);
+  Future<CoachReply> correctGerman(
+    String text,
+    LearningProfile profile,
+  );
+
+  Future<TutorReply> chat(
+    String message,
+    LearningProfile profile,
+  );
+
+  Future<TranscriptionResult> transcribeAudio(
+    AudioCapture audio,
+    LearningProfile profile,
+  );
+
+  Future<List<int>> synthesizeSpeech(
+    String text,
+    LearningProfile profile,
+  );
 }

@@ -192,14 +192,51 @@ class LearningProfile {
 
 class CoachReply {
   const CoachReply({
+    required this.original,
     required this.corrected,
     required this.explanation,
     required this.followUp,
     required this.wasCorrect,
   });
 
+  final String original;
   final String corrected;
   final String explanation;
   final String followUp;
   final bool wasCorrect;
+}
+class TutorReply {
+  const TutorReply({
+    required this.reply,
+    this.correction,
+    this.explanation,
+    required this.followUp,
+  });
+
+  final String reply;
+  final String? correction;
+  final String? explanation;
+  final String followUp;
+}
+
+class AudioCapture {
+  const AudioCapture({
+    required this.bytes,
+    required this.filename,
+    required this.mimeType,
+  });
+
+  final List<int> bytes;
+  final String filename;
+  final String mimeType;
+}
+
+class TranscriptionResult {
+  const TranscriptionResult({
+    required this.text,
+    required this.language,
+  });
+
+  final String text;
+  final String language;
 }

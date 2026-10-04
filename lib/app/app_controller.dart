@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/services/review_scheduler.dart';
-import '../data/ai/mock_ai_repository.dart';
+import '../data/ai/http_ai_repository.dart';
 import '../data/firestore/firestore_learning_repository.dart';
 import '../domain/models/learning_models.dart';
 import '../domain/repositories/learning_repository.dart';
@@ -10,8 +10,11 @@ import '../domain/repositories/learning_repository.dart';
 final learningRepositoryProvider = Provider<LearningRepository>((ref) {
   return FirestoreLearningRepository();
 });
-final aiRepositoryProvider =
-    Provider<AIRepository>((ref) => MockAIRepository());
+final aiRepositoryProvider = Provider<AIRepository>((ref) {
+  return HttpAIRepository(
+    baseUrl: 'http://127.0.0.1:8000',
+  );
+});
 
 final appControllerProvider = ChangeNotifierProvider<AppController>((ref) {
   return AppController(
@@ -119,6 +122,15 @@ class AppController extends ChangeNotifier {
       throw StateError('Complete onboarding before chatting with the coach.');
     }
     return _aiRepository.correctGerman(text, currentProfile);
+  }
+
+  Future<TutorReply> chat(String message) async {
+    final currentProfile = profile;
+    if (currentProfile == null) {
+      throw StateError('Complete onboarding before chatting with the coach.');
+    }
+
+    return _aiRepository.chat(message, currentProfile);
   }
 
   Future<void> _persist() async {
