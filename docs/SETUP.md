@@ -83,7 +83,7 @@ Replace `MockAIRepository` in `lib/app/app_controller.dart` with an HTTP-backed 
 
 ## 8. Add content before adding more features
 
-Create your lessons in `curriculum/pre_a1/` and `curriculum/a1/`. Run this before committing:
+Add lessons to `curriculum/course.json`; the app bundles it as an asset and checks it when it starts. Skill ids on exercises are stable keys for weak-skill tracking, so never rename one once learners have data. Run this before committing:
 
 ```bash
 python3 scripts/validate_curriculum.py

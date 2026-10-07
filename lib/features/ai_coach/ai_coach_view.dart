@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
+import '../../app/theme/breakpoints.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
 import 'services/audio_player_service.dart';
@@ -95,12 +96,12 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                     onPressed:
                         _sending || _recording || _transcribing ? null : _send,
                     child: _sending || _transcribing
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 18,
                             height: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           )
                         : const Icon(Icons.send),
@@ -111,15 +112,15 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
           );
 
           final contextCard = SoftCard(
-            color: SprichstTheme.sand,
+            color: context.softSurface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'LEARNING CONTEXT',
                   style: TextStyle(
-                    color: SprichstTheme.forest,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.1,
                   ),
@@ -146,7 +147,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
             ),
           );
 
-          if (constraints.maxWidth > 820) {
+          if (constraints.maxWidth > Breakpoints.sideBySideContent) {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -155,20 +156,28 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                 ),
                 const SizedBox(width: 20),
                 SizedBox(
-                  width: 260,
+                  width: Breakpoints.sidePanelWidth,
                   child: contextCard,
                 ),
               ],
             );
           }
 
+          // Narrow screens keep the whole height for the conversation and show
+          // the learning context as a single line instead of a card.
           return Column(
             children: [
-              Expanded(
-                child: conversation,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: Text(
+                    '${profile.currentLevel.label} · ${app.currentLesson?.title ?? 'Not started'}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              contextCard,
+              Expanded(child: conversation),
             ],
           );
         },
@@ -401,26 +410,28 @@ class _CoachEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SoftCard(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.forum_outlined,
-              size: 44,
-              color: SprichstTheme.forest,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Start a German conversation',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Write a sentence or use the microphone to talk with your tutor.',
-              textAlign: TextAlign.center,
-            ),
-          ],
+      child: SingleChildScrollView(
+        child: SoftCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.forum_outlined,
+                size: 44,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Start a German conversation',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Write a sentence or use the microphone to talk with your tutor.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -454,12 +465,13 @@ class _MessageBubble extends StatelessWidget {
       alignment:
           message.fromUser ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 560,
-        ),
+        constraints:
+            const BoxConstraints(maxWidth: Breakpoints.messageMaxWidth),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: message.fromUser ? SprichstTheme.forest : Colors.white,
+            color: message.fromUser
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(18),
           ),
           child: Padding(
@@ -470,7 +482,9 @@ class _MessageBubble extends StatelessWidget {
                 Text(
                   message.text,
                   style: TextStyle(
-                    color: message.fromUser ? Colors.white : SprichstTheme.ink,
+                    color: message.fromUser
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.onSurface,
                     height: 1.45,
                   ),
                 ),

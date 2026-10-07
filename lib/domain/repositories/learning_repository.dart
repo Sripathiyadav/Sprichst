@@ -3,6 +3,7 @@ import '../models/learning_models.dart';
 abstract class LearningRepository {
   Future<LearningProfile?> loadProfile();
   Future<void> saveProfile(LearningProfile profile);
+  Future<void> deleteLearningData();
   Future<List<Lesson>> loadLessons();
 }
 

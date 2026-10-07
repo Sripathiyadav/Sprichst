@@ -70,7 +70,8 @@ class MockAIRepository implements AIRepository {
     AudioCapture audio,
     LearningProfile profile,
   ) {
-    throw UnsupportedError('Voice transcription requires the local AI gateway.');
+    throw UnsupportedError(
+        'Voice transcription requires the local AI gateway.');
   }
 
   @override

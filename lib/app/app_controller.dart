@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/review_scheduler.dart';
 import '../data/ai/http_ai_repository.dart';
 import '../data/firestore/firestore_learning_repository.dart';
+import '../domain/learning/exercise_evaluator.dart';
+import '../domain/learning/progress_tracker.dart';
+import '../domain/models/curriculum.dart';
 import '../domain/models/learning_models.dart';
 import '../domain/repositories/learning_repository.dart';
 
@@ -33,26 +36,42 @@ class AppController extends ChangeNotifier {
   final LearningRepository _learningRepository;
   final AIRepository _aiRepository;
   final ReviewScheduler _scheduler = const ReviewScheduler();
+  final ProgressTracker _tracker = const ProgressTracker();
 
   bool isLoading = true;
   LearningProfile? profile;
-  List<Lesson> lessons = const [];
+  Curriculum curriculum = Curriculum(const []);
   String? error;
 
   bool get isOnboarded => profile != null;
+  List<Lesson> get lessons => curriculum.lessons;
   int get dueReviews =>
       profile?.reviewItems.where((item) => item.isDue).length ?? 0;
+  int get pendingMistakes =>
+      profile?.reviewItems
+          .where((item) => item.kind == ReviewItem.mistakeKind)
+          .length ??
+      0;
+  List<String> get weakSkills {
+    final current = profile;
+    return current == null ? const [] : _tracker.weakSkills(current);
+  }
+
   Lesson? get currentLesson {
-    if (profile == null || lessons.isEmpty) return null;
-    return lessons.firstWhere(
-      (lesson) => lesson.id == profile!.currentLessonId,
-      orElse: () => lessons.first,
-    );
+    final current = profile;
+    if (current == null || curriculum.isEmpty) return null;
+    return curriculum.lessonById(current.currentLessonId) ??
+        curriculum.lessons.first;
   }
 
   Future<void> initialize() async {
+    isLoading = true;
+    error = null;
+    profile = null;
+    notifyListeners();
+
     try {
-      lessons = await _learningRepository.loadLessons();
+      curriculum = Curriculum(await _learningRepository.loadLessons());
       profile = await _learningRepository.loadProfile();
     } catch (_) {
       error = 'We could not restore your saved learning state.';
@@ -62,81 +81,114 @@ class AppController extends ChangeNotifier {
     }
   }
 
-  Future<void> completeOnboarding(
-      {required String language, required CefrLevel level}) async {
-    profile = LearningProfile.newLearner(
-        nativeLanguage: language, currentLevel: level);
-    await _persist();
+  void clearSession() {
+    isLoading = true;
+    profile = null;
+    curriculum = Curriculum(const []);
+    error = null;
     notifyListeners();
   }
 
-  Future<void> completeLesson(Lesson lesson,
-      {required int correctAnswers}) async {
-    final before = profile;
-    if (before == null) return;
-    final completed = {...before.completedLessonIds, lesson.id}.toList();
-    final nextIndex = lessons.indexWhere((item) => item.id == lesson.id) + 1;
-    final nextId =
-        nextIndex < lessons.length ? lessons[nextIndex].id : lesson.id;
-    final scoreLift = correctAnswers / lesson.exercises.length * .08;
-    final review = ReviewItem(
-      id: 'lesson-${lesson.id}',
-      label: lesson.title,
-      kind: 'Lesson recall',
-      dueAt: DateTime.now().add(const Duration(minutes: 10)),
-    );
-    profile = before.copyWith(
-      currentLessonId: nextId,
-      completedLessonIds: completed,
-      reviewItems: [
-        ...before.reviewItems.where((item) => item.id != review.id),
-        review
-      ],
-      scores:
-          before.scores.boosted(vocabulary: scoreLift, grammar: scoreLift / 2),
-      xp: before.xp + (correctAnswers * 10),
-      streak: before.streak == 0 ? 1 : before.streak,
-    );
-    await _persist();
+  Future<void> completeOnboarding(
+      {required String language, required CefrLevel level}) {
+    return _commit(LearningProfile.newLearner(
+        nativeLanguage: language, currentLevel: level));
+  }
+
+  Future<void> updateProfile(LearningProfile updated) => _commit(updated);
+
+  Future<void> resetLearningProgress() async {
+    final current = profile;
+    if (current == null) return;
+    await _commit(current.resetLearningProgress());
+  }
+
+  Future<void> deleteLearningData() async {
+    await _learningRepository.deleteLearningData();
+    profile = null;
+    curriculum = Curriculum(const []);
     notifyListeners();
   }
+
+  /// Records that the learner opened [lesson]. Best effort: a failed save must
+  /// never stop someone from studying.
+  Future<void> startLesson(Lesson lesson) async {
+    final before = profile;
+    if (before == null) return;
+    final started = _tracker.startLesson(before, lesson);
+    if (identical(started, before)) return;
+    try {
+      await _commit(started);
+    } catch (_) {}
+  }
+
+  /// Applies a finished lesson and returns the XP it earned.
+  Future<int> completeLesson(
+      Lesson lesson, List<ExerciseResult> results) async {
+    final before = profile;
+    if (before == null) return 0;
+    final update = _tracker.completeLesson(before, lesson, curriculum, results,
+        now: DateTime.now());
+    await _commit(update.profile);
+    return update.xpEarned;
+  }
+
+  /// Applies a targeted practice session and returns the XP it earned.
+  Future<int> completePractice(List<ExerciseResult> results) async {
+    final before = profile;
+    if (before == null) return 0;
+    final update =
+        _tracker.completePractice(before, results, now: DateTime.now());
+    await _commit(update.profile);
+    return update.xpEarned;
+  }
+
+  /// Exercises that train [skillIds], or the learner's weak skills by default.
+  List<Exercise> practiceExercises(
+          {Iterable<String>? skillIds, int limit = 6}) =>
+      curriculum.exercisesForSkills(skillIds ?? weakSkills, limit: limit);
 
   Future<void> rateReview(ReviewItem item, ReviewRating rating) async {
     final before = profile;
     if (before == null) return;
     final rescheduled = _scheduler.schedule(item, rating);
-    profile = before.copyWith(
+    await _commit(before.copyWith(
       reviewItems: [
         for (final existing in before.reviewItems)
           if (existing.id == item.id) rescheduled else existing,
       ],
       xp: before.xp + (rating == ReviewRating.again ? 2 : 5),
-    );
-    await _persist();
+    ));
+  }
+
+  Future<CoachReply> correctGerman(String text) =>
+      _aiRepository.correctGerman(text, _requireProfile());
+
+  Future<TutorReply> chat(String message) =>
+      _aiRepository.chat(message, _requireProfile());
+
+  LearningProfile _requireProfile() {
+    final current = profile;
+    if (current == null) {
+      throw StateError('Complete onboarding before chatting with the coach.');
+    }
+    return current;
+  }
+
+  /// Shows [next] immediately, then saves it. A failed save rolls the screen
+  /// back to the last saved state so the UI never claims what is not stored.
+  Future<void> _commit(LearningProfile next) async {
+    final previous = profile;
+    profile = next;
     notifyListeners();
-  }
 
-  Future<CoachReply> correctGerman(String text) async {
-    final currentProfile = profile;
-    if (currentProfile == null) {
-      throw StateError('Complete onboarding before chatting with the coach.');
-    }
-    return _aiRepository.correctGerman(text, currentProfile);
-  }
-
-  Future<TutorReply> chat(String message) async {
-    final currentProfile = profile;
-    if (currentProfile == null) {
-      throw StateError('Complete onboarding before chatting with the coach.');
-    }
-
-    return _aiRepository.chat(message, currentProfile);
-  }
-
-  Future<void> _persist() async {
-    final currentProfile = profile;
-    if (currentProfile != null) {
-      await _learningRepository.saveProfile(currentProfile);
+    try {
+      await _learningRepository.saveProfile(next);
+    } catch (_) {
+      profile = previous;
+      error = 'We could not save your changes. Please try again.';
+      notifyListeners();
+      rethrow;
     }
   }
 }

@@ -7,5 +7,10 @@ abstract class AuthRepository {
 
   Future<UserCredential?> signInWithGoogle();
 
+  /// Refreshes the sign-in before an irreversible account action.
+  Future<void> reauthenticateWithGoogle();
+
+  Future<void> deleteCurrentUser();
+
   Future<void> signOut();
 }

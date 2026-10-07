@@ -6,6 +6,7 @@ import '../../app/theme/app_theme.dart';
 import '../../core/services/review_scheduler.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
+import 'practice_session_view.dart';
 
 class PracticeView extends ConsumerWidget {
   const PracticeView({super.key});
@@ -14,26 +15,43 @@ class PracticeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final app = ref.watch(appControllerProvider);
     final due = app.profile!.reviewItems.where((item) => item.isDue).toList();
+    final weak = app.weakSkills;
     return PageFrame(
       title: 'Practice',
       subtitle: 'The next useful practice is based on your learning state.',
       child: ListView(children: [
         SoftCard(
-          color: SprichstTheme.sand,
+          color: context.softSurface,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('RECOMMENDED',
+            Text('RECOMMENDED',
                 style: TextStyle(
-                    color: SprichstTheme.forest,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.1)),
             const SizedBox(height: 8),
-            Text(due.isEmpty ? 'You are caught up.' : 'Fix your weakest areas',
+            Text(
+                weak.isNotEmpty
+                    ? 'Fix your weakest areas'
+                    : due.isEmpty
+                        ? 'You are caught up.'
+                        : 'Review what is due',
                 style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
-            Text(due.isEmpty
-                ? 'Complete your next lesson to schedule fresh recall practice.'
-                : '${due.length} items are ready for a quick recall session.'),
+            Text(weak.isNotEmpty
+                ? 'Targeted practice on ${weak.map(skillLabel).join(', ')}.'
+                : due.isEmpty
+                    ? 'Complete your next lesson to schedule fresh recall practice.'
+                    : '${due.length} items are ready for a quick recall session.'),
+            if (weak.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.md),
+              FilledButton.icon(
+                onPressed: () =>
+                    openPractice(context, ref, title: 'Weak-skill practice'),
+                icon: const Icon(Icons.bolt),
+                label: const Text('Start practice'),
+              ),
+            ],
           ]),
         ),
         const SizedBox(height: 24),
@@ -67,25 +85,22 @@ class PracticeView extends ConsumerWidget {
         const SectionTitle('Choose a skill'),
         const SizedBox(height: 12),
         Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              'Vocabulary',
-              'Articles',
-              'Grammar',
-              'Cases',
-              'Listening',
-              'Writing',
-              'Speaking'
-            ]
-                .map((label) => OutlinedButton.icon(
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                '$label practice will be added with the next curriculum pack.'))),
-                    icon: const Icon(Icons.bolt, size: 18),
-                    label: Text(label)))
-                .toList()),
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
+          children: [
+            for (final skill in app.curriculum.skills)
+              ActionChip(
+                avatar: const Icon(Icons.bolt, size: 18),
+                label: Text(skillLabel(skill)),
+                onPressed: () => openPractice(
+                  context,
+                  ref,
+                  skillIds: [skill],
+                  title: skillLabel(skill),
+                ),
+              ),
+          ],
+        ),
       ]),
     );
   }

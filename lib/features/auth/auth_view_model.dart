@@ -54,4 +54,12 @@ class AuthViewModel extends Notifier<AsyncValue<User?>> {
   Future<void> signOut() async {
     await _authRepository.signOut();
   }
+
+  Future<void> reauthenticateWithGoogle() {
+    return _authRepository.reauthenticateWithGoogle();
+  }
+
+  Future<void> deleteCurrentUser() {
+    return _authRepository.deleteCurrentUser();
+  }
 }

@@ -44,6 +44,40 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> reauthenticateWithGoogle() async {
+    final user = _firebaseAuth.currentUser;
+
+    if (user == null) {
+      throw StateError('You need to be signed in to continue.');
+    }
+
+    if (kIsWeb) {
+      await user.reauthenticateWithPopup(GoogleAuthProvider());
+      return;
+    }
+
+    await _googleSignIn.initialize();
+    final googleUser = await _googleSignIn.authenticate();
+    final googleAuth = googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
+
+    await user.reauthenticateWithCredential(credential);
+  }
+
+  @override
+  Future<void> deleteCurrentUser() async {
+    final user = _firebaseAuth.currentUser;
+
+    if (user == null) {
+      throw StateError('You need to be signed in to delete this account.');
+    }
+
+    await user.delete();
+  }
+
+  @override
   Future<void> signOut() async {
     if (!kIsWeb) {
       await _googleSignIn.signOut();

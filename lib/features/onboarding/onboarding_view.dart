@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
-import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
+import '../../shared/widgets/app_widgets.dart';
 
 class OnboardingView extends ConsumerStatefulWidget {
   const OnboardingView({super.key});
@@ -20,37 +20,43 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Padding(
-            padding: const EdgeInsets.all(28),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              child: switch (_step) {
-                0 => _Welcome(
-                    key: const ValueKey(0),
-                    onStart: () => setState(() => _step = 1)),
-                1 => _LanguageStep(
-                    key: const ValueKey(1),
-                    selected: _language,
-                    onSelect: (value) => setState(() => _language = value),
-                    onNext: () => setState(() => _step = 2),
-                  ),
-                _ => _LevelStep(
-                    key: const ValueKey(2),
-                    selected: _level,
-                    onSelect: (value) => setState(() => _level = value),
-                    onFinish: () => ref
-                        .read(appControllerProvider)
-                        .completeOnboarding(language: _language, level: _level),
-                  ),
-              },
-            ),
-          ),
+      body: CenteredScroll(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: switch (_step) {
+            0 => _Welcome(
+                key: const ValueKey(0),
+                onStart: () => setState(() => _step = 1)),
+            1 => _LanguageStep(
+                key: const ValueKey(1),
+                selected: _language,
+                onSelect: (value) => setState(() => _language = value),
+                onNext: () => setState(() => _step = 2),
+              ),
+            _ => _LevelStep(
+                key: const ValueKey(2),
+                selected: _level,
+                onSelect: (value) => setState(() => _level = value),
+                onFinish: _finish,
+              ),
+          },
         ),
       ),
     );
+  }
+
+  Future<void> _finish() async {
+    try {
+      await ref
+          .read(appControllerProvider)
+          .completeOnboarding(language: _language, level: _level);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('We could not save your plan. Please try again.')),
+      );
+    }
   }
 }
 
@@ -63,11 +69,11 @@ class _Welcome extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('SPRICHTS',
+          Text('SPRICHST',
               style: TextStyle(
                   letterSpacing: 3,
                   fontWeight: FontWeight.w900,
-                  color: SprichstTheme.forest)),
+                  color: Theme.of(context).colorScheme.primary)),
           const SizedBox(height: 36),
           Text('Willkommen bei\nSprichst.',
               style: Theme.of(context)

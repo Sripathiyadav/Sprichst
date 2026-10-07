@@ -5,13 +5,18 @@ Sprichst is a Flutter German-learning MVP built around a curriculum and learning
 ## What is already working
 
 - Responsive Flutter interface for mobile and desktop
+- Responsive app shell: bottom navigation on phones, navigation rail on tablets, and an expanded desktop rail
+- Light, dark, and system appearance modes, saved with the learner profile
+- Central Account area for profile, learning preferences, AI/voice preferences, reminder preferences, privacy, support, and licenses
 - Onboarding (explanation language + starting CEFR level)
-- Home, roadmap, lesson runner, exercise feedback, XP, progress matrix, and AI Coach screens
-- A0 / Pre-A1 and A1 foundation lessons
-- Deterministic spaced repetition: Again → 10 minutes, Hard → 1 day, Good → 3 days, Easy → 7 days
+- Home, roadmap (units, per-lesson status, real level progress), lesson runner, XP, progress matrix, and AI Coach screens
+- Learning engine: multiple-choice, fill-in, translation, and word-order exercises with deterministic evaluation, per-skill accuracy, weak-skill tracking, mistake reviews, and targeted practice
+- Nine A0 / Pre-A1 and A1 lessons in `curriculum/course.json` (greetings, introductions, numbers, articles, sein, haben, regular verbs, word order, accusative)
+- Deterministic spaced repetition: Again → 10 minutes; Hard, Good, and Easy start at 1, 3, and 7 days and grow ×1.2, ×2.5, and ×3.5 with each successful recall (capped at 180 days)
 - On-device persistence through `shared_preferences`, so progress survives an app restart
+- Separate reset-learning-progress and reauthenticated delete-account flows
 - FastAPI AI gateway with `/health`, `/v1/correct`, `/v1/chat`, `/v1/explain`, and `/v1/practice`
-- Curriculum JSON and a validation script
+- Versioned curriculum JSON, validated by both a script and the app's parser
 - Firebase Firestore and Storage security rules ready to deploy
 
 ## Project map
@@ -52,4 +57,10 @@ Check `http://127.0.0.1:8000/health`. Before connecting a mobile device or expos
 
 Firebase/Google sign-in is intentionally not silently enabled in this ZIP because it needs your Firebase project identifiers, platform bundle IDs, Google OAuth consent configuration, and the generated `firebase_options.dart` file. The complete click-by-click finishing guide is in [docs/SETUP.md](docs/SETUP.md).
 
-Course content belongs in `curriculum/`; user progress belongs under `users/{uid}/...`; an LLM never controls review dates or has unrestricted database access.
+Course content belongs in `curriculum/course.json`; user progress belongs under `users/{uid}/...`; an LLM never controls review dates or has unrestricted database access.
+
+## Account and privacy controls
+
+Account preferences are stored with the learner profile. The AI and voice controls are safe account preferences: the gateway continues to own provider credentials, model access, and live routing. The privacy screen describes the current data paths without implying that a preference changes gateway behavior before that support is implemented.
+
+Reset learning progress removes completed lessons, reviews, XP, and streaks while retaining the account and preferences. Delete account asks the user to reauthenticate, removes the current Firestore learning documents, then deletes the Firebase Authentication account.

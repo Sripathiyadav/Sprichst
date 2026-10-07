@@ -1,0 +1,630 @@
+{
+  "lessons": [
+    {
+      "id": "pre_a1_greetings",
+      "level": "preA1",
+      "unit": "First steps",
+      "title": "Greetings",
+      "durationMinutes": 8,
+      "objective": "Greet someone and say goodbye politely.",
+      "introduction": "German greetings change slightly with the time of day. Start with these everyday essentials.",
+      "examples": [
+        "Hallo! — Hello!",
+        "Guten Morgen! — Good morning!",
+        "Tschüss! — Bye!"
+      ],
+      "exercises": [
+        {
+          "id": "greeting_1",
+          "kind": "multipleChoice",
+          "prompt": "Choose the German word for “Thank you”.",
+          "options": [
+            "Bitte",
+            "Danke",
+            "Tschüss"
+          ],
+          "answer": "Danke",
+          "explanation": "Danke means “thank you”. Bitte can mean “please” or “you’re welcome”.",
+          "skills": [
+            "greetings"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "greeting_2",
+          "kind": "multipleChoice",
+          "prompt": "What would you say when leaving a friend?",
+          "options": [
+            "Guten Abend",
+            "Tschüss",
+            "Wie heißt du?"
+          ],
+          "answer": "Tschüss",
+          "explanation": "Tschüss is an informal, friendly goodbye.",
+          "skills": [
+            "greetings"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "greeting_3",
+          "kind": "translation",
+          "prompt": "Translate into German: “Good morning!”",
+          "answer": "Guten Morgen",
+          "explanation": "Guten Morgen is used until about late morning.",
+          "skills": [
+            "greetings"
+          ],
+          "area": "writing"
+        }
+      ]
+    },
+    {
+      "id": "pre_a1_introductions",
+      "level": "preA1",
+      "unit": "First steps",
+      "title": "Introduce yourself",
+      "durationMinutes": 10,
+      "objective": "Say your name and ask someone else’s name.",
+      "introduction": "Use heißen to talk about names. With ich, it becomes heiße.",
+      "examples": [
+        "Ich heiße Sam. — My name is Sam.",
+        "Wie heißt du? — What is your name?",
+        "Ich komme aus Indien. — I come from India."
+      ],
+      "exercises": [
+        {
+          "id": "intro_1",
+          "kind": "fillBlank",
+          "prompt": "Complete with the right form of heißen: “Ich ___ Ana.”",
+          "answer": "heiße",
+          "explanation": "With ich, heißen changes to heiße.",
+          "skills": [
+            "verb_conjugation",
+            "introductions"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "intro_2",
+          "kind": "multipleChoice",
+          "prompt": "Choose: “What is your name?”",
+          "options": [
+            "Wie heißt du?",
+            "Wo wohnst du?",
+            "Wie geht es dir?"
+          ],
+          "answer": "Wie heißt du?",
+          "explanation": "Wie heißt du? asks someone’s name informally.",
+          "skills": [
+            "introductions"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "intro_3",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “My name is Sam.”",
+          "options": [
+            "heiße",
+            "Sam",
+            "Ich"
+          ],
+          "answer": "Ich heiße Sam",
+          "explanation": "The verb comes second: Ich heiße Sam.",
+          "skills": [
+            "word_order",
+            "introductions"
+          ],
+          "area": "grammar"
+        }
+      ]
+    },
+    {
+      "id": "pre_a1_numbers",
+      "level": "preA1",
+      "unit": "First steps",
+      "title": "Numbers 1–10",
+      "durationMinutes": 10,
+      "objective": "Recognise and say the numbers from one to ten.",
+      "introduction": "German numbers up to ten are short and worth learning by heart: they come back in prices, times, and addresses.",
+      "examples": [
+        "eins, zwei, drei, vier, fünf",
+        "sechs, sieben, acht, neun, zehn",
+        "Ich habe zwei Brüder. — I have two brothers."
+      ],
+      "exercises": [
+        {
+          "id": "number_1",
+          "kind": "multipleChoice",
+          "prompt": "Which number is “fünf”?",
+          "options": [
+            "4",
+            "5",
+            "6"
+          ],
+          "answer": "5",
+          "explanation": "fünf is five.",
+          "skills": [
+            "numbers"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "number_2",
+          "kind": "multipleChoice",
+          "prompt": "Which number is “neun”?",
+          "options": [
+            "7",
+            "8",
+            "9"
+          ],
+          "answer": "9",
+          "explanation": "neun is nine. Do not confuse it with nein (no).",
+          "skills": [
+            "numbers"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "number_3",
+          "kind": "translation",
+          "prompt": "Translate into German: “seven”",
+          "answer": "sieben",
+          "explanation": "sieben is seven.",
+          "skills": [
+            "numbers"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "number_4",
+          "kind": "fillBlank",
+          "prompt": "Type the German word for 10:",
+          "answer": "zehn",
+          "explanation": "zehn is ten.",
+          "skills": [
+            "numbers"
+          ],
+          "area": "vocabulary"
+        }
+      ]
+    },
+    {
+      "id": "a1_articles",
+      "level": "a1",
+      "unit": "Daily life",
+      "title": "Definite articles",
+      "durationMinutes": 12,
+      "objective": "Recognize der, die and das with common nouns.",
+      "introduction": "Every German noun has a grammatical gender. Learn the article together with the noun.",
+      "examples": [
+        "der Tisch — the table",
+        "die Lampe — the lamp",
+        "das Kind — the child"
+      ],
+      "exercises": [
+        {
+          "id": "article_1",
+          "kind": "multipleChoice",
+          "prompt": "Choose the correct article: ___ Tisch",
+          "options": [
+            "der",
+            "die",
+            "das"
+          ],
+          "answer": "der",
+          "explanation": "Tisch is masculine: der Tisch.",
+          "skills": [
+            "definite_articles"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "article_2",
+          "kind": "multipleChoice",
+          "prompt": "Choose the correct article: ___ Kind",
+          "options": [
+            "der",
+            "die",
+            "das"
+          ],
+          "answer": "das",
+          "explanation": "Kind is neuter: das Kind.",
+          "skills": [
+            "definite_articles"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "article_3",
+          "kind": "fillBlank",
+          "prompt": "Type the article: ___ Lampe",
+          "answer": "die",
+          "explanation": "Lampe is feminine: die Lampe.",
+          "skills": [
+            "definite_articles"
+          ],
+          "area": "grammar"
+        }
+      ]
+    },
+    {
+      "id": "a1_sein",
+      "level": "a1",
+      "unit": "Daily life",
+      "title": "The verb sein",
+      "durationMinutes": 12,
+      "objective": "Use sein (to be) correctly with every pronoun.",
+      "introduction": "Sein is irregular, so it has to be memorised: ich bin, du bist, er/sie/es ist, wir sind, ihr seid, sie/Sie sind.",
+      "examples": [
+        "Ich bin müde. — I am tired.",
+        "Du bist mein Freund. — You are my friend.",
+        "Wir sind zu Hause. — We are at home."
+      ],
+      "exercises": [
+        {
+          "id": "sein_1",
+          "kind": "multipleChoice",
+          "prompt": "Choose the right form: “Ich ___ müde.”",
+          "options": [
+            "bin",
+            "bist",
+            "ist"
+          ],
+          "answer": "bin",
+          "explanation": "With ich the form is bin.",
+          "skills": [
+            "sein",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "sein_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Du ___ mein Freund.”",
+          "answer": "bist",
+          "explanation": "With du the form is bist.",
+          "skills": [
+            "sein",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "sein_3",
+          "kind": "multipleChoice",
+          "prompt": "Choose the right form: “Sie (she) ___ aus Berlin.”",
+          "options": [
+            "ist",
+            "sind",
+            "bin"
+          ],
+          "answer": "ist",
+          "explanation": "er, sie, and es all take ist.",
+          "skills": [
+            "sein",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "sein_4",
+          "kind": "translation",
+          "prompt": "Translate into German: “We are happy.”",
+          "answer": "Wir sind glücklich",
+          "explanation": "With wir the form is sind.",
+          "skills": [
+            "sein",
+            "verb_conjugation"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "sein_5",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “He is a teacher.”",
+          "options": [
+            "Lehrer",
+            "ist",
+            "Er"
+          ],
+          "answer": "Er ist Lehrer",
+          "explanation": "German often leaves out the article for professions: Er ist Lehrer.",
+          "skills": [
+            "sein",
+            "word_order"
+          ],
+          "area": "grammar"
+        }
+      ]
+    },
+    {
+      "id": "a1_haben",
+      "level": "a1",
+      "unit": "Daily life",
+      "title": "The verb haben",
+      "durationMinutes": 12,
+      "objective": "Use haben (to have) with every pronoun.",
+      "introduction": "Haben is nearly regular but drops the b in du hast and er hat: ich habe, du hast, er/sie/es hat, wir haben, ihr habt, sie/Sie haben.",
+      "examples": [
+        "Ich habe Hunger. — I am hungry (literally: I have hunger).",
+        "Er hat ein Auto. — He has a car.",
+        "Wir haben Zeit. — We have time."
+      ],
+      "exercises": [
+        {
+          "id": "haben_1",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich ___ Hunger.”",
+          "answer": "habe",
+          "explanation": "With ich the form is habe.",
+          "skills": [
+            "haben",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "haben_2",
+          "kind": "multipleChoice",
+          "prompt": "Choose the right form: “Er ___ ein Auto.”",
+          "options": [
+            "habe",
+            "hat",
+            "hast"
+          ],
+          "answer": "hat",
+          "explanation": "With er, sie, and es the form is hat.",
+          "skills": [
+            "haben",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "haben_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Du ___ Zeit.”",
+          "answer": "hast",
+          "explanation": "With du the form is hast.",
+          "skills": [
+            "haben",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "haben_4",
+          "kind": "translation",
+          "prompt": "Translate into German: “We have a car.”",
+          "answer": "Wir haben ein Auto",
+          "explanation": "With wir the form is haben.",
+          "skills": [
+            "haben",
+            "verb_conjugation"
+          ],
+          "area": "writing"
+        }
+      ]
+    },
+    {
+      "id": "a1_regular_verbs",
+      "level": "a1",
+      "unit": "Sentences",
+      "title": "Regular verbs",
+      "durationMinutes": 14,
+      "objective": "Conjugate regular verbs in the present tense.",
+      "introduction": "Take the verb stem (lernen → lern) and add an ending: -e, -st, -t, -en, -t, -en.",
+      "examples": [
+        "Ich lerne Deutsch. — I learn German.",
+        "Du wohnst in Berlin. — You live in Berlin.",
+        "Er trinkt Kaffee. — He drinks coffee."
+      ],
+      "exercises": [
+        {
+          "id": "verbs_1",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Du ___ Deutsch.” (lernen)",
+          "answer": "lernst",
+          "explanation": "With du, add -st to the stem: lernst.",
+          "skills": [
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "verbs_2",
+          "kind": "multipleChoice",
+          "prompt": "Choose the right form: “Er ___ Kaffee.” (trinken)",
+          "options": [
+            "trinke",
+            "trinkt",
+            "trinken"
+          ],
+          "answer": "trinkt",
+          "explanation": "With er, sie, and es, add -t to the stem: trinkt.",
+          "skills": [
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "verbs_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Wir ___ in Berlin.” (wohnen)",
+          "answer": "wohnen",
+          "explanation": "With wir, the verb keeps its infinitive form: wohnen.",
+          "skills": [
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "verbs_4",
+          "kind": "translation",
+          "prompt": "Translate into German: “I work.”",
+          "answer": "Ich arbeite",
+          "explanation": "Stems ending in -t add an extra e: arbeite.",
+          "skills": [
+            "verb_conjugation"
+          ],
+          "area": "writing"
+        }
+      ]
+    },
+    {
+      "id": "a1_word_order",
+      "level": "a1",
+      "unit": "Sentences",
+      "title": "Verb in second position",
+      "durationMinutes": 14,
+      "objective": "Place the verb correctly in simple statements.",
+      "introduction": "In a German statement the conjugated verb is always the second element. Starting with a time word moves the subject after the verb.",
+      "examples": [
+        "Ich lerne heute Deutsch. — I learn German today.",
+        "Heute lerne ich Deutsch. — Today I learn German.",
+        "Wir wohnen in Berlin. — We live in Berlin."
+      ],
+      "exercises": [
+        {
+          "id": "order_1",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “I learn German.”",
+          "options": [
+            "Deutsch",
+            "lerne",
+            "Ich"
+          ],
+          "answer": "Ich lerne Deutsch",
+          "explanation": "The verb is in second position.",
+          "skills": [
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "order_2",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence starting with “Heute”: “Today I learn German.”",
+          "options": [
+            "ich",
+            "Deutsch",
+            "Heute",
+            "lerne"
+          ],
+          "answer": "Heute lerne ich Deutsch",
+          "explanation": "After Heute, the verb stays second and the subject follows it.",
+          "skills": [
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "order_3",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Heute ich lerne Deutsch",
+            "Heute lerne ich Deutsch",
+            "Ich Deutsch lerne heute"
+          ],
+          "answer": "Heute lerne ich Deutsch",
+          "explanation": "The conjugated verb must be the second element.",
+          "skills": [
+            "word_order"
+          ],
+          "area": "grammar"
+        }
+      ]
+    },
+    {
+      "id": "a1_accusative",
+      "level": "a1",
+      "unit": "Sentences",
+      "title": "Accusative: the direct object",
+      "durationMinutes": 16,
+      "objective": "Use den and einen for masculine direct objects.",
+      "introduction": "The thing that receives the action is the direct object and takes the accusative case. Only masculine articles change: der → den and ein → einen.",
+      "examples": [
+        "Ich sehe den Hund. — I see the dog.",
+        "Ich habe einen Bruder. — I have a brother.",
+        "Ich sehe die Lampe. — I see the lamp (feminine: no change)."
+      ],
+      "exercises": [
+        {
+          "id": "acc_1",
+          "kind": "multipleChoice",
+          "prompt": "Choose the article: “Ich sehe ___ Hund.” (the dog)",
+          "options": [
+            "der",
+            "den",
+            "dem"
+          ],
+          "answer": "den",
+          "explanation": "Hund is masculine and the direct object, so der becomes den.",
+          "skills": [
+            "accusative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "acc_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich habe ___ Bruder.” (a brother)",
+          "answer": "einen",
+          "explanation": "Bruder is masculine and the direct object, so ein becomes einen.",
+          "skills": [
+            "accusative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "acc_3",
+          "kind": "multipleChoice",
+          "prompt": "Choose the article: “Ich kaufe ___ Tisch.” (the table)",
+          "options": [
+            "der",
+            "den",
+            "das"
+          ],
+          "answer": "den",
+          "explanation": "Tisch is masculine, so the direct object takes den.",
+          "skills": [
+            "accusative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "acc_4",
+          "kind": "multipleChoice",
+          "prompt": "Choose the article: “Ich sehe ___ Lampe.” (the lamp)",
+          "options": [
+            "die",
+            "den",
+            "der"
+          ],
+          "answer": "die",
+          "explanation": "Feminine articles do not change in the accusative.",
+          "skills": [
+            "accusative",
+            "definite_articles"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "acc_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “I see the dog.”",
+          "answer": "Ich sehe den Hund",
+          "explanation": "Hund is masculine, so the accusative article is den.",
+          "skills": [
+            "accusative"
+          ],
+          "area": "writing"
+        }
+      ]
+    }
+  ]
+}

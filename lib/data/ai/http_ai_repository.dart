@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../domain/learning/progress_tracker.dart';
 import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/learning_repository.dart';
 
@@ -13,6 +14,7 @@ class HttpAIRepository implements AIRepository {
 
   final String baseUrl;
   final http.Client _client;
+  static const _tracker = ProgressTracker();
 
   @override
   Future<CoachReply> correctGerman(
@@ -146,6 +148,8 @@ class HttpAIRepository implements AIRepository {
     }
   }
 
+  /// The compact, trusted context sent with every request. It carries
+  /// learning signals only; provider, voice, and name stay on the device.
   Map<String, dynamic> _buildContext(LearningProfile profile) {
     return {
       'level': profile.currentLevel.label,
@@ -153,11 +157,15 @@ class HttpAIRepository implements AIRepository {
       'current_lesson': profile.currentLessonId,
       'weak_skills': _weakSkills(profile),
       'known_vocabulary': <String>[],
-      'recent_mistakes': <String>[],
+      'recent_mistakes': profile.recentMistakes,
     };
   }
 
   List<String> _weakSkills(LearningProfile profile) {
+    final tracked = _tracker.weakSkills(profile);
+    if (tracked.isNotEmpty) return tracked.map(skillLabel).toList();
+
+    // No evidence yet: hint at the broad areas with the lowest scores.
     final entries = profile.scores.entries.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
 
