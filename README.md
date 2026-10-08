@@ -10,9 +10,15 @@ Sprichst is a Flutter German-learning MVP built around a curriculum and learning
 - Central Account area for profile, learning preferences, AI/voice preferences, reminder preferences, privacy, support, and licenses
 - Onboarding (explanation language + starting CEFR level)
 - Home, roadmap (units, per-lesson status, real level progress), lesson runner, XP, progress matrix, and AI Coach screens
-- Learning engine: multiple-choice, fill-in, translation, and word-order exercises with deterministic evaluation, per-skill accuracy, weak-skill tracking, mistake reviews, and targeted practice
-- Nine A0 / Pre-A1 and A1 lessons in `curriculum/course.json` (greetings, introductions, numbers, articles, sein, haben, regular verbs, word order, accusative)
-- Deterministic spaced repetition: Again → 10 minutes; Hard, Good, and Easy start at 1, 3, and 7 days and grow ×1.2, ×2.5, and ×3.5 with each successful recall (capped at 180 days)
+- Adaptive learning: a deterministic planner picks the next review, weak-skill practice, or lesson from your own answers; practice is limited to lessons you have started, difficulty follows your accuracy per skill, missed exercises are retried and respaced, and finishing a level well moves you up
+- Personalised curriculum: choose a goal (everyday, travel, work, Goethe-Zertifikat or TestDaF) and the path, vocabulary and practice follow it, with the reason for each recommendation shown on the roadmap
+- Exam-style tasks modelled on the Goethe-Zertifikat and TestDaF modules: reading over a passage, listening (read aloud by the tutor, transcript always available), Lückentext, writing against content points (Leitpunkte) with a live checklist, speaking (record, transcribe, compare), a graph description task, and a mock exam (Modelltest) with a per-module report
+- Flashcards with spaced repetition (a deterministic SM-2 variant): nouns are shown without their article so the article is recalled too, and a card flips to meaning → German once it is well known
+- Five games: Artikel-Rausch (swipe der/die/das), Memory, Buchstabensalat (word scramble), Wortle (five-letter German word), and Gespräch (conversation fill-ups), with combos, stars, daily quests and badges
+- Insights drawn from how you answer (recognition vs. recall, weakest and strongest mode). Sprichst deliberately does not use "learning styles" such as VARK, which research has not supported; see `docs/learning-design.md`
+- Learning engine: eight exercise types with deterministic evaluation, per-skill accuracy, weak-skill tracking, mistake reviews, and targeted practice
+- 25 lessons from Pre-A1 to B2 in `curriculum/course.json`, with 150 vocabulary words, 7 dialogues, and Goethe A1–B1 and TestDaF task lessons
+- Deterministic spaced repetition for reviews and flashcards (Again → 10 minutes; successful recalls grow the gap)
 - On-device persistence through `shared_preferences`, so progress survives an app restart
 - Separate reset-learning-progress and reauthenticated delete-account flows
 - FastAPI AI gateway with `/health`, `/v1/correct`, `/v1/chat`, `/v1/explain`, and `/v1/practice`
@@ -52,6 +58,27 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 Check `http://127.0.0.1:8000/health`. Before connecting a mobile device or exposing the service, read [docs/SETUP.md](docs/SETUP.md): the gateway must remain behind authentication and HTTPS.
+
+## Preview the app without signing in
+
+`tool/preview_main.dart` runs the real app with a fake signed-in learner and seeded progress, so you can inspect every screen (and light/dark mode) without Google sign-in or Firebase:
+
+```bash
+flutter run -t tool/preview_main.dart
+# or preview a look:
+flutter run -t tool/preview_main.dart \
+  --dart-define=PREVIEW_APPEARANCE=dark --dart-define=PREVIEW_STYLE=glass --dart-define=PREVIEW_INTENSITY=80
+```
+
+## Design
+
+**Colour.** The brand is the German flag: black `#000000`, red `#DD0000`, gold `#FFCE00`. The palette is built from colour theory in HCT (hue, chroma, tone) in `lib/app/theme/color_system.dart`: neutrals are tinted with the gold hue so greys feel warm, foreground tones are derived from their background to hit WCAG contrast instead of being hand-picked, and roughly 60% of a screen is neutral surface, 30% ink and containers, 10% accent. Light mode is white with a black primary action and red accent; dark mode is flag-black with a gold primary action. Gold marks correct answers and achievements, red marks mistakes, and every state also carries an icon and a word. Tests enforce AA contrast, tone derivation, brand fidelity, and colour-blind safety (protan, deutan, tritan simulation).
+
+**Liquid Glass.** Under Account → Appearance, choose **Standard** (flat, opaque) or **Liquid Glass**, and set the glass **intensity** from subtle to strong with a live preview. Intensity drives blur, fill opacity, the light-catching edge, shadow, and the red/gold light behind the glass. Blur is used only on the floating navigation (content scrolls beneath it); cards are frosted but unblurred, which keeps scrolling smooth. Fill opacity never drops below a floor that a test proves keeps text at 4.5:1 over the worst backdrops at every intensity. Devices set to High Contrast get opaque surfaces whatever is chosen.
+
+**Apple Human Interface Guidelines.** The Apple type scale with Dynamic Type, continuous ("squircle") corners, capsule buttons, inset grouped settings lists, native Cupertino alerts on Apple platforms, press-scale and haptic feedback, a floating tab bar, swipe-back navigation, and 44pt+ targets.
+
+**Universal design.** Palette contrast, tap-target size, semantic labels, 200% text size, reduced motion, keyboard submit, and light/dark/Standard/Glass rendering are all enforced by tests.
 
 ## Important implementation boundary
 

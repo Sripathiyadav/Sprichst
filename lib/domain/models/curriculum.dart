@@ -20,7 +20,9 @@ class Curriculum {
       : lessons = List.unmodifiable(source),
         _indexById = {},
         _lessonsByLevel = {},
-        _exercisesBySkill = {} {
+        _exercisesBySkill = {},
+        _exerciseIndex = {},
+        _lessonByExercise = {} {
     final unitsByKey = <String, List<Lesson>>{};
     for (var index = 0; index < lessons.length; index++) {
       final lesson = lessons[index];
@@ -30,6 +32,8 @@ class Curriculum {
           .putIfAbsent('${lesson.level.name}|${lesson.unit}', () => [])
           .add(lesson);
       for (final exercise in lesson.exercises) {
+        _exerciseIndex[exercise.id] = exercise;
+        _lessonByExercise[exercise.id] = lesson;
         for (final skill in exercise.skills) {
           _exercisesBySkill.putIfAbsent(skill, () => []).add(exercise);
         }
@@ -50,6 +54,8 @@ class Curriculum {
   final Map<String, int> _indexById;
   final Map<CefrLevel, List<Lesson>> _lessonsByLevel;
   final Map<String, List<Exercise>> _exercisesBySkill;
+  final Map<String, Exercise> _exerciseIndex;
+  final Map<String, Lesson> _lessonByExercise;
 
   bool get isEmpty => lessons.isEmpty;
 
@@ -59,6 +65,22 @@ class Curriculum {
   Lesson? lessonById(String id) {
     final index = _indexById[id];
     return index == null ? null : lessons[index];
+  }
+
+  Exercise? exerciseById(String id) => _exerciseIndex[id];
+
+  Lesson? lessonOfExercise(String exerciseId) => _lessonByExercise[exerciseId];
+
+  /// Every exercise, in curriculum order.
+  Iterable<Exercise> get exercises => lessons.expand((l) => l.exercises);
+
+  /// The first lesson taught at [level] or any later level, or null when the
+  /// course has nothing at or above it.
+  Lesson? firstLessonAtOrAbove(CefrLevel level) {
+    for (final lesson in lessons) {
+      if (lesson.level.index >= level.index) return lesson;
+    }
+    return null;
   }
 
   List<Lesson> lessonsAt(CefrLevel level) => _lessonsByLevel[level] ?? const [];

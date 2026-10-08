@@ -1,7 +1,11 @@
+import 'package:flutter/cupertino.dart' show CupertinoDialogAction;
 import 'package:flutter/material.dart';
 
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/breakpoints.dart';
+import 'glass.dart';
+
+export 'glass.dart';
 
 class PageFrame extends StatelessWidget {
   const PageFrame(
@@ -9,24 +13,41 @@ class PageFrame extends StatelessWidget {
       required this.title,
       this.subtitle,
       required this.child,
-      this.trailing});
+      this.trailing,
+      this.scrollsUnderNav = true});
 
   final String title;
   final String? subtitle;
   final Widget child;
   final Widget? trailing;
 
+  /// Whether [child] is a scrollable that may run beneath the floating
+  /// navigation bar. A scrollable pads itself by the inset it is given (use
+  /// [pageListPadding]); a fixed layout such as the Coach screen must instead be
+  /// kept clear of the bar, so it sets this to false.
+  final bool scrollsUnderNav;
+
   @override
   Widget build(BuildContext context) => SafeArea(
+        bottom: !scrollsUnderNav,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final compact = constraints.maxWidth < Breakpoints.narrowContent;
+            // Enlarged text or a short window leaves little room: the subtitle is
+            // supporting text, so it yields before the content does.
+            final scale = MediaQuery.textScalerOf(context).scale(1);
+            // The avatar sits beside the title unless the row would be cramped.
+            final stackTrailing =
+                constraints.maxWidth < Breakpoints.stackTrailing ||
+                    scale >= 1.5;
+            final showSubtitle = subtitle != null &&
+                constraints.maxHeight / scale >= Breakpoints.subtitleMinHeight;
             final horizontal = compact ? AppSpacing.md : AppSpacing.lg;
             final heading = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: Theme.of(context).textTheme.displaySmall),
-                if (subtitle != null) ...[
+                if (showSubtitle) ...[
                   const SizedBox(height: AppSpacing.xs),
                   Text(subtitle!, style: Theme.of(context).textTheme.bodyLarge),
                 ],
@@ -43,14 +64,14 @@ class PageFrame extends StatelessWidget {
                     horizontal,
                     compact ? AppSpacing.lg : 26,
                     horizontal,
-                    AppSpacing.lg,
+                    scrollsUnderNav ? 0 : AppSpacing.lg,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (trailing == null)
                         heading
-                      else if (compact) ...[
+                      else if (stackTrailing) ...[
                         heading,
                         const SizedBox(height: AppSpacing.sm),
                         Align(
@@ -70,6 +91,42 @@ class PageFrame extends StatelessWidget {
               ),
             );
           },
+        ),
+      );
+}
+
+/// Bottom padding for a page's main scrollable: a comfortable gap plus whatever
+/// inset the screen has (the floating navigation bar or the home indicator), so
+/// the last item can scroll fully clear while earlier ones pass beneath.
+EdgeInsets pageListPadding(BuildContext context) => EdgeInsets.only(
+      bottom: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+    );
+
+/// A full-screen page: the ambient backdrop with a transparent [Scaffold] on top,
+/// so Liquid Glass has light to catch and routes never show the page behind them
+/// while animating. With standard surfaces it is an ordinary page.
+class GlassPage extends StatelessWidget {
+  const GlassPage({
+    super.key,
+    this.appBar,
+    required this.body,
+    this.bottomNavigationBar,
+    this.extendBody = false,
+  });
+
+  final PreferredSizeWidget? appBar;
+  final Widget body;
+  final Widget? bottomNavigationBar;
+  final bool extendBody;
+
+  @override
+  Widget build(BuildContext context) => AmbientBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: appBar,
+          body: body,
+          bottomNavigationBar: bottomNavigationBar,
+          extendBody: extendBody,
         ),
       );
 }
@@ -125,6 +182,9 @@ class ProfileAvatar extends StatelessWidget {
   }
 }
 
+/// The app's standard card: a plain bordered card, or Liquid Glass when the
+/// learner has chosen it. [color] tints the card (for emphasis) instead of using
+/// the default surface colour.
 class SoftCard extends StatelessWidget {
   const SoftCard(
       {super.key,
@@ -137,9 +197,10 @@ class SoftCard extends StatelessWidget {
   final EdgeInsets padding;
 
   @override
-  Widget build(BuildContext context) => Card(
-        color: color,
-        child: Padding(padding: padding, child: child),
+  Widget build(BuildContext context) => GlassSurface(
+        tint: color,
+        padding: padding,
+        child: child,
       );
 }
 
@@ -172,7 +233,13 @@ class SkillMeter extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) {
+    final percent = (value * 100).round();
+    return Semantics(
+      label: label,
+      value: '$percent percent',
+      excludeSemantics: true,
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -182,8 +249,11 @@ class SkillMeter extends StatelessWidget {
                     Text(label, style: Theme.of(context).textTheme.bodyMedium),
               ),
               const SizedBox(width: AppSpacing.xs),
-              Text('${(value * 100).round()}%',
-                  style: const TextStyle(fontWeight: FontWeight.w700)),
+              Text('$percent%',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontSize: 15)),
             ],
           ),
           SizedBox(height: compact ? 5 : 8),
@@ -191,14 +261,16 @@ class SkillMeter extends StatelessWidget {
             borderRadius: BorderRadius.circular(99),
             child: LinearProgressIndicator(
               value: value,
-              minHeight: compact ? 7 : 10,
+              minHeight: compact ? 8 : 12,
               backgroundColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,
-              color: Theme.of(context).colorScheme.primary,
+              color: context.accent,
             ),
           ),
         ],
-      );
+      ),
+    );
+  }
 }
 
 class SettingsPage extends StatelessWidget {
@@ -214,16 +286,21 @@ class SettingsPage extends StatelessWidget {
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => GlassPage(
         appBar: AppBar(title: Text(title)),
         body: PageFrame(
           title: title,
           subtitle: subtitle,
-          child: ListView(children: children),
+          child: ListView(
+            padding: pageListPadding(context),
+            children: children,
+          ),
         ),
       );
 }
 
+/// An inset grouped list section, as in iOS Settings: a small header above, a
+/// rounded group of rows with inset separators, and an optional footer below.
 class SettingsSection extends StatelessWidget {
   const SettingsSection({
     super.key,
@@ -237,33 +314,54 @@ class SettingsSection extends StatelessWidget {
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            if (description != null) ...[
-              const SizedBox(height: AppSpacing.xs),
-              Text(description!, style: Theme.of(context).textTheme.bodyMedium),
-            ],
-            const SizedBox(height: AppSpacing.sm),
-            SoftCard(
-              padding: EdgeInsets.zero,
-              child: Column(children: _withDividers(context, children)),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: AppSpacing.md,
+              bottom: AppSpacing.xs,
             ),
-          ],
-        ),
-      );
-
-  List<Widget> _withDividers(BuildContext context, List<Widget> items) {
-    return [
-      for (var index = 0; index < items.length; index++) ...[
-        items[index],
-        if (index != items.length - 1) const Divider(height: 1),
-      ],
-    ];
+            child: Semantics(
+              header: true,
+              child: Text(
+                title,
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+          SoftCard(
+            padding: EdgeInsets.zero,
+            child: Column(children: _withDividers(children)),
+          ),
+          if (description != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.xs,
+                AppSpacing.md,
+                0,
+              ),
+              child: Text(description!, style: theme.textTheme.bodySmall),
+            ),
+        ],
+      ),
+    );
   }
+
+  /// Separators start where the text does, leaving the icon column clear.
+  List<Widget> _withDividers(List<Widget> items) => [
+        for (var index = 0; index < items.length; index++) ...[
+          items[index],
+          if (index != items.length - 1)
+            const Divider(height: 1, indent: AppSpacing.md + 40),
+        ],
+      ];
 }
 
 class SettingsTile extends StatelessWidget {
@@ -288,7 +386,7 @@ class SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = destructive
         ? Theme.of(context).colorScheme.error
-        : Theme.of(context).colorScheme.primary;
+        : Theme.of(context).colorScheme.onSurface;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
@@ -305,6 +403,8 @@ class SettingsTile extends StatelessWidget {
   }
 }
 
+/// A confirmation alert that looks native: Cupertino on Apple platforms,
+/// Material elsewhere.
 Future<bool> showSprichstConfirmation(
   BuildContext context, {
   required String title,
@@ -312,30 +412,206 @@ Future<bool> showSprichstConfirmation(
   required String confirmLabel,
   bool destructive = false,
 }) async {
-  return await showDialog<bool>(
+  return await showAdaptiveDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              style: destructive
-                  ? FilledButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(dialogContext).colorScheme.error,
-                      foregroundColor:
-                          Theme.of(dialogContext).colorScheme.onError,
-                    )
-                  : null,
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(confirmLabel),
-            ),
-          ],
-        ),
+        builder: (dialogContext) {
+          final theme = Theme.of(dialogContext);
+          final apple = theme.platform == TargetPlatform.iOS ||
+              theme.platform == TargetPlatform.macOS;
+
+          void close(bool confirmed) =>
+              Navigator.of(dialogContext).pop(confirmed);
+
+          return AlertDialog.adaptive(
+            title: Text(title),
+            content: Text(message),
+            actions: apple
+                ? [
+                    CupertinoDialogAction(
+                      onPressed: () => close(false),
+                      child: const Text('Cancel'),
+                    ),
+                    CupertinoDialogAction(
+                      isDestructiveAction: destructive,
+                      isDefaultAction: !destructive,
+                      onPressed: () => close(true),
+                      child: Text(confirmLabel),
+                    ),
+                  ]
+                : [
+                    TextButton(
+                      onPressed: () => close(false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      style: destructive
+                          ? TextButton.styleFrom(
+                              foregroundColor: theme.colorScheme.error)
+                          : null,
+                      onPressed: () => close(true),
+                      child: Text(confirmLabel),
+                    ),
+                  ],
+          );
+        },
       ) ??
       false;
 }
+
+/// The German flag's three bands as a slim decorative accent. Purely visual,
+/// so hidden from assistive technology; the hairline keeps the black band
+/// visible against dark backgrounds.
+class FlagStripe extends StatelessWidget {
+  const FlagStripe({
+    super.key,
+    this.height = 6,
+    this.radius = 99,
+    this.outline,
+  });
+
+  final double height;
+  final double radius;
+
+  /// Hairline drawn around the stripe so the band matching the backdrop (black
+  /// on black, gold on gold) stays visible. Defaults to a neutral outline.
+  final Color? outline;
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radius),
+            border: Border.all(
+              color: outline ?? Theme.of(context).colorScheme.outlineVariant,
+              width: outline == null ? .5 : 1.5,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(radius),
+            child: SizedBox(
+              height: height,
+              // Container (not ColoredBox) so each band fills its slot: a
+              // child-less ColoredBox collapses to zero height inside a Row.
+              child: Row(
+                children: [
+                  for (final color in const [
+                    FlagColors.black,
+                    FlagColors.red,
+                    FlagColors.gold,
+                  ])
+                    Expanded(child: Container(color: color)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
+/// Correct / not-quite feedback. Colour is reinforced by an icon and a heading,
+/// and the message is announced to screen readers as it appears.
+class FeedbackBanner extends StatelessWidget {
+  const FeedbackBanner({
+    super.key,
+    required this.correct,
+    required this.message,
+  });
+
+  final bool correct;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final background = correct ? context.successSurface : context.dangerSurface;
+    final foreground =
+        correct ? context.onSuccessSurface : context.onDangerSurface;
+    final heading = correct ? 'Correct!' : 'Not quite';
+    return Semantics(
+      liveRegion: true,
+      container: true,
+      label: '$heading $message',
+      excludeSemantics: true,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(correct ? Icons.check_circle : Icons.cancel_outlined,
+                  color: foreground, size: 28),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(heading,
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(color: foreground)),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(message,
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(color: foreground)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A single number with an icon and a plain-language label.
+class StatTile extends StatelessWidget {
+  const StatTile({
+    super.key,
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        label: '$value $label',
+        excludeSemantics: true,
+        child: SoftCard(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: context.softSurface,
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                child: Icon(icon),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(value,
+                        style: Theme.of(context).textTheme.headlineSmall),
+                    Text(label),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+}
+
+/// Animation length that respects the platform's reduce-motion setting.
+Duration motionDuration(BuildContext context, [int milliseconds = 200]) =>
+    MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : Duration(milliseconds: milliseconds);

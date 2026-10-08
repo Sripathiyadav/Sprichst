@@ -22,11 +22,11 @@ class LessonView extends ConsumerStatefulWidget {
 class _LessonViewState extends ConsumerState<LessonView> {
   var _stage = _Stage.introduction;
   List<ExerciseResult> _results = const [];
-  var _xpEarned = 0;
+  var _outcome = (xpEarned: 0, leveledUpTo: null as CefrLevel?);
   var _wasCompletedBefore = false;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => GlassPage(
         appBar: AppBar(title: Text(widget.lesson.title)),
         body: SafeArea(
           child: Center(
@@ -36,7 +36,7 @@ class _LessonViewState extends ConsumerState<LessonView> {
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
+                  duration: motionDuration(context),
                   child: switch (_stage) {
                     _Stage.introduction => _Introduction(
                         key: const ValueKey('introduction'),
@@ -47,6 +47,7 @@ class _LessonViewState extends ConsumerState<LessonView> {
                         key: const ValueKey('practice'),
                         exercises: widget.lesson.exercises,
                         finishLabel: 'Finish lesson',
+                        retryMissed: true,
                         onFinished: _finish,
                       ),
                     _Stage.complete => Column(
@@ -55,10 +56,12 @@ class _LessonViewState extends ConsumerState<LessonView> {
                           Expanded(
                             child: SessionSummary(
                               title: 'Lesson complete!',
-                              correct:
-                                  _results.where((r) => r.isCorrect).length,
-                              total: _results.length,
-                              xpEarned: _xpEarned,
+                              correct: _results
+                                  .where((r) => r.isCorrect && !r.isRetry)
+                                  .length,
+                              total: _results.where((r) => !r.isRetry).length,
+                              xpEarned: _outcome.xpEarned,
+                              leveledUpTo: _outcome.leveledUpTo,
                               note: _wasCompletedBefore
                                   ? 'XP is awarded the first time you complete a lesson.'
                                   : null,
@@ -88,13 +91,13 @@ class _LessonViewState extends ConsumerState<LessonView> {
 
   Future<void> _finish(List<ExerciseResult> results) async {
     try {
-      final xp = await ref
+      final outcome = await ref
           .read(appControllerProvider)
           .completeLesson(widget.lesson, results);
       if (!mounted) return;
       setState(() {
         _results = results;
-        _xpEarned = xp;
+        _outcome = outcome;
         _stage = _Stage.complete;
       });
     } catch (_) {
@@ -126,12 +129,9 @@ class _Introduction extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  lesson.level.label,
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                  ),
+                  '${lesson.level.label} · ${lesson.unit}',
+                  style: theme.textTheme.labelLarge
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(lesson.title, style: theme.textTheme.displaySmall),
@@ -143,8 +143,12 @@ class _Introduction extends StatelessWidget {
                 for (final example in lesson.examples)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: SoftCard(
-                      child: Text(example, style: theme.textTheme.titleMedium),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: SoftCard(
+                        child:
+                            Text(example, style: theme.textTheme.titleMedium),
+                      ),
                     ),
                   ),
               ],

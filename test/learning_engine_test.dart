@@ -9,6 +9,7 @@ import 'package:sprichst/domain/models/learning_models.dart';
 import 'support/fakes.dart';
 
 final seedLessons = loadCourse();
+final course = Curriculum(seedLessons);
 
 const _article = Exercise(
   id: 'article_x',
@@ -30,8 +31,8 @@ const _typed = Exercise(
   skills: ['greetings'],
 );
 
-LearningProfile _learner() => LearningProfile.newLearner(
-    nativeLanguage: 'English', currentLevel: CefrLevel.a1);
+LearningProfile _learner([CefrLevel level = CefrLevel.a1]) =>
+    LearningProfile.newLearner(nativeLanguage: 'English', currentLevel: level);
 
 ExerciseResult _answer(Exercise exercise, String response) =>
     const ExerciseEvaluator().evaluate(exercise, response);
@@ -85,8 +86,8 @@ void main() {
     final curriculum = Curriculum(seedLessons);
 
     test('groups lessons into units by level and title', () {
-      expect(curriculum.units.map((u) => u.title),
-          ['First steps', 'Daily life', 'Sentences']);
+      expect(curriculum.units.map((u) => u.title).take(4),
+          ['First steps', 'Daily life', 'Sentences', 'Goethe A1']);
       expect(curriculum.units.first.lessons, hasLength(3));
     });
 
@@ -102,7 +103,7 @@ void main() {
         () {
       expect(curriculum.firstIncomplete((id) => id == 'pre_a1_greetings')!.id,
           'pre_a1_introductions');
-      expect(curriculum.firstIncomplete((_) => true)!.id, 'a1_accusative');
+      expect(curriculum.firstIncomplete((_) => true)!.id, 'b2_testdaf_graph');
     });
 
     test('interleaves exercises across skills without duplicates', () {
@@ -126,8 +127,9 @@ void main() {
         for (final exercise in lesson.exercises)
           _answer(exercise, exercise.answer),
       ];
-      final first = tracker
-          .completeLesson(_learner(), lesson, curriculum, results, now: now);
+      final first = tracker.completeLesson(
+          _learner(CefrLevel.preA1), lesson, curriculum, results,
+          now: now);
 
       expect(first.xpEarned, 30);
       expect(first.profile.isLessonCompleted(lesson.id), isTrue);
@@ -142,8 +144,9 @@ void main() {
     });
 
     test('mistakes feed skill stats, recent mistakes, and a review item', () {
-      final update = tracker
-          .completePractice(_learner(), [_answer(_article, 'die')], now: now);
+      final update = tracker.completePractice(
+          _learner(), course, [_answer(_article, 'die')],
+          now: now);
 
       expect(update.xpEarned, 0);
       expect(update.profile.skillStats['definite_articles']!.attempts, 1);
@@ -158,13 +161,14 @@ void main() {
     test('weak skills need evidence and are ranked weakest first', () {
       var profile = _learner();
       profile = tracker
-          .completePractice(profile, [_answer(_article, 'die')], now: now)
+          .completePractice(profile, course, [_answer(_article, 'die')],
+              now: now)
           .profile;
       expect(tracker.weakSkills(profile), isEmpty,
           reason: 'one answer is not enough');
 
       profile = tracker
-          .completePractice(profile,
+          .completePractice(profile, course,
               [_answer(_article, 'die'), _answer(_typed, 'Guten Morgen')],
               now: now)
           .profile;
@@ -183,7 +187,8 @@ void main() {
           skills: const ['s'],
         );
         profile = tracker
-            .completePractice(profile, [_answer(exercise, 'b')], now: now)
+            .completePractice(profile, course, [_answer(exercise, 'b')],
+                now: now)
             .profile;
       }
       expect(
@@ -195,18 +200,19 @@ void main() {
         'streak grows on consecutive days, holds within a day, resets after a gap',
         () {
       var profile = tracker
-          .completePractice(_learner(), [_answer(_article, 'der')], now: now)
+          .completePractice(_learner(), course, [_answer(_article, 'der')],
+              now: now)
           .profile;
       expect(profile.streak, 1);
 
       profile = tracker
-          .completePractice(profile, [_answer(_article, 'der')],
+          .completePractice(profile, course, [_answer(_article, 'der')],
               now: now.add(const Duration(hours: 5)))
           .profile;
       expect(profile.streak, 1);
 
       profile = tracker
-          .completePractice(profile, [_answer(_article, 'der')],
+          .completePractice(profile, course, [_answer(_article, 'der')],
               now: now.add(const Duration(days: 1)))
           .profile;
       expect(profile.streak, 2);
@@ -214,7 +220,7 @@ void main() {
       expect(profile.streakAt(now.add(const Duration(days: 3))), 0);
 
       profile = tracker
-          .completePractice(profile, [_answer(_article, 'der')],
+          .completePractice(profile, course, [_answer(_article, 'der')],
               now: now.add(const Duration(days: 9)))
           .profile;
       expect(profile.streak, 1);
@@ -234,7 +240,8 @@ void main() {
 
     test('round-trips a profile with progress and stats', () {
       final profile = tracker
-          .completePractice(_learner(), [_answer(_article, 'die')], now: now)
+          .completePractice(_learner(), course, [_answer(_article, 'die')],
+              now: now)
           .profile
           .copyWith(
         lessonProgress: const {
@@ -274,31 +281,6 @@ void main() {
       expect(decoded.isLessonCompleted('pre_a1_greetings'), isTrue);
       expect(decoded.scores.vocabulary, .6);
       expect(decoded.speechRate, 230);
-    });
-  });
-
-  group('seed curriculum', () {
-    test('has unique ids and self-consistent exercises', () {
-      final lessonIds = seedLessons.map((l) => l.id).toList();
-      expect(lessonIds.toSet(), hasLength(lessonIds.length));
-
-      final exercises = [for (final l in seedLessons) ...l.exercises];
-      expect(exercises.map((e) => e.id).toSet(), hasLength(exercises.length));
-
-      for (final exercise in exercises) {
-        expect(exercise.skills, isNotEmpty, reason: exercise.id);
-        if (exercise.kind == ExerciseKind.multipleChoice) {
-          expect(exercise.options, contains(exercise.answer),
-              reason: exercise.id);
-        }
-        if (exercise.kind == ExerciseKind.wordOrder) {
-          expect(exercise.options.toList()..sort(),
-              exercise.answer.split(' ').toList()..sort(),
-              reason: exercise.id);
-        }
-        expect(_answer(exercise, exercise.answer).isCorrect, isTrue,
-            reason: exercise.id);
-      }
     });
   });
 }

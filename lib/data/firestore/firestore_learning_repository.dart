@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../domain/models/dialogue_models.dart';
 import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/learning_repository.dart';
 import '../local/local_learning_repository.dart';
@@ -77,6 +78,9 @@ class FirestoreLearningRepository implements LearningRepository {
 
     await _firestore.collection('users').doc(user.uid).delete();
   }
+
+  @override
+  Future<List<Dialogue>> loadDialogues() => _localRepository.loadDialogues();
 
   @override
   Future<List<Lesson>> loadLessons() {

@@ -14,3 +14,11 @@ abstract class AuthRepository {
 
   Future<void> signOut();
 }
+
+/// Thrown when someone dismisses a sign-in prompt that an action depends on.
+class AuthCancelledException implements Exception {
+  const AuthCancelledException();
+
+  @override
+  String toString() => 'Sign-in was cancelled.';
+}

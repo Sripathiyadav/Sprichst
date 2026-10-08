@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../domain/learning/progress_tracker.dart';
 import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/learning_repository.dart';
 
@@ -14,12 +13,11 @@ class HttpAIRepository implements AIRepository {
 
   final String baseUrl;
   final http.Client _client;
-  static const _tracker = ProgressTracker();
 
   @override
   Future<CoachReply> correctGerman(
     String text,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/v1/correct'),
@@ -27,8 +25,8 @@ class HttpAIRepository implements AIRepository {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'message': text,
-        'context': _buildContext(profile),
+        'text': text,
+        'context': _encode(context),
       }),
     );
 
@@ -52,7 +50,7 @@ class HttpAIRepository implements AIRepository {
   @override
   Future<TutorReply> chat(
     String message,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/v1/chat'),
@@ -61,7 +59,7 @@ class HttpAIRepository implements AIRepository {
       },
       body: jsonEncode({
         'message': message,
-        'context': _buildContext(profile),
+        'context': _encode(context),
       }),
     );
 
@@ -84,13 +82,13 @@ class HttpAIRepository implements AIRepository {
   @override
   Future<TranscriptionResult> transcribeAudio(
     AudioCapture audio,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('$baseUrl/v1/transcribe'),
     )
-      ..fields['context'] = jsonEncode(_buildContext(profile))
+      ..fields['context'] = jsonEncode(_encode(context))
       ..files.add(
         http.MultipartFile.fromBytes(
           'audio',
@@ -117,7 +115,7 @@ class HttpAIRepository implements AIRepository {
   @override
   Future<List<int>> synthesizeSpeech(
     String text,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/v1/speak'),
@@ -126,7 +124,7 @@ class HttpAIRepository implements AIRepository {
       },
       body: jsonEncode({
         'message': text,
-        'context': _buildContext(profile),
+        'context': _encode(context),
       }),
     );
 
@@ -148,27 +146,12 @@ class HttpAIRepository implements AIRepository {
     }
   }
 
-  /// The compact, trusted context sent with every request. It carries
-  /// learning signals only; provider, voice, and name stay on the device.
-  Map<String, dynamic> _buildContext(LearningProfile profile) {
-    return {
-      'level': profile.currentLevel.label,
-      'current_unit': null,
-      'current_lesson': profile.currentLessonId,
-      'weak_skills': _weakSkills(profile),
-      'known_vocabulary': <String>[],
-      'recent_mistakes': profile.recentMistakes,
-    };
-  }
-
-  List<String> _weakSkills(LearningProfile profile) {
-    final tracked = _tracker.weakSkills(profile);
-    if (tracked.isNotEmpty) return tracked.map(skillLabel).toList();
-
-    // No evidence yet: hint at the broad areas with the lowest scores.
-    final entries = profile.scores.entries.entries.toList()
-      ..sort((a, b) => a.value.compareTo(b.value));
-
-    return entries.take(2).map((entry) => entry.key).toList();
-  }
+  Map<String, dynamic> _encode(TutorContext context) => {
+        'level': context.level,
+        'current_unit': context.unit,
+        'current_lesson': context.lesson,
+        'weak_skills': context.weakSkills,
+        'known_vocabulary': context.knownVocabulary,
+        'recent_mistakes': context.recentMistakes,
+      };
 }

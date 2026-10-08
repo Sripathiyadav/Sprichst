@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
+import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
 
@@ -16,13 +17,14 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
   var _step = 0;
   var _language = 'English';
   var _level = CefrLevel.preA1;
+  var _goal = LearningGoal.everyday;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GlassPage(
       body: CenteredScroll(
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
+          duration: motionDuration(context, 250),
           child: switch (_step) {
             0 => _Welcome(
                 key: const ValueKey(0),
@@ -33,10 +35,16 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
                 onSelect: (value) => setState(() => _language = value),
                 onNext: () => setState(() => _step = 2),
               ),
-            _ => _LevelStep(
+            2 => _LevelStep(
                 key: const ValueKey(2),
                 selected: _level,
                 onSelect: (value) => setState(() => _level = value),
+                onNext: () => setState(() => _step = 3),
+              ),
+            _ => _GoalStep(
+                key: const ValueKey(3),
+                selected: _goal,
+                onSelect: (value) => setState(() => _goal = value),
                 onFinish: _finish,
               ),
           },
@@ -49,7 +57,7 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
     try {
       await ref
           .read(appControllerProvider)
-          .completeOnboarding(language: _language, level: _level);
+          .completeOnboarding(language: _language, level: _level, goal: _goal);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,6 +66,25 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
       );
     }
   }
+}
+
+/// The SPRICHST wordmark with the flag stripe beneath it.
+class _Wordmark extends StatelessWidget {
+  const _Wordmark();
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('SPRICHST',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w900)),
+          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(width: 96, child: FlagStripe()),
+        ],
+      );
 }
 
 class _Welcome extends StatelessWidget {
@@ -69,11 +96,7 @@ class _Welcome extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('SPRICHST',
-              style: TextStyle(
-                  letterSpacing: 3,
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.primary)),
+          const _Wordmark(),
           const SizedBox(height: 36),
           Text('Willkommen bei\nSprichst.',
               style: Theme.of(context)
@@ -130,10 +153,10 @@ class _LevelStep extends StatelessWidget {
       {super.key,
       required this.selected,
       required this.onSelect,
-      required this.onFinish});
+      required this.onNext});
   final CefrLevel selected;
   final ValueChanged<CefrLevel> onSelect;
-  final VoidCallback onFinish;
+  final VoidCallback onNext;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -155,8 +178,83 @@ class _LevelStep extends StatelessWidget {
               onChanged: (value) => onSelect(value!),
             ),
           const SizedBox(height: 16),
+          FilledButton(onPressed: onNext, child: const Text('Continue')),
+        ],
+      );
+}
+
+class _GoalStep extends StatelessWidget {
+  const _GoalStep({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+    required this.onFinish,
+  });
+
+  final LearningGoal selected;
+  final ValueChanged<LearningGoal> onSelect;
+  final VoidCallback onFinish;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('What do you want German for?',
+              style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 8),
+          const Text(
+              'Your lessons, vocabulary and practice follow this goal. You can change it any time.'),
+          const SizedBox(height: 16),
+          GoalPicker(selected: selected, onSelect: onSelect),
+          const SizedBox(height: 16),
           FilledButton(
               onPressed: onFinish, child: const Text('Build my learning plan')),
         ],
       );
+}
+
+/// The learning goals as selectable cards (a single choice).
+class GoalPicker extends StatelessWidget {
+  const GoalPicker({super.key, required this.selected, required this.onSelect});
+
+  final LearningGoal selected;
+  final ValueChanged<LearningGoal> onSelect;
+
+  static IconData _icon(LearningGoal goal) => switch (goal) {
+        LearningGoal.everyday => Icons.forum_outlined,
+        LearningGoal.travel => Icons.flight_takeoff_rounded,
+        LearningGoal.work => Icons.work_outline_rounded,
+        LearningGoal.goethe => Icons.workspace_premium_outlined,
+        LearningGoal.testdaf => Icons.school_outlined,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return RadioGroup<LearningGoal>(
+      groupValue: selected,
+      onChanged: (value) {
+        if (value != null) onSelect(value);
+      },
+      child: Column(
+        children: [
+          for (final goal in LearningGoal.values)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              child: SoftCard(
+                padding: EdgeInsets.zero,
+                color: goal == selected ? context.softSurface : null,
+                child: RadioListTile<LearningGoal>(
+                  value: goal,
+                  secondary: Icon(_icon(goal)),
+                  title: Text(goal.label, style: theme.textTheme.titleMedium),
+                  subtitle: Text(goal.description),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }

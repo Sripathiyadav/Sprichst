@@ -5,7 +5,7 @@ class MockAIRepository implements AIRepository {
   @override
   Future<CoachReply> correctGerman(
     String text,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
     await Future<void>.delayed(const Duration(milliseconds: 350));
 
@@ -55,7 +55,7 @@ class MockAIRepository implements AIRepository {
   @override
   Future<TutorReply> chat(
     String message,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
     await Future<void>.delayed(const Duration(milliseconds: 350));
 
@@ -68,7 +68,7 @@ class MockAIRepository implements AIRepository {
   @override
   Future<TranscriptionResult> transcribeAudio(
     AudioCapture audio,
-    LearningProfile profile,
+    TutorContext context,
   ) {
     throw UnsupportedError(
         'Voice transcription requires the local AI gateway.');
@@ -77,7 +77,7 @@ class MockAIRepository implements AIRepository {
   @override
   Future<List<int>> synthesizeSpeech(
     String text,
-    LearningProfile profile,
+    TutorContext context,
   ) {
     throw UnsupportedError('Speech playback requires the local AI gateway.');
   }

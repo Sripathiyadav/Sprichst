@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../domain/models/dialogue_models.dart';
 import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/learning_repository.dart';
 import '../curriculum_parser.dart';
@@ -12,6 +13,7 @@ class LocalLearningRepository implements LearningRepository {
   static const _profileKey = 'sprichst_profile_v1';
 
   List<Lesson>? _lessons;
+  List<Dialogue>? _dialogues;
 
   @override
   Future<LearningProfile?> loadProfile() async {
@@ -46,5 +48,10 @@ class LocalLearningRepository implements LearningRepository {
   @override
   Future<List<Lesson>> loadLessons() async =>
       _lessons ??= CurriculumParser.parse(
+          await rootBundle.loadString(CurriculumParser.assetPath));
+
+  @override
+  Future<List<Dialogue>> loadDialogues() async =>
+      _dialogues ??= CurriculumParser.parseDialogues(
           await rootBundle.loadString(CurriculumParser.assetPath));
 }

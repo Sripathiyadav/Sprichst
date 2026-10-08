@@ -76,17 +76,19 @@ void main() {
       // No profile yet: onboarding.
       expect(find.text('Start'), findsOneWidget);
       await _tapVisible(tester, find.text('Start'));
-      await _tapVisible(tester, find.text('Continue'));
+      await _tapVisible(tester, find.text('Continue')); // language
+      await _tapVisible(tester, find.text('Continue')); // level
+      expect(find.text('What do you want German for?'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await _tapVisible(tester, find.text('Build my learning plan'));
 
       // Lesson: intro then first exercise.
       await tester.tap(find.text('Learn').last);
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Open lesson').first);
+      await tester.tap(find.text('Greetings').first);
       await tester.pumpAndSettle();
       await _tapVisible(tester, find.text('Start practice'));
-      expect(find.text('PRACTICE 1/3'), findsOneWidget);
+      expect(find.text('Question 1 of 3'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

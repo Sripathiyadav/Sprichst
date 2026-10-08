@@ -13,6 +13,7 @@ import '../features/onboarding/onboarding_view.dart';
 import '../features/practice/practice_view.dart';
 import '../features/progress/progress_view.dart';
 import '../domain/models/learning_models.dart';
+import '../shared/haptics.dart';
 import '../shared/widgets/app_widgets.dart';
 import 'app_controller.dart';
 import 'theme/app_theme.dart';
@@ -34,8 +35,20 @@ class _SprichstAppState extends ConsumerState<SprichstApp> {
   Widget build(BuildContext context) {
     // Watch only what this widget renders so unrelated profile changes (a new
     // XP total, say) do not rebuild the whole MaterialApp.
-    final appearance = ref.watch(appControllerProvider
-        .select((app) => app.profile?.appearancePreference));
+    final look = ref.watch(appControllerProvider.select((app) {
+      final profile = app.profile;
+      return profile == null
+          ? null
+          : (
+              profile.appearancePreference,
+              profile.surfaceStyle,
+              profile.glassIntensity,
+            );
+    }));
+    final glass = GlassTheme.fromProfile(
+      look?.$2 ?? SurfaceStyle.glass,
+      look?.$3 ?? LearningProfile.defaultGlassIntensity,
+    );
     final isLoading =
         ref.watch(appControllerProvider.select((app) => app.isLoading));
     final isOnboarded =
@@ -46,9 +59,9 @@ class _SprichstAppState extends ConsumerState<SprichstApp> {
       navigatorKey: _navigatorKey,
       title: 'Sprichst',
       debugShowCheckedModeBanner: false,
-      theme: SprichstTheme.light,
-      darkTheme: SprichstTheme.dark,
-      themeMode: switch (appearance) {
+      theme: SprichstTheme.build(Brightness.light, glass: glass),
+      darkTheme: SprichstTheme.build(Brightness.dark, glass: glass),
+      themeMode: switch (look?.$1) {
         AppearancePreference.light => ThemeMode.light,
         AppearancePreference.dark => ThemeMode.dark,
         _ => ThemeMode.system,
@@ -98,7 +111,7 @@ class _SplashView extends StatelessWidget {
   const _SplashView();
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => GlassPage(
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -108,9 +121,11 @@ class _SplashView extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .displaySmall
-                    ?.copyWith(letterSpacing: 3),
+                    ?.copyWith(fontWeight: FontWeight.w900),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.xs),
+              const SizedBox(width: 120, child: FlagStripe(height: 8)),
+              const SizedBox(height: AppSpacing.md),
               const Text(
                 'Deutsch lernen.\nDeutsch sprechen.',
                 textAlign: TextAlign.center,
@@ -172,49 +187,83 @@ class _LearningShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final layout = MediaQuery.sizeOf(context).width.navigationLayout;
     final useRail = layout != NavigationLayout.bottomBar;
+    final glassy = context.glass.enabled;
 
-    return Scaffold(
+    void select(int index) {
+      if (index != selectedIndex) Haptics.selection();
+      onSelect(index);
+    }
+
+    final rail = NavigationRail(
+      selectedIndex: selectedIndex,
+      onDestinationSelected: select,
+      backgroundColor: glassy ? Colors.transparent : null,
+      extended: layout == NavigationLayout.extendedRail,
+      labelType: layout == NavigationLayout.extendedRail
+          ? null
+          : NavigationRailLabelType.all,
+      leading: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+        child: Text(
+          'S',
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w900,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ),
+      destinations: [
+        for (final item in _destinations)
+          NavigationRailDestination(
+            icon: Icon(item.icon),
+            selectedIcon: Icon(item.selected),
+            label: Text(item.label),
+          ),
+      ],
+    );
+
+    // Scrollable so six destinations still fit on a short landscape phone;
+    // IntrinsicHeight keeps the rail full-height otherwise.
+    Widget railPanel = LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(child: rail),
+        ),
+      ),
+    );
+    if (glassy) {
+      railPanel = Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: GlassSurface(radius: 32, blur: true, child: railPanel),
+      );
+    }
+
+    final bar = NavigationBar(
+      selectedIndex: math.min(selectedIndex, _primaryCount),
+      onDestinationSelected: select,
+      backgroundColor: glassy ? Colors.transparent : null,
+      elevation: 0,
+      destinations: [
+        for (final item in [
+          ..._destinations.take(_primaryCount),
+          _moreDestination,
+        ])
+          NavigationDestination(
+            icon: Icon(item.icon),
+            selectedIcon: Icon(item.selected),
+            label: item.label,
+          ),
+      ],
+    );
+
+    return GlassPage(
+      // Glass navigation floats over the content, which scrolls beneath it.
+      extendBody: glassy && !useRail,
       body: Row(
         children: [
-          if (useRail)
-            // Scrollable so six destinations still fit on a short landscape
-            // phone; IntrinsicHeight keeps the rail full-height otherwise.
-            LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                      child: NavigationRail(
-                    selectedIndex: selectedIndex,
-                    onDestinationSelected: onSelect,
-                    extended: layout == NavigationLayout.extendedRail,
-                    labelType: layout == NavigationLayout.extendedRail
-                        ? null
-                        : NavigationRailLabelType.all,
-                    leading: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-                      child: Text(
-                        'S',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w900,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                    destinations: [
-                      for (final item in _destinations)
-                        NavigationRailDestination(
-                          icon: Icon(item.icon),
-                          selectedIcon: Icon(item.selected),
-                          label: Text(item.label),
-                        ),
-                    ],
-                  )),
-                ),
-              ),
-            ),
+          if (useRail) railPanel,
           Expanded(
             child: useRail
                 ? IndexedStack(index: selectedIndex, children: _pages)
@@ -230,21 +279,20 @@ class _LearningShell extends StatelessWidget {
       ),
       bottomNavigationBar: useRail
           ? null
-          : NavigationBar(
-              selectedIndex: math.min(selectedIndex, _primaryCount),
-              onDestinationSelected: onSelect,
-              destinations: [
-                for (final item in [
-                  ..._destinations.take(_primaryCount),
-                  _moreDestination,
-                ])
-                  NavigationDestination(
-                    icon: Icon(item.icon),
-                    selectedIcon: Icon(item.selected),
-                    label: item.label,
+          : glassy
+              ? SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      0,
+                      AppSpacing.md,
+                      AppSpacing.xs,
+                    ),
+                    child: GlassSurface(radius: 32, blur: true, child: bar),
                   ),
-              ],
-            ),
+                )
+              : bar,
     );
   }
 }
@@ -301,7 +349,7 @@ class _MoreTile extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
-              builder: (_) => Scaffold(appBar: AppBar(), body: page),
+              builder: (_) => GlassPage(appBar: AppBar(), body: page),
             ),
           ),
         ),

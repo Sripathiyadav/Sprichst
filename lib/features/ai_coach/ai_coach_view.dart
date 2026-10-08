@@ -27,6 +27,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   var _sending = false;
   var _recording = false;
   var _transcribing = false;
+  var _startingRecording = false;
 
   @override
   void dispose() {
@@ -42,6 +43,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     final profile = app.profile!;
 
     return PageFrame(
+      scrollsUnderNav: false,
       title: 'AI Coach',
       subtitle:
           'Practice German with your personal tutor through text or voice.',
@@ -92,13 +94,14 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                         : const Icon(Icons.mic),
                   ),
                   const SizedBox(width: 4),
-                  FilledButton(
+                  IconButton.filled(
+                    tooltip: 'Send message',
                     onPressed:
                         _sending || _recording || _transcribing ? null : _send,
-                    child: _sending || _transcribing
+                    icon: _sending || _transcribing
                         ? SizedBox(
-                            width: 18,
-                            height: 18,
+                            width: 20,
+                            height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               color: Theme.of(context).colorScheme.onPrimary,
@@ -118,12 +121,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'LEARNING CONTEXT',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.1,
-                  ),
+                  'Learning context',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 14),
                 Text(
@@ -190,37 +189,51 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       await _stopRecording();
       return;
     }
+    // Ignore taps while the permission prompt or the recorder is starting.
+    if (_startingRecording) return;
+    _startingRecording = true;
 
     try {
-      final permission = await _audioRecorder.hasPermission();
-
-      if (!permission) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Microphone permission is required.'),
-            ),
-          );
-        }
+      if (!await _audioRecorder.hasPermission()) {
+        _showMessage(
+          'Microphone access is off. Turn it on for Sprichst in your device '
+          'settings to practise speaking.',
+        );
         return;
       }
 
       await _audioRecorder.start();
-
-      if (mounted) {
-        setState(() {
-          _recording = true;
-        });
-      }
+      if (mounted) setState(() => _recording = true);
     } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not start recording: $error'),
-          ),
-        );
-      }
+      _showMessage('Could not start recording. Please try again.');
+      debugPrint('Recording failed to start: $error');
+    } finally {
+      _startingRecording = false;
     }
+  }
+
+  /// Plain-language reason a voice turn failed; the raw error goes to the log.
+  String _voiceErrorMessage(Object error) {
+    final text = error.toString();
+    if (text.contains('No speech was detected')) {
+      return 'I did not catch that. Hold the phone closer and try again.';
+    }
+    if (text.contains('No recording was created')) {
+      return 'Nothing was recorded. Please try again.';
+    }
+    if (text.contains('SocketException') ||
+        text.contains('ClientException') ||
+        text.contains('Connection')) {
+      return 'Could not reach your tutor. Check your connection and that the AI gateway is running.';
+    }
+    return 'The voice conversation did not work this time. Please try again.';
+  }
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   Future<void> _stopRecording() async {
@@ -246,7 +259,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 
       final result = await ref.read(aiRepositoryProvider).transcribeAudio(
             capture,
-            app.profile!,
+            app.tutorContext,
           );
 
       final text = result.text.trim();
@@ -276,11 +289,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
           _transcribing = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Voice conversation failed: $error'),
-          ),
-        );
+        _showMessage(_voiceErrorMessage(error));
+        debugPrint('Voice conversation failed: $error');
       }
     }
   }
@@ -345,7 +355,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       if (speakResponse && speechText.isNotEmpty) {
         final audio = await ref.read(aiRepositoryProvider).synthesizeSpeech(
               speechText,
-              app.profile!,
+              app.tutorContext,
             );
 
         await _audioPlayer.playBytes(audio);
@@ -388,7 +398,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 
       final audio = await ref.read(aiRepositoryProvider).synthesizeSpeech(
             speechText,
-            app.profile!,
+            app.tutorContext,
           );
 
       await _audioPlayer.playBytes(audio);
@@ -473,6 +483,10 @@ class _MessageBubble extends StatelessWidget {
                 ? Theme.of(context).colorScheme.primary
                 : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(18),
+            border: message.fromUser
+                ? null
+                : Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant),
           ),
           child: Padding(
             padding: const EdgeInsets.all(14),

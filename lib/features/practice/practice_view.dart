@@ -3,9 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
-import '../../core/services/review_scheduler.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../../domain/games/game_models.dart';
+import '../../domain/learning/exam_readiness.dart';
+import '../flashcards/flashcard_session_view.dart';
+import '../gamification/quests_card.dart';
+import '../games/open_game.dart';
+import '../home/plan_card.dart';
+import 'mock_exam_view.dart';
 import 'practice_session_view.dart';
 
 class PracticeView extends ConsumerWidget {
@@ -14,113 +20,292 @@ class PracticeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final app = ref.watch(appControllerProvider);
-    final due = app.profile!.reviewItems.where((item) => item.isDue).toList();
-    final weak = app.weakSkills;
+    final plan = app.plan;
+    final now = DateTime.now();
+    final reviews = [...app.profile!.reviewItems]
+      ..sort((a, b) => a.dueAt.compareTo(b.dueAt));
+    final skills = app.practisableSkills;
+
     return PageFrame(
       title: 'Practice',
-      subtitle: 'The next useful practice is based on your learning state.',
-      child: ListView(children: [
-        SoftCard(
-          color: context.softSurface,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('RECOMMENDED',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.1)),
-            const SizedBox(height: 8),
-            Text(
-                weak.isNotEmpty
-                    ? 'Fix your weakest areas'
-                    : due.isEmpty
-                        ? 'You are caught up.'
-                        : 'Review what is due',
-                style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 8),
-            Text(weak.isNotEmpty
-                ? 'Targeted practice on ${weak.map(skillLabel).join(', ')}.'
-                : due.isEmpty
-                    ? 'Complete your next lesson to schedule fresh recall practice.'
-                    : '${due.length} items are ready for a quick recall session.'),
-            if (weak.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.md),
-              FilledButton.icon(
-                onPressed: () =>
-                    openPractice(context, ref, title: 'Weak-skill practice'),
-                icon: const Icon(Icons.bolt),
-                label: const Text('Start practice'),
-              ),
-            ],
-          ]),
-        ),
-        const SizedBox(height: 24),
-        const SectionTitle('Review queue'),
-        const SizedBox(height: 12),
-        if (due.isEmpty)
-          const SoftCard(
-              child: Text('Nothing is due right now. Great consistency!'))
-        else
-          for (final item in due)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: SoftCard(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(item.label,
-                          style: Theme.of(context).textTheme.titleMedium),
-                      Text(item.kind),
-                      const SizedBox(height: 14),
-                      Wrap(spacing: 8, runSpacing: 8, children: [
-                        _RateButton('Again', ReviewRating.again, item),
-                        _RateButton('Hard', ReviewRating.hard, item),
-                        _RateButton('Good', ReviewRating.good, item),
-                        _RateButton('Easy', ReviewRating.easy, item),
-                      ]),
-                    ]),
+      subtitle: 'Sprichst picks what to practise from your own answers.',
+      child: ListView(
+        padding: pageListPadding(context),
+        children: [
+          if (plan != null) PlanCard(plan: plan),
+          const SizedBox(height: AppSpacing.md),
+          QuestsCard(profile: app.profile!, now: now),
+          const SizedBox(height: AppSpacing.xl),
+          const SectionTitle('Flashcards'),
+          const SizedBox(height: AppSpacing.sm),
+          const _FlashcardsCard(),
+          const SizedBox(height: AppSpacing.xl),
+          const SectionTitle('Games'),
+          const SizedBox(height: AppSpacing.sm),
+          const _GamesGrid(),
+          if (app.profile!.goal.isExam) ...[
+            const SizedBox(height: AppSpacing.xl),
+            const SectionTitle('Exam training'),
+            const SizedBox(height: AppSpacing.sm),
+            const _ExamCard(),
+          ],
+          const SizedBox(height: AppSpacing.xl),
+          const SectionTitle('Review queue'),
+          const SizedBox(height: AppSpacing.sm),
+          if (reviews.isEmpty)
+            const SoftCard(
+              child: Text(
+                  'Nothing is scheduled yet. Finish a lesson and Sprichst will bring back what you missed at the right time.'),
+            )
+          else
+            SoftCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  for (var i = 0; i < reviews.length && i < 6; i++) ...[
+                    if (i > 0) const Divider(),
+                    _ReviewRow(item: reviews[i], now: now),
+                  ],
+                ],
               ),
             ),
-        const SizedBox(height: 24),
-        const SectionTitle('Choose a skill'),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: AppSpacing.xs,
-          runSpacing: AppSpacing.xs,
-          children: [
-            for (final skill in app.curriculum.skills)
-              ActionChip(
-                avatar: const Icon(Icons.bolt, size: 18),
-                label: Text(skillLabel(skill)),
-                onPressed: () => openPractice(
-                  context,
-                  ref,
-                  skillIds: [skill],
-                  title: skillLabel(skill),
-                ),
-              ),
-          ],
-        ),
-      ]),
+          const SizedBox(height: AppSpacing.xl),
+          const SectionTitle('Practise a skill'),
+          const SizedBox(height: AppSpacing.sm),
+          if (skills.isEmpty)
+            const SoftCard(
+              child: Text(
+                  'Skills appear here once you start a lesson, so you only practise what you have been taught.'),
+            )
+          else
+            Wrap(
+              spacing: AppSpacing.xs,
+              runSpacing: AppSpacing.xs,
+              children: [
+                for (final skill in skills)
+                  ActionChip(
+                    avatar: const Icon(Icons.bolt, size: 18),
+                    label: Text(skillLabel(skill)),
+                    onPressed: () => openPractice(
+                      context,
+                      ref,
+                      skillIds: [skill],
+                      title: skillLabel(skill),
+                    ),
+                  ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }
 
-class _RateButton extends ConsumerWidget {
-  const _RateButton(this.label, this.rating, this.item);
-  final String label;
-  final ReviewRating rating;
+class _ReviewRow extends StatelessWidget {
+  const _ReviewRow({required this.item, required this.now});
+
   final ReviewItem item;
+  final DateTime now;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => OutlinedButton(
-        onPressed: () async {
-          await ref.read(appControllerProvider).rateReview(item, rating);
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Scheduled ${item.label} again.')));
-          }
-        },
-        child: Text(label),
+  Widget build(BuildContext context) {
+    final due = !item.dueAt.isAfter(now);
+    return ListTile(
+      leading: Icon(due ? Icons.notifications_active_outlined : Icons.schedule),
+      title: Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis),
+      subtitle: Text('${item.kind} · ${_when(item.dueAt, now)}'),
+    );
+  }
+
+  static String _when(DateTime dueAt, DateTime now) {
+    final diff = dueAt.difference(now);
+    if (!diff.isNegative && diff.inMinutes > 0) {
+      if (diff.inDays >= 1) {
+        return 'due in ${diff.inDays} ${diff.inDays == 1 ? 'day' : 'days'}';
+      }
+      if (diff.inHours >= 1) return 'due in ${diff.inHours} h';
+      return 'due in ${diff.inMinutes} min';
+    }
+    return 'due now';
+  }
+}
+
+class _FlashcardsCard extends ConsumerWidget {
+  const _FlashcardsCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final summary = ref.watch(appControllerProvider).flashcardSummary;
+    final ready = summary.ready;
+    return SoftCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            summary.total == 0
+                ? 'Words you learn in lessons appear here as flashcards.'
+                : ready == 0
+                    ? 'All caught up — come back when cards are due.'
+                    : '$ready cards ready',
+            style: theme.textTheme.titleMedium,
+          ),
+          if (summary.total > 0) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              '${summary.due} due · ${summary.newAvailable} new today · '
+              '${summary.mature} well known · ${summary.total} unlocked',
+              style: theme.textTheme.bodyMedium,
+            ),
+          ],
+          const SizedBox(height: AppSpacing.md),
+          FilledButton.icon(
+            onPressed:
+                summary.total == 0 ? null : () => openFlashcards(context, ref),
+            icon: const Icon(Icons.style_rounded),
+            label: Text(ready == 0 ? 'Nothing due' : 'Review $ready cards'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GamesGrid extends ConsumerWidget {
+  const _GamesGrid();
+
+  static IconData _icon(GameId game) => switch (game) {
+        GameId.articleSwipe => Icons.swipe_rounded,
+        GameId.memoryMatch => Icons.grid_view_rounded,
+        GameId.wordScramble => Icons.shuffle_rounded,
+        GameId.wortle => Icons.spellcheck_rounded,
+        GameId.dialogue => Icons.forum_rounded,
+      };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final best =
+        ref.watch(appControllerProvider).profile!.gamification.gameBest;
+    return LayoutBuilder(builder: (context, box) {
+      final enlarged = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+      // Each tile needs room for a title and a sentence beside its icon.
+      final twoColumns = box.maxWidth >= 640 && !enlarged;
+      final width =
+          twoColumns ? (box.maxWidth - AppSpacing.sm) / 2 : box.maxWidth;
+      return Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [
+          for (final game in GameId.values)
+            SizedBox(
+              width: width,
+              child: _GameTile(
+                game: game,
+                icon: _icon(game),
+                best: best[game.name],
+                onTap: () => openGame(context, ref, game),
+              ),
+            ),
+        ],
       );
+    });
+  }
+}
+
+class _GameTile extends StatelessWidget {
+  const _GameTile({
+    required this.game,
+    required this.icon,
+    required this.best,
+    required this.onTap,
+  });
+
+  final GameId game;
+  final IconData icon;
+  final int? best;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      button: true,
+      label:
+          '${game.title}. ${game.tagline}${best == null ? '' : ' Best score $best.'}',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        child: SoftCard(
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: context.softSurface,
+                foregroundColor: theme.colorScheme.onSurface,
+                child: Icon(icon),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(game.title, style: theme.textTheme.titleMedium),
+                    Text(game.tagline, style: theme.textTheme.bodySmall),
+                    if (best != null)
+                      Text('Best: $best',
+                          style: theme.textTheme.labelLarge
+                              ?.copyWith(color: context.accent)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExamCard extends ConsumerWidget {
+  const _ExamCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final app = ref.watch(appControllerProvider);
+    final readiness = app.examReadiness;
+    final goal = app.profile!.goal;
+    final theme = Theme.of(context);
+    return SoftCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Preparing for ${goal.label}',
+              style: theme.textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.sm),
+          if (readiness != null)
+            for (final pillar in readiness.pillars) ...[
+              SkillMeter(
+                label: '${pillar.module} · ${_status(pillar.status)}',
+                value: pillar.accuracy,
+                compact: true,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+            ],
+          const SizedBox(height: AppSpacing.xs),
+          FilledButton.icon(
+            onPressed: () => openMockExam(context, ref),
+            icon: const Icon(Icons.assignment_turned_in_outlined),
+            label: const Text('Take a mock exam'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _status(ReadinessStatus status) => switch (status) {
+        ReadinessStatus.notStarted => 'not started',
+        ReadinessStatus.building => 'building',
+        ReadinessStatus.onTrack => 'on track',
+      };
 }

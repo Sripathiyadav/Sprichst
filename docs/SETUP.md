@@ -53,6 +53,20 @@ firebase deploy --only firestore:rules,firestore:indexes,storage
 
 During `firebase init`, preserve the generated project alias and configure the CLI to use `firebase/firestore.rules`, `firebase/firestore.indexes.json`, and `firebase/storage.rules` (or copy those paths into the generated root `firebase.json`). Test with a non-owner account: it must not read or write another `users/{uid}` path.
 
+### iOS Google sign-in checklist
+
+Sign-in fails on iOS unless all three of these are in place:
+
+1. **Download `GoogleService-Info.plist` after enabling Google sign-in** in Firebase (Authentication → Sign-in method). A plist downloaded earlier lacks `CLIENT_ID` and `REVERSED_CLIENT_ID`; re-download it and replace `ios/Runner/GoogleService-Info.plist` (git-ignored).
+2. **`ios/Runner/Info.plist` carries two values from that file**: `GIDClientID` (the `CLIENT_ID`) and a `CFBundleURLTypes` entry whose scheme is the `REVERSED_CLIENT_ID`. Google redirects back into the app through that scheme. If you ever regenerate the Firebase iOS app, update both.
+3. The bundle identifier in Xcode matches the one registered in Firebase (`com.example.sprichst` today).
+
+On a simulator, iOS shows a "Wants to Use google.com to Sign In" prompt first; that is expected. If Firebase later reports `keychain-error`, enable **Keychain Sharing** for the Runner target in Xcode.
+
+### Microphone permissions
+
+Voice practice needs a usage string on each platform, or the OS ends the app the moment the microphone is touched: `NSMicrophoneUsageDescription` in `ios/Runner/Info.plist` and `macos/Runner/Info.plist`, `RECORD_AUDIO` in the Android manifest, and the `com.apple.security.device.audio-input` entitlement for sandboxed macOS builds. Browsers need HTTPS or localhost.
+
 ## 5. Add Google sign-in safely
 
 Use Firebase Authentication as the identity layer only. Its user ID should be the Firestore namespace: `users/{uid}/...`.

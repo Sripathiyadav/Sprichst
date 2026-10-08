@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../domain/learning/exercise_evaluator.dart';
 import '../../../domain/models/learning_models.dart';
+import '../../../shared/haptics.dart';
+import '../../../shared/widgets/pressable.dart';
+import 'exam_inputs.dart';
 
 /// Renders the input for an [Exercise] and reports what the learner entered.
 ///
@@ -15,21 +18,46 @@ class ExerciseRenderer extends StatelessWidget {
     super.key,
     required this.exercise,
     required this.onResponse,
+    this.onSubmit,
     this.result,
   });
 
   final Exercise exercise;
   final ValueChanged<String?> onResponse;
+
+  /// Called when the learner presses Enter / Done in a typed answer.
+  final VoidCallback? onSubmit;
   final ExerciseResult? result;
 
   @override
   Widget build(BuildContext context) => switch (exercise.kind) {
-        ExerciseKind.multipleChoice => _MultipleChoiceInput(
+        ExerciseKind.multipleChoice => MultipleChoiceInput(
             exercise: exercise,
             onResponse: onResponse,
             result: result,
           ),
         ExerciseKind.fillBlank || ExerciseKind.translation => _TypedInput(
+            exercise: exercise,
+            onResponse: onResponse,
+            onSubmit: onSubmit,
+            result: result,
+          ),
+        ExerciseKind.cloze => ClozeInput(
+            exercise: exercise,
+            onResponse: onResponse,
+            result: result,
+          ),
+        ExerciseKind.listening => ListeningInput(
+            exercise: exercise,
+            onResponse: onResponse,
+            result: result,
+          ),
+        ExerciseKind.writing => WritingInput(
+            exercise: exercise,
+            onResponse: onResponse,
+            result: result,
+          ),
+        ExerciseKind.speaking => SpeakingInput(
             exercise: exercise,
             onResponse: onResponse,
             result: result,
@@ -42,8 +70,9 @@ class ExerciseRenderer extends StatelessWidget {
       };
 }
 
-class _MultipleChoiceInput extends StatefulWidget {
-  const _MultipleChoiceInput({
+class MultipleChoiceInput extends StatefulWidget {
+  const MultipleChoiceInput({
+    super.key,
     required this.exercise,
     required this.onResponse,
     required this.result,
@@ -54,10 +83,10 @@ class _MultipleChoiceInput extends StatefulWidget {
   final ExerciseResult? result;
 
   @override
-  State<_MultipleChoiceInput> createState() => _MultipleChoiceInputState();
+  State<MultipleChoiceInput> createState() => MultipleChoiceInputState();
 }
 
-class _MultipleChoiceInputState extends State<_MultipleChoiceInput> {
+class MultipleChoiceInputState extends State<MultipleChoiceInput> {
   String? _selected;
 
   @override
@@ -78,6 +107,7 @@ class _MultipleChoiceInputState extends State<_MultipleChoiceInput> {
               onTap: locked
                   ? null
                   : () {
+                      Haptics.selection();
                       setState(() => _selected = option);
                       widget.onResponse(option);
                     },
@@ -92,11 +122,13 @@ class _TypedInput extends StatefulWidget {
   const _TypedInput({
     required this.exercise,
     required this.onResponse,
+    required this.onSubmit,
     required this.result,
   });
 
   final Exercise exercise;
   final ValueChanged<String?> onResponse;
+  final VoidCallback? onSubmit;
   final ExerciseResult? result;
 
   @override
@@ -116,21 +148,34 @@ class _TypedInputState extends State<_TypedInput> {
   Widget build(BuildContext context) {
     final result = widget.result;
     final scheme = Theme.of(context).colorScheme;
+    final color = result == null
+        ? null
+        : result.isCorrect
+            ? context.onSuccessSurface
+            : scheme.error;
     return TextField(
       controller: _controller,
+      autofocus: true,
       readOnly: result != null,
       autocorrect: false,
       enableSuggestions: false,
       textInputAction: TextInputAction.done,
+      style: Theme.of(context).textTheme.titleMedium,
+      onSubmitted: (_) => widget.onSubmit?.call(),
       decoration: InputDecoration(
         labelText: 'Your answer',
+        // The icon, not just the border colour, tells the outcome.
+        suffixIcon: result == null
+            ? null
+            : Icon(result.isCorrect ? Icons.check_circle : Icons.cancel,
+                color: color),
         enabledBorder: result == null
             ? null
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.input),
                 borderSide: BorderSide(
-                  color: result.isCorrect ? scheme.primary : scheme.error,
-                  width: 2,
+                  color: result.isCorrect ? scheme.tertiary : scheme.error,
+                  width: 3,
                 ),
               ),
       ),
@@ -250,27 +295,80 @@ class _OptionTile extends StatelessWidget {
             : selected
                 ? context.softSurface
                 : scheme.surface;
-    final border = isAnswer || (selected && !isWrongPick)
-        ? scheme.primary
+    final foreground = isAnswer
+        ? context.onSuccessSurface
         : isWrongPick
-            ? scheme.error
-            : scheme.outlineVariant;
-    final radius = BorderRadius.circular(AppRadius.input);
-    return Material(
-      color: fill,
-      borderRadius: radius,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            border: Border.all(color: border),
-            borderRadius: radius,
+            ? context.onDangerSurface
+            : scheme.onSurface;
+    final border = isWrongPick
+        ? scheme.error
+        : isAnswer
+            ? scheme.tertiary
+            : selected
+                ? scheme.onSurface
+                : scheme.outline;
+    final icon = isAnswer
+        ? Icons.check_circle
+        : isWrongPick
+            ? Icons.cancel
+            : selected
+                ? Icons.radio_button_checked
+                : Icons.radio_button_unchecked;
+    final shape = RoundedSuperellipseBorder(
+      borderRadius: BorderRadius.circular(AppRadius.control),
+      side: BorderSide(
+        color: border,
+        width: selected || isAnswer || isWrongPick ? 2.5 : 1.5,
+      ),
+    );
+    final status = isAnswer
+        ? ', correct answer'
+        : isWrongPick
+            ? ', your answer, incorrect'
+            : '';
+
+    return Semantics(
+      button: true,
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      label: '$label$status',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: PressableScale(
+        enabled: onTap != null,
+        child: Material(
+          color: Colors.transparent,
+          shape: shape,
+          child: Ink(
+            decoration: ShapeDecoration(color: fill, shape: shape),
+            child: InkWell(
+              onTap: onTap,
+              customBorder: shape,
+              child: Container(
+                width: double.infinity,
+                constraints: const BoxConstraints(minHeight: 56),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Row(
+                  children: [
+                    Icon(icon, color: foreground),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: foreground),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          child:
-              Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         ),
       ),
     );

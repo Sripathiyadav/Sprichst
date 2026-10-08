@@ -13,6 +13,12 @@ abstract final class Breakpoints {
   /// Page content narrower than this stacks the heading and its trailing widget.
   static const narrowContent = 480.0;
 
+  /// Below this width a page heading stacks its trailing widget underneath.
+  static const stackTrailing = 360.0;
+
+  /// Content at least this wide fits two compact stat tiles side by side.
+  static const twoStatTiles = 340.0;
+
   /// Page content at least this wide may lay cards out in two columns.
   static const twoColumnContent = 560.0;
 
@@ -20,6 +26,10 @@ abstract final class Breakpoints {
   static const sideBySideContent = 820.0;
   static const sidePanelWidth = 260.0;
   static const messageMaxWidth = 560.0;
+
+  /// Page subtitles are hidden when the height, divided by the text scale,
+  /// falls below this.
+  static const subtitleMinHeight = 520.0;
 
   static const contentMaxWidth = 1100.0;
   static const lessonMaxWidth = 720.0;

@@ -1,6 +1,12 @@
+import 'exam_models.dart';
+import 'gamification_models.dart';
 import 'progress_models.dart';
+import 'vocab_models.dart';
 
+export 'exam_models.dart';
+export 'gamification_models.dart';
 export 'progress_models.dart';
+export 'vocab_models.dart';
 
 enum CefrLevel { preA1, a1, a2, b1, b2, c1 }
 
@@ -13,6 +19,22 @@ extension AppearancePreferenceLabel on AppearancePreference {
         AppearancePreference.system => 'Use device setting',
         AppearancePreference.light => 'Light',
         AppearancePreference.dark => 'Dark',
+      };
+}
+
+/// How surfaces are drawn: flat and opaque, or translucent "Liquid Glass".
+enum SurfaceStyle { standard, glass }
+
+extension SurfaceStyleLabel on SurfaceStyle {
+  String get label => switch (this) {
+        SurfaceStyle.standard => 'Standard',
+        SurfaceStyle.glass => 'Liquid Glass',
+      };
+
+  String get description => switch (this) {
+        SurfaceStyle.standard => 'Clean, opaque surfaces.',
+        SurfaceStyle.glass =>
+          'Translucent, light-catching surfaces that let colour show through.',
       };
 }
 
@@ -55,7 +77,85 @@ extension CefrLevelLabel on CefrLevel {
       };
 }
 
-enum ExerciseKind { multipleChoice, fillBlank, translation, wordOrder }
+/// Why the learner is studying German. It steers which lessons come first, how
+/// vocabulary is chosen, and whether exam practice is offered.
+enum LearningGoal { everyday, travel, work, goethe, testdaf }
+
+extension LearningGoalInfo on LearningGoal {
+  String get label => switch (this) {
+        LearningGoal.everyday => 'Everyday life',
+        LearningGoal.travel => 'Travel',
+        LearningGoal.work => 'Work',
+        LearningGoal.goethe => 'Goethe-Zertifikat',
+        LearningGoal.testdaf => 'TestDaF',
+      };
+
+  String get description => switch (this) {
+        LearningGoal.everyday =>
+          'Talk with friends, shop, and handle daily situations.',
+        LearningGoal.travel =>
+          'Get around, order food, and book places in German-speaking countries.',
+        LearningGoal.work =>
+          'Write emails, make appointments, and cope at the workplace.',
+        LearningGoal.goethe =>
+          'Prepare for the Goethe-Zertifikat: Lesen, Hören, Schreiben, Sprechen.',
+        LearningGoal.testdaf =>
+          'Prepare for TestDaF (B2–C1) for studying at a German university.',
+      };
+
+  /// Topic labels (see `preferredTopics`) this goal naturally favours.
+  List<String> get topics => switch (this) {
+        LearningGoal.everyday => const ['Everyday life', 'Family', 'Food'],
+        LearningGoal.travel => const ['Travel', 'Food', 'Culture'],
+        LearningGoal.work => const ['Work', 'Everyday life'],
+        LearningGoal.goethe => const ['Everyday life', 'Family', 'Work'],
+        LearningGoal.testdaf => const ['Study', 'Work', 'Culture'],
+      };
+
+  /// Which exam family the goal prepares for, or null for none.
+  String? get exam => switch (this) {
+        LearningGoal.goethe => 'goethe',
+        LearningGoal.testdaf => 'testdaf',
+        _ => null,
+      };
+
+  bool get isExam => exam != null;
+}
+
+/// How a practice item is answered.
+///
+/// The exam kinds follow the Goethe-Zertifikat and TestDaF modules: `cloze` is
+/// the Lückentext / Sprachbausteine, `listening` is Hören (audio, then
+/// questions), `writing` is Schreiben (Leitpunkte), `speaking` is Sprechen.
+/// Reading tasks are `multipleChoice` over a passage given as `context`.
+enum ExerciseKind {
+  multipleChoice,
+  fillBlank,
+  translation,
+  wordOrder,
+  cloze,
+  listening,
+  writing,
+  speaking,
+}
+
+extension ExerciseKindInfo on ExerciseKind {
+  /// Recognising the right answer is easier than producing one: the learner
+  /// insight compares the two.
+  bool get isRecognition =>
+      this == ExerciseKind.multipleChoice || this == ExerciseKind.listening;
+
+  String get label => switch (this) {
+        ExerciseKind.multipleChoice => 'Choosing answers',
+        ExerciseKind.fillBlank => 'Filling gaps',
+        ExerciseKind.translation => 'Translating',
+        ExerciseKind.wordOrder => 'Building sentences',
+        ExerciseKind.cloze => 'Cloze texts',
+        ExerciseKind.listening => 'Listening',
+        ExerciseKind.writing => 'Writing',
+        ExerciseKind.speaking => 'Speaking',
+      };
+}
 
 /// The broad competency an exercise exercises. Drives [SkillScores].
 enum SkillArea { vocabulary, grammar, reading, listening, writing, speaking }
@@ -73,10 +173,16 @@ extension SkillAreaLabel on SkillArea {
 
 /// A single practice item.
 ///
-/// [options] holds the choices for [ExerciseKind.multipleChoice] and the word
-/// bank for [ExerciseKind.wordOrder]; typed exercises leave it empty.
-/// [skills] are stable snake_case ids (e.g. `definite_articles`) used for
-/// weak-skill tracking; see [skillLabel] for display text.
+/// [options] holds the choices for [ExerciseKind.multipleChoice] and
+/// [ExerciseKind.listening] and the word bank for [ExerciseKind.wordOrder]; typed
+/// exercises leave it empty. [skills] are stable snake_case ids (e.g.
+/// `definite_articles`) used for weak-skill tracking; see [skillLabel] for
+/// display text.
+///
+/// Exam-style items add: [context] (a reading text or dialogue shown above the
+/// prompt), [audioText] (what is spoken in a listening task), [gaps] (a cloze
+/// passage's blanks, numbered `{1}`, `{2}` in [context]), [brief] (a writing
+/// task), and [examPart] (e.g. "Lesen Teil 1") naming the exam task it imitates.
 class Exercise {
   const Exercise({
     required this.id,
@@ -88,7 +194,13 @@ class Exercise {
     this.alternatives = const [],
     this.kind = ExerciseKind.multipleChoice,
     this.area = SkillArea.vocabulary,
-  });
+    this.context,
+    this.audioText,
+    this.gaps = const [],
+    this.brief,
+    this.examPart,
+    int? difficulty,
+  }) : _difficulty = difficulty;
 
   final String id;
   final String prompt;
@@ -99,6 +211,30 @@ class Exercise {
   final List<String> skills;
   final ExerciseKind kind;
   final SkillArea area;
+  final String? context;
+  final String? audioText;
+  final List<ClozeGap> gaps;
+  final WritingBrief? brief;
+  final String? examPart;
+  final int? _difficulty;
+
+  /// 1 (easiest) to 3. Unless a lesson sets it, typing is harder than
+  /// recognising, and producing longer language is harder still.
+  int get difficulty =>
+      _difficulty ??
+      switch (kind) {
+        ExerciseKind.multipleChoice || ExerciseKind.listening => 1,
+        ExerciseKind.fillBlank ||
+        ExerciseKind.wordOrder ||
+        ExerciseKind.cloze =>
+          2,
+        ExerciseKind.translation ||
+        ExerciseKind.writing ||
+        ExerciseKind.speaking =>
+          3,
+      };
+
+  bool get isExamStyle => examPart != null;
 
   List<String> get acceptedAnswers => [answer, ...alternatives];
 }
@@ -121,6 +257,11 @@ class Lesson {
     required this.introduction,
     required this.examples,
     required this.exercises,
+    this.vocabulary = const [],
+    this.topics = const [],
+    this.goals = const [],
+    this.requires = const [],
+    this.exam,
   });
 
   final String id;
@@ -132,6 +273,22 @@ class Lesson {
   final String introduction;
   final List<String> examples;
   final List<Exercise> exercises;
+
+  /// Words this lesson teaches: they become flashcards once the lesson is
+  /// started, and "known vocabulary" the tutor reuses once it is completed.
+  final List<VocabItem> vocabulary;
+
+  /// Topic labels (matching `preferredTopics`) this lesson belongs to.
+  final List<String> topics;
+
+  /// Goals this lesson especially serves. Empty means it is core for everyone.
+  final List<LearningGoal> goals;
+
+  /// Lessons that should be finished first. Empty means no prerequisite.
+  final List<String> requires;
+
+  /// `goethe` or `testdaf` for lessons built around that exam's task types.
+  final String? exam;
 }
 
 class SkillScores {
@@ -209,9 +366,15 @@ class LearningProfile {
     required this.nativeLanguage,
     required this.currentLevel,
     required this.targetLevel,
+    required this.goal,
     required this.currentLessonId,
     required this.lessonProgress,
     required this.skillStats,
+    required this.exerciseStats,
+    required this.kindStats,
+    required this.areaStats,
+    required this.flashcards,
+    required this.gamification,
     required this.recentMistakes,
     required this.reviewItems,
     required this.scores,
@@ -222,6 +385,8 @@ class LearningProfile {
     required this.preferredTopics,
     required this.focusSkills,
     required this.appearancePreference,
+    required this.surfaceStyle,
+    required this.glassIntensity,
     required this.aiProviderPreference,
     required this.aiModel,
     required this.voice,
@@ -234,6 +399,9 @@ class LearningProfile {
 
   static const firstLessonId = 'pre_a1_greetings';
 
+  /// Liquid Glass strength, 0 (barely there) to 100 (most see-through).
+  static const defaultGlassIntensity = 60;
+
   factory LearningProfile.newLearner({
     required String nativeLanguage,
     required CefrLevel currentLevel,
@@ -243,9 +411,15 @@ class LearningProfile {
         nativeLanguage: nativeLanguage,
         currentLevel: currentLevel,
         targetLevel: CefrLevel.c1,
+        goal: LearningGoal.everyday,
         currentLessonId: firstLessonId,
         lessonProgress: const {},
         skillStats: const {},
+        exerciseStats: const {},
+        kindStats: const {},
+        areaStats: const {},
+        flashcards: const FlashcardProgress(),
+        gamification: const GamificationState(),
         recentMistakes: const [],
         reviewItems: const [],
         scores: const SkillScores(),
@@ -256,6 +430,8 @@ class LearningProfile {
         preferredTopics: const ['Everyday life'],
         focusSkills: const ['Vocabulary', 'Speaking'],
         appearancePreference: AppearancePreference.system,
+        surfaceStyle: SurfaceStyle.glass,
+        glassIntensity: defaultGlassIntensity,
         aiProviderPreference: AIProviderPreference.automatic,
         aiModel: 'Qwen',
         voice: 'Anna',
@@ -270,9 +446,21 @@ class LearningProfile {
   final String nativeLanguage;
   final CefrLevel currentLevel;
   final CefrLevel targetLevel;
+  final LearningGoal goal;
   final String currentLessonId;
   final Map<String, LessonProgress> lessonProgress;
   final Map<String, SkillStat> skillStats;
+  final Map<String, ExerciseStat> exerciseStats;
+
+  /// Accuracy by how items are answered (keyed by [ExerciseKind.name]); shows
+  /// whether the learner recognises more than they can produce.
+  final Map<String, SkillStat> kindStats;
+
+  /// Accuracy by skill area (keyed by [SkillArea.name]): the four Goethe skills
+  /// plus vocabulary and grammar. Drives exam readiness.
+  final Map<String, SkillStat> areaStats;
+  final FlashcardProgress flashcards;
+  final GamificationState gamification;
   final List<String> recentMistakes;
   final List<ReviewItem> reviewItems;
   final SkillScores scores;
@@ -283,6 +471,8 @@ class LearningProfile {
   final List<String> preferredTopics;
   final List<String> focusSkills;
   final AppearancePreference appearancePreference;
+  final SurfaceStyle surfaceStyle;
+  final int glassIntensity;
   final AIProviderPreference aiProviderPreference;
   final String aiModel;
   final String voice;
@@ -313,6 +503,7 @@ class LearningProfile {
     String? currentLessonId,
     Map<String, LessonProgress>? lessonProgress,
     Map<String, SkillStat>? skillStats,
+    Map<String, ExerciseStat>? exerciseStats,
     List<String>? recentMistakes,
     List<ReviewItem>? reviewItems,
     SkillScores? scores,
@@ -320,10 +511,17 @@ class LearningProfile {
     int? streak,
     DateTime? lastStudyDate,
     CefrLevel? targetLevel,
+    LearningGoal? goal,
+    Map<String, SkillStat>? kindStats,
+    Map<String, SkillStat>? areaStats,
+    FlashcardProgress? flashcards,
+    GamificationState? gamification,
     int? dailyGoalMinutes,
     List<String>? preferredTopics,
     List<String>? focusSkills,
     AppearancePreference? appearancePreference,
+    SurfaceStyle? surfaceStyle,
+    int? glassIntensity,
     AIProviderPreference? aiProviderPreference,
     String? aiModel,
     String? voice,
@@ -338,9 +536,15 @@ class LearningProfile {
         nativeLanguage: nativeLanguage ?? this.nativeLanguage,
         currentLevel: currentLevel ?? this.currentLevel,
         targetLevel: targetLevel ?? this.targetLevel,
+        goal: goal ?? this.goal,
         currentLessonId: currentLessonId ?? this.currentLessonId,
         lessonProgress: lessonProgress ?? this.lessonProgress,
         skillStats: skillStats ?? this.skillStats,
+        exerciseStats: exerciseStats ?? this.exerciseStats,
+        kindStats: kindStats ?? this.kindStats,
+        areaStats: areaStats ?? this.areaStats,
+        flashcards: flashcards ?? this.flashcards,
+        gamification: gamification ?? this.gamification,
         recentMistakes: recentMistakes ?? this.recentMistakes,
         reviewItems: reviewItems ?? this.reviewItems,
         scores: scores ?? this.scores,
@@ -351,6 +555,8 @@ class LearningProfile {
         preferredTopics: preferredTopics ?? this.preferredTopics,
         focusSkills: focusSkills ?? this.focusSkills,
         appearancePreference: appearancePreference ?? this.appearancePreference,
+        surfaceStyle: surfaceStyle ?? this.surfaceStyle,
+        glassIntensity: (glassIntensity ?? this.glassIntensity).clamp(0, 100),
         aiProviderPreference: aiProviderPreference ?? this.aiProviderPreference,
         aiModel: aiModel ?? this.aiModel,
         voice: voice ?? this.voice,
@@ -373,9 +579,15 @@ class LearningProfile {
         nativeLanguage: nativeLanguage,
         currentLevel: currentLevel,
         targetLevel: targetLevel,
+        goal: goal,
         currentLessonId: firstLessonId,
         lessonProgress: const {},
         skillStats: const {},
+        exerciseStats: const {},
+        kindStats: const {},
+        areaStats: const {},
+        flashcards: const FlashcardProgress(),
+        gamification: const GamificationState(),
         recentMistakes: const [],
         reviewItems: const [],
         scores: const SkillScores(),
@@ -386,6 +598,8 @@ class LearningProfile {
         preferredTopics: preferredTopics,
         focusSkills: focusSkills,
         appearancePreference: appearancePreference,
+        surfaceStyle: surfaceStyle,
+        glassIntensity: glassIntensity,
         aiProviderPreference: aiProviderPreference,
         aiModel: aiModel,
         voice: voice,
@@ -395,6 +609,26 @@ class LearningProfile {
         reviewRemindersEnabled: reviewRemindersEnabled,
         streakRemindersEnabled: streakRemindersEnabled,
       );
+}
+
+/// The compact, trusted learner state shared with the AI tutor. Learning
+/// signals only: name, provider, and voice preferences never leave the device.
+class TutorContext {
+  const TutorContext({
+    required this.level,
+    this.unit,
+    this.lesson,
+    this.weakSkills = const [],
+    this.knownVocabulary = const [],
+    this.recentMistakes = const [],
+  });
+
+  final String level;
+  final String? unit;
+  final String? lesson;
+  final List<String> weakSkills;
+  final List<String> knownVocabulary;
+  final List<String> recentMistakes;
 }
 
 class CoachReply {

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+
+import '../onboarding/onboarding_view.dart' show GoalPicker;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,8 +11,10 @@ import '../../app/app_info.dart';
 import '../../app/theme/app_theme.dart';
 import '../../data/profile_codec.dart';
 import '../../domain/models/learning_models.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../auth/auth_view_model.dart';
+import 'appearance_page.dart';
 
 class AccountView extends ConsumerWidget {
   const AccountView({super.key});
@@ -26,6 +30,7 @@ class AccountView extends ConsumerWidget {
       subtitle: 'Your learning preferences, privacy, and app settings.',
       trailing: ProfileAvatar(name: profile.name),
       child: ListView(
+        padding: pageListPadding(context),
         children: [
           SoftCard(
             color: context.softSurface,
@@ -73,8 +78,8 @@ class AccountView extends ConsumerWidget {
               SettingsTile(
                 icon: Icons.palette_outlined,
                 title: 'Appearance',
-                subtitle: profile.appearancePreference.label,
-                onTap: () => _push(context, const _AppearancePage()),
+                subtitle: _appearanceSummary(profile),
+                onTap: () => _push(context, const AppearancePage()),
               ),
               SettingsTile(
                 icon: Icons.smart_toy_outlined,
@@ -152,6 +157,13 @@ class AccountView extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  static String _appearanceSummary(LearningProfile profile) {
+    final mode = profile.appearancePreference.label;
+    return profile.surfaceStyle == SurfaceStyle.glass
+        ? '$mode · Liquid Glass ${profile.glassIntensity}%'
+        : '$mode · Standard';
   }
 
   static String _notificationSummary(LearningProfile profile) {
@@ -234,12 +246,14 @@ class AccountView extends ConsumerWidget {
       await auth.deleteCurrentUser();
       // On success the auth state change ends the session, which removes this
       // dialog along with every other pushed route.
-    } catch (_) {
+    } catch (error) {
       navigator.pop();
       messenger.showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'We could not finish deleting the account. Please sign in again and retry.',
+            error is AuthCancelledException
+                ? 'Account deletion cancelled. Nothing was deleted.'
+                : 'We could not finish deleting the account. Please sign in again and retry.',
           ),
         ),
       );
@@ -435,6 +449,9 @@ class _LearningPreferencesPage extends ConsumerWidget {
     'Work',
     'Culture',
     'Family',
+    'Food',
+    'Study',
+    'Health',
   ];
   static const _skills = [
     'Vocabulary',
@@ -514,6 +531,20 @@ class _LearningPreferencesPage extends ConsumerWidget {
                     _save(ref, profile.copyWith(nativeLanguage: value));
                   }
                 },
+              ),
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: 'My goal',
+          description:
+              'Your lessons, vocabulary, games and mock exams follow this goal.',
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: GoalPicker(
+                selected: profile.goal,
+                onSelect: (goal) => _save(ref, profile.copyWith(goal: goal)),
               ),
             ),
           ],
@@ -620,47 +651,6 @@ class _LearningPreferencesPage extends ConsumerWidget {
   Future<void> _save(WidgetRef ref, LearningProfile updated) {
     return ref.read(appControllerProvider).updateProfile(updated);
   }
-}
-
-class _AppearancePage extends ConsumerWidget {
-  const _AppearancePage();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(appControllerProvider).profile!;
-    return SettingsPage(
-      title: 'Appearance',
-      subtitle: 'Choose a light, dark, or device-matched app appearance.',
-      children: [
-        SettingsSection(
-          title: 'Color mode',
-          children: [
-            for (final option in AppearancePreference.values)
-              RadioListTile<AppearancePreference>(
-                value: option,
-                groupValue: profile.appearancePreference,
-                title: Text(option.label),
-                subtitle: Text(_appearanceDescription(option)),
-                onChanged: (value) {
-                  if (value != null) {
-                    ref.read(appControllerProvider).updateProfile(
-                          profile.copyWith(appearancePreference: value),
-                        );
-                  }
-                },
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  String _appearanceDescription(AppearancePreference preference) =>
-      switch (preference) {
-        AppearancePreference.system => 'Match your device automatically.',
-        AppearancePreference.light => 'Use a bright, paper-like workspace.',
-        AppearancePreference.dark => 'Use a lower-light workspace.',
-      };
 }
 
 class _AIAndVoicePage extends ConsumerStatefulWidget {

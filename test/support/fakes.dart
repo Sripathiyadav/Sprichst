@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sprichst/app/app.dart';
 import 'package:sprichst/app/app_controller.dart';
 import 'package:sprichst/data/ai/mock_ai_repository.dart';
 import 'package:sprichst/data/curriculum_parser.dart';
+import 'package:sprichst/domain/models/dialogue_models.dart';
 import 'package:sprichst/domain/models/learning_models.dart';
 import 'package:sprichst/domain/repositories/auth_repository.dart';
 import 'package:sprichst/domain/repositories/learning_repository.dart';
@@ -17,6 +18,9 @@ import 'package:sprichst/features/auth/auth_view_model.dart';
 /// The real course file, parsed straight from disk (tests run from the root).
 List<Lesson> loadCourse() =>
     CurriculumParser.parse(File('curriculum/course.json').readAsStringSync());
+
+List<Dialogue> loadCourseDialogues() => CurriculumParser.parseDialogues(
+    File('curriculum/course.json').readAsStringSync());
 
 class FakeUser implements User {
   @override
@@ -30,9 +34,13 @@ class FakeUser implements User {
 }
 
 class FakeAuthRepository implements AuthRepository {
-  FakeAuthRepository({this.signedIn = true});
+  FakeAuthRepository({this.signedIn = true, this.signInError});
 
   final bool signedIn;
+
+  /// When set, [signInWithGoogle] throws it.
+  final Object? signInError;
+  var signInAttempts = 0;
 
   @override
   User? get currentUser => signedIn ? FakeUser() : null;
@@ -41,7 +49,11 @@ class FakeAuthRepository implements AuthRepository {
   Stream<User?> get authStateChanges => const Stream.empty();
 
   @override
-  Future<UserCredential?> signInWithGoogle() async => null;
+  Future<UserCredential?> signInWithGoogle() async {
+    signInAttempts++;
+    if (signInError != null) throw signInError!;
+    return null;
+  }
 
   @override
   Future<void> reauthenticateWithGoogle() async {}
@@ -70,13 +82,16 @@ class InMemoryLearningRepository implements LearningRepository {
 
   @override
   Future<List<Lesson>> loadLessons() async => loadCourse();
+
+  @override
+  Future<List<Dialogue>> loadDialogues() async => loadCourseDialogues();
 }
 
 List<Override> testOverrides(InMemoryLearningRepository learning,
-        {bool signedIn = true}) =>
+        {bool signedIn = true, FakeAuthRepository? auth}) =>
     [
       authRepositoryProvider
-          .overrideWithValue(FakeAuthRepository(signedIn: signedIn)),
+          .overrideWithValue(auth ?? FakeAuthRepository(signedIn: signedIn)),
       learningRepositoryProvider.overrideWithValue(learning),
       aiRepositoryProvider.overrideWithValue(MockAIRepository()),
     ];
@@ -88,17 +103,29 @@ Future<void> pumpSprichst(
   required Brightness brightness,
   required InMemoryLearningRepository repository,
   bool signedIn = true,
+  FakeAuthRepository? auth,
+  double textScale = 1,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   tester.platformDispatcher.platformBrightnessTestValue = brightness;
+  tester.platformDispatcher.textScaleFactorTestValue = textScale;
+  // The Coach screen creates a recorder; there is no microphone under test.
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    const MethodChannel('com.llfbandit.record/messages'),
+    (_) async => null,
+  );
   addTearDown(() {
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('com.llfbandit.record/messages'),
+      null,
+    );
     tester.view.resetPhysicalSize();
     tester.view.resetDevicePixelRatio();
     tester.platformDispatcher.clearAllTestValues();
   });
   await tester.pumpWidget(ProviderScope(
-    overrides: testOverrides(repository, signedIn: signedIn),
+    overrides: testOverrides(repository, signedIn: signedIn, auth: auth),
     child: const SprichstApp(),
   ));
   await tester.pumpAndSettle();

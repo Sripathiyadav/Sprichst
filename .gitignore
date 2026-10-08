@@ -16,6 +16,7 @@ ai-server/.env
 lib/firebase_options.dart
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
+/GoogleService-Info.plist
 macos/Runner/GoogleService-Info.plist
 
 # Editors and operating system files

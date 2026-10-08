@@ -1,3 +1,4 @@
+import '../models/dialogue_models.dart';
 import '../models/learning_models.dart';
 
 abstract class LearningRepository {
@@ -5,26 +6,27 @@ abstract class LearningRepository {
   Future<void> saveProfile(LearningProfile profile);
   Future<void> deleteLearningData();
   Future<List<Lesson>> loadLessons();
+  Future<List<Dialogue>> loadDialogues();
 }
 
 abstract class AIRepository {
   Future<CoachReply> correctGerman(
     String text,
-    LearningProfile profile,
+    TutorContext context,
   );
 
   Future<TutorReply> chat(
     String message,
-    LearningProfile profile,
+    TutorContext context,
   );
 
   Future<TranscriptionResult> transcribeAudio(
     AudioCapture audio,
-    LearningProfile profile,
+    TutorContext context,
   );
 
   Future<List<int>> synthesizeSpeech(
     String text,
-    LearningProfile profile,
+    TutorContext context,
   );
 }

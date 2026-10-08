@@ -3,10 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/auth/firebase_auth_repository.dart';
 import '../../domain/repositories/auth_repository.dart';
+import 'auth_errors.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return FirebaseAuthRepository();
 });
+
+/// Sign-in progress and failure are tracked apart from the auth state itself,
+/// so attempting to sign in never replaces the sign-in screen with a splash.
+final signInInProgressProvider = StateProvider<bool>((ref) => false);
+final signInErrorProvider = StateProvider<String?>((ref) => null);
 
 final authViewModelProvider =
     NotifierProvider<AuthViewModel, AsyncValue<User?>>(
@@ -14,7 +20,8 @@ final authViewModelProvider =
 );
 
 class AuthViewModel extends Notifier<AsyncValue<User?>> {
-  late final AuthRepository _authRepository;
+  // Not final: `build` runs again whenever the repository provider changes.
+  late AuthRepository _authRepository;
 
   @override
   AsyncValue<User?> build() {
@@ -34,20 +41,18 @@ class AuthViewModel extends Notifier<AsyncValue<User?>> {
     return AsyncData(_authRepository.currentUser);
   }
 
+  /// Signs in with Google. The resulting user arrives through the auth-state
+  /// stream; this only reports progress and failure.
   Future<void> signInWithGoogle() async {
-    state = const AsyncLoading();
+    ref.read(signInErrorProvider.notifier).state = null;
+    ref.read(signInInProgressProvider.notifier).state = true;
 
     try {
-      final credential = await _authRepository.signInWithGoogle();
-
-      if (credential == null) {
-        state = AsyncData(_authRepository.currentUser);
-        return;
-      }
-
-      state = AsyncData(credential.user);
-    } catch (error, stackTrace) {
-      state = AsyncError(error, stackTrace);
+      await _authRepository.signInWithGoogle();
+    } catch (error) {
+      ref.read(signInErrorProvider.notifier).state = describeAuthError(error);
+    } finally {
+      ref.read(signInInProgressProvider.notifier).state = false;
     }
   }
 

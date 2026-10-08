@@ -4,7 +4,9 @@ import '../../../app/theme/app_theme.dart';
 import '../../../domain/learning/exercise_evaluator.dart';
 import '../../../domain/learning/exercise_session.dart';
 import '../../../domain/models/learning_models.dart';
+import '../../../shared/haptics.dart';
 import '../../../shared/widgets/app_widgets.dart';
+import 'exam_inputs.dart';
 import 'exercise_widgets.dart';
 
 /// Runs a list of exercises: prompt, input, feedback, next. Shared by lessons
@@ -15,10 +17,14 @@ class ExerciseRunner extends StatefulWidget {
     required this.exercises,
     required this.onFinished,
     this.finishLabel = 'Finish',
+    this.retryMissed = false,
   });
 
   final List<Exercise> exercises;
   final String finishLabel;
+
+  /// Ask each missed exercise once more at the end of the session.
+  final bool retryMissed;
 
   /// Called once, after the last exercise has been checked and acknowledged.
   final Future<void> Function(List<ExerciseResult> results) onFinished;
@@ -28,7 +34,10 @@ class ExerciseRunner extends StatefulWidget {
 }
 
 class _ExerciseRunnerState extends State<ExerciseRunner> {
-  late final ExerciseSession _session = ExerciseSession(widget.exercises);
+  late final ExerciseSession _session = ExerciseSession(
+    widget.exercises,
+    retryMissed: widget.retryMissed,
+  );
   String? _response;
   var _finishing = false;
 
@@ -42,10 +51,15 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        LinearProgressIndicator(
-          value: _session.position / _session.total,
-          minHeight: 7,
-          borderRadius: BorderRadius.circular(99),
+        Semantics(
+          label: 'Progress',
+          value: '${_session.position} of ${_session.total} questions',
+          excludeSemantics: true,
+          child: LinearProgressIndicator(
+            value: _session.position / _session.total,
+            minHeight: 10,
+            borderRadius: BorderRadius.circular(99),
+          ),
         ),
         const SizedBox(height: AppSpacing.xl),
         Expanded(
@@ -55,28 +69,36 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'PRACTICE ${_session.position + 1}/${_session.total}',
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                  ),
+                  _session.isRetry
+                      ? 'Try again'
+                      : 'Question ${_session.position + 1} of ${_session.total}',
+                  style: theme.textTheme.labelLarge
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
+                if (exercise.examPart != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  ExamPartTag(exercise.examPart!),
+                ],
                 const SizedBox(height: AppSpacing.md),
                 Text(exercise.prompt, style: theme.textTheme.headlineSmall),
+                if (exercise.context != null &&
+                    exercise.kind != ExerciseKind.cloze) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  PassageCard(text: exercise.context!),
+                ],
                 const SizedBox(height: AppSpacing.xl),
                 ExerciseRenderer(
                   exercise: exercise,
                   result: checked,
                   onResponse: (value) => setState(() => _response = value),
+                  onSubmit:
+                      _buttonEnabled && checked == null ? _onPressed : null,
                 ),
                 if (checked != null) ...[
                   const SizedBox(height: AppSpacing.md),
-                  SoftCard(
-                    color: checked.isCorrect
-                        ? context.successSurface
-                        : context.dangerSurface,
-                    child: Text(checked.feedback),
+                  FeedbackBanner(
+                    correct: checked.isCorrect,
+                    message: checked.feedback,
                   ),
                 ],
               ],
@@ -103,7 +125,9 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
 
   Future<void> _onPressed() async {
     if (_session.checked == null) {
-      setState(() => _session.submit(_response!));
+      final result = _session.submit(_response!);
+      result.isCorrect ? Haptics.success() : Haptics.mistake();
+      setState(() {});
       return;
     }
     if (_session.position + 1 < _session.total) {
@@ -131,6 +155,7 @@ class SessionSummary extends StatelessWidget {
     required this.total,
     required this.xpEarned,
     this.note,
+    this.leveledUpTo,
   });
 
   final String title;
@@ -138,15 +163,16 @@ class SessionSummary extends StatelessWidget {
   final int total;
   final int xpEarned;
   final String? note;
+  final CefrLevel? leveledUpTo;
 
   @override
   Widget build(BuildContext context) => Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           CircleAvatar(
             radius: 38,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            child: const Icon(Icons.celebration, size: 38),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            foregroundColor: Theme.of(context).colorScheme.onTertiary,
+            child: const Icon(Icons.emoji_events, size: 38),
           ),
           const SizedBox(height: AppSpacing.lg),
           Text(title, style: Theme.of(context).textTheme.displaySmall),
@@ -156,6 +182,14 @@ class SessionSummary extends StatelessWidget {
             '${xpEarned > 0 ? ' and earned $xpEarned XP' : ''}.',
             textAlign: TextAlign.center,
           ),
+          if (leveledUpTo != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Level up! You are now working at ${leveledUpTo!.label}.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ],
           if (note != null) ...[
             const SizedBox(height: AppSpacing.xs),
             Text(note!, textAlign: TextAlign.center),

@@ -16,6 +16,7 @@ abstract final class ProfileCodec {
         'nativeLanguage': profile.nativeLanguage,
         'currentLevel': profile.currentLevel.name,
         'targetLevel': profile.targetLevel.name,
+        'goal': profile.goal.name,
         'currentLessonId': profile.currentLessonId,
         'lessonProgress': {
           for (final entry in profile.lessonProgress.entries)
@@ -32,6 +33,54 @@ abstract final class ProfileCodec {
               'attempts': entry.value.attempts,
               'correct': entry.value.correct,
             },
+        },
+        'exerciseStats': {
+          for (final entry in profile.exerciseStats.entries)
+            entry.key: {
+              'attempts': entry.value.attempts,
+              'correct': entry.value.correct,
+              'lastAnsweredAt': encodeDate(entry.value.lastAnsweredAt),
+            },
+        },
+        'kindStats': {
+          for (final entry in profile.kindStats.entries)
+            entry.key: {
+              'attempts': entry.value.attempts,
+              'correct': entry.value.correct,
+            },
+        },
+        'areaStats': {
+          for (final entry in profile.areaStats.entries)
+            entry.key: {
+              'attempts': entry.value.attempts,
+              'correct': entry.value.correct,
+            },
+        },
+        'flashcards': {
+          if (profile.flashcards.day != null) 'day': profile.flashcards.day,
+          'newToday': profile.flashcards.newToday,
+          'states': {
+            for (final entry in profile.flashcards.states.entries)
+              entry.key: {
+                'dueAt': encodeDate(entry.value.dueAt),
+                'intervalDays': entry.value.intervalDays,
+                'ease': entry.value.ease,
+                'reps': entry.value.reps,
+                'lapses': entry.value.lapses,
+              },
+          },
+        },
+        'gamification': {
+          'badges': {
+            for (final entry in profile.gamification.badges.entries)
+              entry.key: encodeDate(entry.value),
+          },
+          if (profile.gamification.questDay != null)
+            'questDay': profile.gamification.questDay,
+          'questProgress': profile.gamification.questProgress,
+          'questsDone': profile.gamification.questsDone,
+          'gameBest': profile.gamification.gameBest,
+          'gamesPlayed': profile.gamification.gamesPlayed,
         },
         'recentMistakes': profile.recentMistakes,
         'reviewItems': [
@@ -56,6 +105,8 @@ abstract final class ProfileCodec {
         'preferredTopics': profile.preferredTopics,
         'focusSkills': profile.focusSkills,
         'appearancePreference': profile.appearancePreference.name,
+        'surfaceStyle': profile.surfaceStyle.name,
+        'glassIntensity': profile.glassIntensity,
         'aiProviderPreference': profile.aiProviderPreference.name,
         'aiModel': profile.aiModel,
         'voice': profile.voice,
@@ -92,6 +143,7 @@ abstract final class ProfileCodec {
       currentLevel:
           _enum(CefrLevel.values, data['currentLevel'], CefrLevel.preA1),
       targetLevel: _enum(CefrLevel.values, data['targetLevel'], CefrLevel.c1),
+      goal: _enum(LearningGoal.values, data['goal'], LearningGoal.everyday),
       currentLessonId:
           data['currentLessonId'] as String? ?? LearningProfile.firstLessonId,
       lessonProgress: lessonProgress,
@@ -102,6 +154,32 @@ abstract final class ProfileCodec {
             correct: _int(_map(entry.value)?['correct'], 0),
           ),
       },
+      exerciseStats: {
+        for (final entry in (_map(data['exerciseStats']) ?? const {}).entries)
+          if (_map(entry.value) case final stat?)
+            if (stat['lastAnsweredAt'] != null)
+              entry.key: ExerciseStat(
+                attempts: _int(stat['attempts'], 0),
+                correct: _int(stat['correct'], 0),
+                lastAnsweredAt: decodeDate(stat['lastAnsweredAt']),
+              ),
+      },
+      kindStats: {
+        for (final entry in (_map(data['kindStats']) ?? const {}).entries)
+          entry.key: SkillStat(
+            attempts: _int(_map(entry.value)?['attempts'], 0),
+            correct: _int(_map(entry.value)?['correct'], 0),
+          ),
+      },
+      areaStats: {
+        for (final entry in (_map(data['areaStats']) ?? const {}).entries)
+          entry.key: SkillStat(
+            attempts: _int(_map(entry.value)?['attempts'], 0),
+            correct: _int(_map(entry.value)?['correct'], 0),
+          ),
+      },
+      flashcards: _flashcards(_map(data['flashcards']), decodeDate),
+      gamification: _gamification(_map(data['gamification']), decodeDate),
       recentMistakes: _list<String>(data['recentMistakes']),
       reviewItems: [
         for (final raw in _list<Object?>(data['reviewItems']))
@@ -142,6 +220,15 @@ abstract final class ProfileCodec {
         data['appearancePreference'],
         AppearancePreference.system,
       ),
+      surfaceStyle: _enum(
+        SurfaceStyle.values,
+        data['surfaceStyle'],
+        SurfaceStyle.glass,
+      ),
+      glassIntensity: _int(
+        data['glassIntensity'],
+        LearningProfile.defaultGlassIntensity,
+      ).clamp(0, 100),
       aiProviderPreference: _enum(
         AIProviderPreference.values,
         data['aiProviderPreference'],
@@ -154,6 +241,53 @@ abstract final class ProfileCodec {
       lessonRemindersEnabled: data['lessonRemindersEnabled'] as bool? ?? false,
       reviewRemindersEnabled: data['reviewRemindersEnabled'] as bool? ?? false,
       streakRemindersEnabled: data['streakRemindersEnabled'] as bool? ?? false,
+    );
+  }
+
+  static FlashcardProgress _flashcards(
+    Map<String, dynamic>? raw,
+    DateDecoder decodeDate,
+  ) {
+    if (raw == null) return const FlashcardProgress();
+    return FlashcardProgress(
+      day: raw['day'] as String?,
+      newToday: _int(raw['newToday'], 0),
+      states: {
+        for (final entry in (_map(raw['states']) ?? const {}).entries)
+          if (_map(entry.value) case final state?)
+            if (state['dueAt'] != null)
+              entry.key: CardState(
+                dueAt: decodeDate(state['dueAt']),
+                intervalDays: _int(state['intervalDays'], 0),
+                ease: _double(state['ease'], CardState.defaultEase),
+                reps: _int(state['reps'], 0),
+                lapses: _int(state['lapses'], 0),
+              ),
+      },
+    );
+  }
+
+  static GamificationState _gamification(
+    Map<String, dynamic>? raw,
+    DateDecoder decodeDate,
+  ) {
+    if (raw == null) return const GamificationState();
+    return GamificationState(
+      badges: {
+        for (final entry in (_map(raw['badges']) ?? const {}).entries)
+          if (entry.value != null) entry.key: decodeDate(entry.value),
+      },
+      questDay: raw['questDay'] as String?,
+      questProgress: {
+        for (final entry in (_map(raw['questProgress']) ?? const {}).entries)
+          entry.key: _int(entry.value, 0),
+      },
+      questsDone: _list<String>(raw['questsDone']),
+      gameBest: {
+        for (final entry in (_map(raw['gameBest']) ?? const {}).entries)
+          entry.key: _int(entry.value, 0),
+      },
+      gamesPlayed: _int(raw['gamesPlayed'], 0),
     );
   }
 

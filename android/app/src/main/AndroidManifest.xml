@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Network access for Firebase and the AI gateway (release builds need it). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Voice practice: recorded only while the learner taps the microphone. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <application
         android:label="sprichst"
         android:name="${applicationName}"

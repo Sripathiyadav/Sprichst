@@ -57,6 +57,48 @@
           ],
           "area": "writing"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "Hallo",
+          "en": "hello",
+          "example": "Hallo, wie geht es dir?",
+          "exampleEn": "Hello, how are you?"
+        },
+        {
+          "de": "Guten Morgen",
+          "en": "good morning",
+          "example": "Guten Morgen, Frau Weber!",
+          "exampleEn": "Good morning, Ms Weber!"
+        },
+        {
+          "de": "Guten Abend",
+          "en": "good evening",
+          "example": "Guten Abend! Wie geht's?",
+          "exampleEn": "Good evening! How are you?"
+        },
+        {
+          "de": "Tschüss",
+          "en": "bye",
+          "example": "Tschüss, bis morgen!",
+          "exampleEn": "Bye, see you tomorrow!"
+        },
+        {
+          "de": "Danke",
+          "en": "thank you",
+          "example": "Danke, gut!",
+          "exampleEn": "Thanks, I'm fine!"
+        },
+        {
+          "de": "Bitte",
+          "en": "please / you're welcome",
+          "example": "Einen Kaffee, bitte.",
+          "exampleEn": "A coffee, please."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
       ]
     },
     {
@@ -118,6 +160,55 @@
           ],
           "area": "grammar"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "heißen",
+          "en": "to be called",
+          "example": "Ich heiße Anna.",
+          "exampleEn": "My name is Anna."
+        },
+        {
+          "de": "kommen",
+          "en": "to come",
+          "example": "Ich komme aus Indien.",
+          "exampleEn": "I come from India."
+        },
+        {
+          "de": "wohnen",
+          "en": "to live",
+          "example": "Ich wohne in Berlin.",
+          "exampleEn": "I live in Berlin."
+        },
+        {
+          "de": "Name",
+          "en": "name",
+          "article": "der",
+          "example": "Mein Name ist Sam.",
+          "exampleEn": "My name is Sam."
+        },
+        {
+          "de": "Stadt",
+          "en": "city",
+          "article": "die",
+          "example": "Berlin ist eine große Stadt.",
+          "exampleEn": "Berlin is a big city."
+        },
+        {
+          "de": "Land",
+          "en": "country",
+          "article": "das",
+          "example": "Indien ist ein großes Land.",
+          "exampleEn": "India is a big country."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel",
+        "Family"
+      ],
+      "requires": [
+        "pre_a1_greetings"
       ]
     },
     {
@@ -188,6 +279,55 @@
           ],
           "area": "vocabulary"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "eins",
+          "en": "one"
+        },
+        {
+          "de": "zwei",
+          "en": "two"
+        },
+        {
+          "de": "drei",
+          "en": "three"
+        },
+        {
+          "de": "vier",
+          "en": "four"
+        },
+        {
+          "de": "fünf",
+          "en": "five"
+        },
+        {
+          "de": "sechs",
+          "en": "six"
+        },
+        {
+          "de": "sieben",
+          "en": "seven"
+        },
+        {
+          "de": "acht",
+          "en": "eight"
+        },
+        {
+          "de": "neun",
+          "en": "nine"
+        },
+        {
+          "de": "zehn",
+          "en": "ten"
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "requires": [
+        "pre_a1_greetings"
       ]
     },
     {
@@ -247,6 +387,68 @@
           ],
           "area": "grammar"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "Tisch",
+          "en": "table",
+          "article": "der",
+          "example": "Der Tisch ist groß.",
+          "exampleEn": "The table is big."
+        },
+        {
+          "de": "Lampe",
+          "en": "lamp",
+          "article": "die",
+          "example": "Die Lampe ist neu.",
+          "exampleEn": "The lamp is new."
+        },
+        {
+          "de": "Kind",
+          "en": "child",
+          "article": "das",
+          "example": "Das Kind spielt.",
+          "exampleEn": "The child is playing."
+        },
+        {
+          "de": "Hund",
+          "en": "dog",
+          "article": "der",
+          "example": "Der Hund schläft.",
+          "exampleEn": "The dog is sleeping."
+        },
+        {
+          "de": "Bruder",
+          "en": "brother",
+          "article": "der",
+          "example": "Mein Bruder wohnt in Köln.",
+          "exampleEn": "My brother lives in Cologne."
+        },
+        {
+          "de": "Schwester",
+          "en": "sister",
+          "article": "die",
+          "example": "Meine Schwester ist Lehrerin.",
+          "exampleEn": "My sister is a teacher."
+        },
+        {
+          "de": "Haus",
+          "en": "house",
+          "article": "das",
+          "example": "Das Haus hat einen Garten.",
+          "exampleEn": "The house has a garden."
+        },
+        {
+          "de": "Katze",
+          "en": "cat",
+          "article": "die",
+          "example": "Die Katze ist müde.",
+          "exampleEn": "The cat is tired."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Family"
       ]
     },
     {
@@ -338,6 +540,53 @@
           ],
           "area": "grammar"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "müde",
+          "en": "tired",
+          "example": "Ich bin müde.",
+          "exampleEn": "I am tired."
+        },
+        {
+          "de": "glücklich",
+          "en": "happy",
+          "example": "Wir sind glücklich.",
+          "exampleEn": "We are happy."
+        },
+        {
+          "de": "Freund",
+          "en": "friend (male)",
+          "article": "der",
+          "example": "Er ist mein Freund.",
+          "exampleEn": "He is my friend."
+        },
+        {
+          "de": "Freundin",
+          "en": "friend (female)",
+          "article": "die",
+          "example": "Sie ist meine Freundin.",
+          "exampleEn": "She is my friend."
+        },
+        {
+          "de": "Lehrer",
+          "en": "teacher (male)",
+          "article": "der",
+          "example": "Er ist Lehrer.",
+          "exampleEn": "He is a teacher."
+        },
+        {
+          "de": "Lehrerin",
+          "en": "teacher (female)",
+          "article": "die",
+          "example": "Sie ist Lehrerin.",
+          "exampleEn": "She is a teacher."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Family",
+        "Work"
       ]
     },
     {
@@ -407,6 +656,408 @@
           ],
           "area": "writing"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "Hunger",
+          "en": "hunger",
+          "article": "der",
+          "example": "Ich habe Hunger.",
+          "exampleEn": "I am hungry."
+        },
+        {
+          "de": "Durst",
+          "en": "thirst",
+          "article": "der",
+          "example": "Er hat Durst.",
+          "exampleEn": "He is thirsty."
+        },
+        {
+          "de": "Zeit",
+          "en": "time",
+          "article": "die",
+          "example": "Wir haben Zeit.",
+          "exampleEn": "We have time."
+        },
+        {
+          "de": "Auto",
+          "en": "car",
+          "article": "das",
+          "example": "Er hat ein Auto.",
+          "exampleEn": "He has a car."
+        },
+        {
+          "de": "Buch",
+          "en": "book",
+          "article": "das",
+          "example": "Ich habe ein Buch.",
+          "exampleEn": "I have a book."
+        }
+      ],
+      "topics": [
+        "Everyday life"
+      ]
+    },
+    {
+      "id": "a1_time_dates",
+      "level": "a1",
+      "unit": "Daily life",
+      "title": "Time and days",
+      "durationMinutes": 12,
+      "objective": "Tell the time and name the days of the week.",
+      "introduction": "Germans say the time two ways. Say the hour plus Uhr (acht Uhr = 8:00). For half hours, say halb plus the NEXT hour: halb drei is 2:30, because it is halfway to three. The week starts on Monday.",
+      "examples": [
+        "Es ist acht Uhr. — It is eight o'clock.",
+        "Es ist halb drei. — It is half past two (2:30).",
+        "Heute ist Montag. — Today is Monday."
+      ],
+      "exercises": [
+        {
+          "id": "time_1",
+          "kind": "multipleChoice",
+          "prompt": "What time is it? “Es ist halb drei.”",
+          "options": [
+            "2:30",
+            "3:30",
+            "2:15"
+          ],
+          "answer": "2:30",
+          "explanation": "halb drei is halfway to three, so 2:30.",
+          "skills": [
+            "telling_time"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "time_2",
+          "kind": "multipleChoice",
+          "prompt": "Which day comes after Montag?",
+          "options": [
+            "Dienstag",
+            "Sonntag",
+            "Mittwoch"
+          ],
+          "answer": "Dienstag",
+          "explanation": "The week runs Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag, Sonntag.",
+          "skills": [
+            "telling_time"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "time_3",
+          "kind": "fillBlank",
+          "prompt": "Type the number: “Es ist ___ Uhr.” (8:00)",
+          "answer": "acht",
+          "explanation": "8:00 is acht Uhr.",
+          "skills": [
+            "telling_time",
+            "numbers"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "time_4",
+          "kind": "listening",
+          "prompt": "Listen. When does the train leave?",
+          "audioText": "Der Zug nach München fährt um zehn Uhr dreißig.",
+          "options": [
+            "10:30",
+            "10:13",
+            "13:00"
+          ],
+          "answer": "10:30",
+          "explanation": "zehn Uhr dreißig is 10:30.",
+          "skills": [
+            "listening_numbers",
+            "telling_time"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 1"
+        },
+        {
+          "id": "time_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “Today is Saturday.”",
+          "answer": "Heute ist Samstag",
+          "explanation": "Heute ist + the weekday.",
+          "skills": [
+            "telling_time"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "time_6",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “It is half past three.”",
+          "options": [
+            "vier",
+            "halb",
+            "ist",
+            "Es"
+          ],
+          "answer": "Es ist halb vier",
+          "explanation": "halb vier is 3:30: half the way to four.",
+          "skills": [
+            "telling_time",
+            "word_order"
+          ],
+          "area": "grammar"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Uhr",
+          "en": "clock, o'clock",
+          "article": "die",
+          "example": "Es ist acht Uhr.",
+          "exampleEn": "It is eight o'clock."
+        },
+        {
+          "de": "Stunde",
+          "en": "hour",
+          "article": "die",
+          "example": "Der Kurs dauert eine Stunde.",
+          "exampleEn": "The course lasts an hour."
+        },
+        {
+          "de": "Minute",
+          "en": "minute",
+          "article": "die",
+          "example": "Warte eine Minute!",
+          "exampleEn": "Wait a minute!"
+        },
+        {
+          "de": "Woche",
+          "en": "week",
+          "article": "die",
+          "example": "Die Woche hat sieben Tage.",
+          "exampleEn": "The week has seven days."
+        },
+        {
+          "de": "Montag",
+          "en": "Monday",
+          "article": "der",
+          "example": "Am Montag arbeite ich.",
+          "exampleEn": "On Monday I work."
+        },
+        {
+          "de": "Samstag",
+          "en": "Saturday",
+          "article": "der",
+          "example": "Am Samstag habe ich Zeit.",
+          "exampleEn": "On Saturday I have time."
+        },
+        {
+          "de": "halb",
+          "en": "half (to the next hour)",
+          "example": "Es ist halb drei.",
+          "exampleEn": "It is half past two."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "requires": [
+        "pre_a1_numbers"
+      ]
+    },
+    {
+      "id": "a1_food_ordering",
+      "level": "a1",
+      "unit": "Daily life",
+      "title": "Ordering food and drink",
+      "durationMinutes": 14,
+      "objective": "Order politely in a café or bakery and ask for the bill.",
+      "introduction": "Use Ich möchte … (I would like …) to order politely, and add bitte. With masculine things use einen: einen Kaffee. To pay, say Die Rechnung, bitte. To ask a price: Was kostet das?",
+      "examples": [
+        "Ich möchte einen Kaffee, bitte. — I would like a coffee, please.",
+        "Die Rechnung, bitte. — The bill, please.",
+        "Was kostet das Brot? — How much is the bread?"
+      ],
+      "exercises": [
+        {
+          "id": "food_1",
+          "kind": "multipleChoice",
+          "prompt": "At a café you want a coffee. What do you say?",
+          "options": [
+            "Ich möchte einen Kaffee, bitte.",
+            "Gib mir Kaffee!",
+            "Ich bin ein Kaffee."
+          ],
+          "answer": "Ich möchte einen Kaffee, bitte.",
+          "explanation": "Ich möchte … bitte is the polite way to order.",
+          "skills": [
+            "ordering_food"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "food_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich ___ ein Wasser, bitte.” (möchten)",
+          "answer": "möchte",
+          "explanation": "With ich, möchten becomes möchte.",
+          "skills": [
+            "ordering_food",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "food_3",
+          "kind": "multipleChoice",
+          "prompt": "Read the dialogue. What does the customer buy?",
+          "options": [
+            "Brötchen und Kaffee",
+            "Brot und Milch",
+            "Kuchen und Wasser"
+          ],
+          "answer": "Brötchen und Kaffee",
+          "explanation": "He asks for zwei Brötchen und einen Kaffee.",
+          "skills": [
+            "reading_dialogues"
+          ],
+          "area": "reading",
+          "context": "Verkäuferin: Guten Morgen! Was darf es sein?\nKunde: Ich möchte zwei Brötchen und einen Kaffee.\nVerkäuferin: Das macht 3,50 Euro.",
+          "examPart": "Lesen Teil 2"
+        },
+        {
+          "id": "food_4",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Der Kunde kauft Kuchen.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Falsch",
+          "explanation": "He buys Brötchen and coffee, not cake.",
+          "skills": [
+            "reading_dialogues"
+          ],
+          "area": "reading",
+          "context": "Verkäuferin: Guten Morgen! Was darf es sein?\nKunde: Ich möchte zwei Brötchen und einen Kaffee.\nVerkäuferin: Das macht 3,50 Euro.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "food_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “The bill, please.”",
+          "answer": "Die Rechnung, bitte",
+          "explanation": "Die Rechnung is feminine.",
+          "skills": [
+            "ordering_food"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "food_6",
+          "kind": "wordOrder",
+          "prompt": "Build the question: “How much is the bread?”",
+          "options": [
+            "Brot",
+            "das",
+            "kostet",
+            "Was"
+          ],
+          "answer": "Was kostet das Brot",
+          "explanation": "Was kostet …? asks a price.",
+          "skills": [
+            "ordering_food",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "food_7",
+          "kind": "speaking",
+          "prompt": "Say in German: “I would like a coffee, please.”",
+          "answer": "Ich möchte einen Kaffee, bitte",
+          "explanation": "Ich möchte einen Kaffee, bitte is polite and clear.",
+          "skills": [
+            "ordering_food",
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Einen Kaffee, bitte"
+          ]
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Brot",
+          "en": "bread",
+          "article": "das",
+          "example": "Das Brot kostet zwei Euro.",
+          "exampleEn": "The bread costs two euros."
+        },
+        {
+          "de": "Brötchen",
+          "en": "bread roll",
+          "article": "das",
+          "example": "Ich möchte zwei Brötchen.",
+          "exampleEn": "I would like two bread rolls."
+        },
+        {
+          "de": "Wasser",
+          "en": "water",
+          "article": "das",
+          "example": "Ein Wasser, bitte.",
+          "exampleEn": "A water, please."
+        },
+        {
+          "de": "Milch",
+          "en": "milk",
+          "article": "die",
+          "example": "Ich trinke Milch.",
+          "exampleEn": "I drink milk."
+        },
+        {
+          "de": "Suppe",
+          "en": "soup",
+          "article": "die",
+          "example": "Die Suppe ist heiß.",
+          "exampleEn": "The soup is hot."
+        },
+        {
+          "de": "Kuchen",
+          "en": "cake",
+          "article": "der",
+          "example": "Der Kuchen schmeckt gut.",
+          "exampleEn": "The cake tastes good."
+        },
+        {
+          "de": "Rechnung",
+          "en": "bill",
+          "article": "die",
+          "example": "Die Rechnung, bitte.",
+          "exampleEn": "The bill, please."
+        },
+        {
+          "de": "möchten",
+          "en": "would like",
+          "example": "Ich möchte einen Tee.",
+          "exampleEn": "I would like a tea."
+        },
+        {
+          "de": "kosten",
+          "en": "to cost",
+          "example": "Was kostet das?",
+          "exampleEn": "How much does that cost?"
+        }
+      ],
+      "topics": [
+        "Food",
+        "Travel",
+        "Everyday life"
+      ],
+      "goals": [
+        "travel"
+      ],
+      "requires": [
+        "a1_articles"
       ]
     },
     {
@@ -472,6 +1123,43 @@
           ],
           "area": "writing"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "lernen",
+          "en": "to learn",
+          "example": "Ich lerne Deutsch.",
+          "exampleEn": "I learn German."
+        },
+        {
+          "de": "arbeiten",
+          "en": "to work",
+          "example": "Ich arbeite heute.",
+          "exampleEn": "I work today."
+        },
+        {
+          "de": "trinken",
+          "en": "to drink",
+          "example": "Er trinkt Kaffee.",
+          "exampleEn": "He drinks coffee."
+        },
+        {
+          "de": "spielen",
+          "en": "to play",
+          "example": "Die Kinder spielen.",
+          "exampleEn": "The children play."
+        },
+        {
+          "de": "Kaffee",
+          "en": "coffee",
+          "article": "der",
+          "example": "Der Kaffee ist heiß.",
+          "exampleEn": "The coffee is hot."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Work"
       ]
     },
     {
@@ -537,6 +1225,171 @@
           ],
           "area": "grammar"
         }
+      ],
+      "vocabulary": [
+        {
+          "de": "heute",
+          "en": "today",
+          "example": "Heute lerne ich Deutsch.",
+          "exampleEn": "Today I learn German."
+        },
+        {
+          "de": "morgen",
+          "en": "tomorrow",
+          "example": "Morgen arbeite ich nicht.",
+          "exampleEn": "Tomorrow I am not working."
+        },
+        {
+          "de": "jetzt",
+          "en": "now",
+          "example": "Jetzt habe ich Zeit.",
+          "exampleEn": "Now I have time."
+        },
+        {
+          "de": "oft",
+          "en": "often",
+          "example": "Ich lerne oft am Abend.",
+          "exampleEn": "I often study in the evening."
+        },
+        {
+          "de": "gern",
+          "en": "gladly",
+          "example": "Ich trinke gern Tee.",
+          "exampleEn": "I like drinking tea."
+        }
+      ],
+      "topics": [
+        "Everyday life"
+      ]
+    },
+    {
+      "id": "a1_modal_verbs",
+      "level": "a1",
+      "unit": "Sentences",
+      "title": "Modal verbs",
+      "durationMinutes": 14,
+      "objective": "Use können, müssen and wollen with a second verb.",
+      "introduction": "Modal verbs express ability, necessity, and wishes. The modal is conjugated and stays in second position; the second verb goes to the end in its infinitive form.",
+      "examples": [
+        "Ich kann Deutsch sprechen. — I can speak German.",
+        "Du musst heute arbeiten. — You have to work today.",
+        "Wir wollen Kaffee trinken. — We want to drink coffee."
+      ],
+      "exercises": [
+        {
+          "id": "modal_1",
+          "kind": "multipleChoice",
+          "prompt": "Choose the right form: “Ich ___ Deutsch sprechen.”",
+          "options": [
+            "kann",
+            "kannst",
+            "können"
+          ],
+          "answer": "kann",
+          "explanation": "With ich, können becomes kann.",
+          "skills": [
+            "modal_verbs",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "modal_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Du ___ heute arbeiten.” (müssen)",
+          "answer": "musst",
+          "explanation": "With du, müssen becomes musst.",
+          "skills": [
+            "modal_verbs",
+            "verb_conjugation"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "modal_3",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “I can swim well.”",
+          "options": [
+            "schwimmen",
+            "gut",
+            "kann",
+            "Ich"
+          ],
+          "answer": "Ich kann gut schwimmen",
+          "explanation": "The modal verb is second; the infinitive goes to the end.",
+          "skills": [
+            "modal_verbs",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "modal_4",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Er will heute arbeiten",
+            "Er will arbeiten heute",
+            "Er heute will arbeiten"
+          ],
+          "answer": "Er will heute arbeiten",
+          "explanation": "The infinitive belongs at the end of the sentence.",
+          "skills": [
+            "modal_verbs",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "modal_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “We want to learn German.”",
+          "answer": "Wir wollen Deutsch lernen",
+          "explanation": "With wir, wollen stays wollen; lernen goes to the end.",
+          "skills": [
+            "modal_verbs"
+          ],
+          "area": "writing"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "können",
+          "en": "can, to be able to",
+          "example": "Ich kann Deutsch sprechen.",
+          "exampleEn": "I can speak German."
+        },
+        {
+          "de": "müssen",
+          "en": "must, to have to",
+          "example": "Du musst heute arbeiten.",
+          "exampleEn": "You have to work today."
+        },
+        {
+          "de": "wollen",
+          "en": "to want to",
+          "example": "Wir wollen Kaffee trinken.",
+          "exampleEn": "We want to drink coffee."
+        },
+        {
+          "de": "schwimmen",
+          "en": "to swim",
+          "example": "Ich kann gut schwimmen.",
+          "exampleEn": "I can swim well."
+        },
+        {
+          "de": "sprechen",
+          "en": "to speak",
+          "example": "Sprechen Sie Englisch?",
+          "exampleEn": "Do you speak English?"
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Work"
+      ],
+      "requires": [
+        "a1_regular_verbs"
       ]
     },
     {
@@ -623,6 +1476,2604 @@
             "accusative"
           ],
           "area": "writing"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "sehen",
+          "en": "to see",
+          "example": "Ich sehe den Hund.",
+          "exampleEn": "I see the dog."
+        },
+        {
+          "de": "kaufen",
+          "en": "to buy",
+          "example": "Ich kaufe einen Apfel.",
+          "exampleEn": "I buy an apple."
+        },
+        {
+          "de": "Apfel",
+          "en": "apple",
+          "article": "der",
+          "example": "Der Apfel ist rot.",
+          "exampleEn": "The apple is red."
+        },
+        {
+          "de": "Käse",
+          "en": "cheese",
+          "article": "der",
+          "example": "Ich kaufe den Käse.",
+          "exampleEn": "I buy the cheese."
+        },
+        {
+          "de": "Stuhl",
+          "en": "chair",
+          "article": "der",
+          "example": "Ich brauche einen Stuhl.",
+          "exampleEn": "I need a chair."
+        },
+        {
+          "de": "Tasche",
+          "en": "bag",
+          "article": "die",
+          "example": "Ich habe eine Tasche.",
+          "exampleEn": "I have a bag."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Food"
+      ],
+      "requires": [
+        "a1_articles"
+      ]
+    },
+    {
+      "id": "a1_goethe_forms",
+      "level": "a1",
+      "unit": "Goethe A1",
+      "title": "Goethe A1 · Filling in a form",
+      "durationMinutes": 14,
+      "objective": "Pick the key facts from a short text and complete a form, as in Schreiben Teil 1.",
+      "introduction": "In the Goethe A1 writing module you first complete a form using facts from a short text. Read for the key details only: first name, surname, age, place of residence, profession. Do not copy whole sentences.",
+      "examples": [
+        "Vorname: Mehmet — first name",
+        "Wohnort: Köln — place of residence",
+        "Telefonnummer: 0171 555 0123 — phone number"
+      ],
+      "exercises": [
+        {
+          "id": "gforms_1",
+          "kind": "cloze",
+          "prompt": "Read the text, then complete the form: “Hallo, ich heiße Mehmet Yilmaz. Ich bin 27 Jahre alt und wohne in Köln. Ich komme aus der Türkei.”",
+          "context": "Anmeldung Deutschkurs\nName: {1}\nAlter: {2}\nWohnort: {3}\nHerkunftsland: {4}",
+          "gaps": [
+            {
+              "options": [
+                "Mehmet Yilmaz",
+                "Mehmet Köln",
+                "Yilmaz 27"
+              ],
+              "answer": "Mehmet Yilmaz"
+            },
+            {
+              "options": [
+                "27",
+                "72",
+                "24"
+              ],
+              "answer": "27"
+            },
+            {
+              "options": [
+                "Köln",
+                "Türkei",
+                "Hamburg"
+              ],
+              "answer": "Köln"
+            },
+            {
+              "options": [
+                "Türkei",
+                "Köln",
+                "Deutschland"
+              ],
+              "answer": "Türkei"
+            }
+          ],
+          "answer": "Name: Mehmet Yilmaz, Alter: 27, Wohnort: Köln, Herkunftsland: Türkei",
+          "explanation": "Read for facts: name, age, residence, country of origin.",
+          "skills": [
+            "forms"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 1"
+        },
+        {
+          "id": "gforms_2",
+          "kind": "cloze",
+          "prompt": "Read the text, then complete the form: “Mein Name ist Lena Fischer. Ich bin Studentin und wohne in der Bahnhofstraße 5 in Leipzig.”",
+          "context": "Bibliothek Leipzig · Anmeldung\nVorname: {1}\nNachname: {2}\nBeruf: {3}\nStraße: {4}",
+          "gaps": [
+            {
+              "options": [
+                "Lena",
+                "Fischer",
+                "Leipzig"
+              ],
+              "answer": "Lena"
+            },
+            {
+              "options": [
+                "Fischer",
+                "Lena",
+                "Studentin"
+              ],
+              "answer": "Fischer"
+            },
+            {
+              "options": [
+                "Studentin",
+                "Leipzig",
+                "Lehrerin"
+              ],
+              "answer": "Studentin"
+            },
+            {
+              "options": [
+                "Bahnhofstraße 5",
+                "Leipzig 5",
+                "Bahnhof"
+              ],
+              "answer": "Bahnhofstraße 5"
+            }
+          ],
+          "answer": "Vorname: Lena, Nachname: Fischer, Beruf: Studentin, Straße: Bahnhofstraße 5",
+          "explanation": "Vorname is the first name; Nachname is the family name.",
+          "skills": [
+            "forms"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 1"
+        },
+        {
+          "id": "gforms_3",
+          "kind": "multipleChoice",
+          "prompt": "What does “Wohnort” mean?",
+          "options": [
+            "place of residence",
+            "place of birth",
+            "workplace"
+          ],
+          "answer": "place of residence",
+          "explanation": "wohnen means to live, so Wohnort is where you live.",
+          "skills": [
+            "forms"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "gforms_4",
+          "kind": "fillBlank",
+          "prompt": "Type the German word for “phone number”:",
+          "answer": "Telefonnummer",
+          "explanation": "Telefonnummer is a compound: Telefon + Nummer.",
+          "skills": [
+            "forms"
+          ],
+          "area": "vocabulary"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Vorname",
+          "en": "first name",
+          "article": "der",
+          "example": "Mein Vorname ist Lena.",
+          "exampleEn": "My first name is Lena."
+        },
+        {
+          "de": "Nachname",
+          "en": "surname",
+          "article": "der",
+          "example": "Mein Nachname ist Fischer.",
+          "exampleEn": "My surname is Fischer."
+        },
+        {
+          "de": "Alter",
+          "en": "age",
+          "article": "das",
+          "example": "Mein Alter ist 27.",
+          "exampleEn": "My age is 27."
+        },
+        {
+          "de": "Wohnort",
+          "en": "place of residence",
+          "article": "der",
+          "example": "Mein Wohnort ist Köln.",
+          "exampleEn": "My place of residence is Cologne."
+        },
+        {
+          "de": "Telefonnummer",
+          "en": "phone number",
+          "article": "die",
+          "example": "Meine Telefonnummer ist 0171 555 0123.",
+          "exampleEn": "My phone number is 0171 555 0123."
+        },
+        {
+          "de": "Adresse",
+          "en": "address",
+          "article": "die",
+          "example": "Meine Adresse ist Bahnhofstraße 5.",
+          "exampleEn": "My address is Bahnhofstraße 5."
+        },
+        {
+          "de": "Beruf",
+          "en": "profession",
+          "article": "der",
+          "example": "Mein Beruf ist Lehrer.",
+          "exampleEn": "My profession is teacher."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Study"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "pre_a1_introductions",
+        "pre_a1_numbers"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "a1_goethe_messages",
+      "level": "a1",
+      "unit": "Goethe A1",
+      "title": "Goethe A1 · Short messages",
+      "durationMinutes": 16,
+      "objective": "Write a short message that covers three content points with the right greeting and closing.",
+      "introduction": "The second Goethe A1 writing task is a short message with three Leitpunkte (content points). Cover every point, even briefly. Use a greeting and closing that fit: Liebe Anna / Viele Grüße to a friend; Sehr geehrter Herr … / Mit freundlichen Grüßen to a doctor or office. Write at least 25 words.",
+      "examples": [
+        "Liebe Lena, … Viele Grüße — to a friend",
+        "Sehr geehrter Herr Dr. Berger, … Mit freundlichen Grüßen — formal",
+        "Ich komme am Samstag. — I am coming on Saturday."
+      ],
+      "exercises": [
+        {
+          "id": "gmsg_1",
+          "kind": "writing",
+          "prompt": "Ihre Freundin Lena hat Geburtstag. Schreiben Sie ihr eine Nachricht (mindestens 25 Wörter): 1) Gratulieren Sie. 2) Sagen Sie, dass Sie am Samstag kommen. 3) Fragen Sie, was Sie mitbringen sollen.",
+          "answer": "Liebe Lena, herzlichen Glückwunsch zum Geburtstag! Ich komme am Samstag gern zu deiner Party. Was soll ich mitbringen? Soll ich Kuchen oder Getränke kaufen? Bis bald und viele Grüße, Sam",
+          "explanation": "Good: you greeted a friend informally, covered all three points, and closed warmly.",
+          "skills": [
+            "message_writing",
+            "informal_register"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 2",
+          "brief": {
+            "minWords": 25,
+            "register": "informal",
+            "points": [
+              {
+                "label": "Congratulate her",
+                "keywords": [
+                  "geburtstag",
+                  "gratulier",
+                  "alles gute",
+                  "glückwunsch"
+                ]
+              },
+              {
+                "label": "Say you will come on Saturday",
+                "keywords": [
+                  "samstag",
+                  "komme"
+                ]
+              },
+              {
+                "label": "Ask what to bring",
+                "keywords": [
+                  "mitbringen",
+                  "bringen"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "gmsg_2",
+          "kind": "writing",
+          "prompt": "Sie sind krank. Schreiben Sie Dr. Berger eine Nachricht (mindestens 25 Wörter): 1) Sagen Sie, dass Sie krank sind. 2) Fragen Sie nach einem Termin. 3) Sagen Sie, wann Sie Zeit haben.",
+          "answer": "Sehr geehrter Herr Dr. Berger, ich bin seit gestern krank und habe Fieber. Ich möchte gern einen Termin bei Ihnen haben. Ich habe am Montag oder am Dienstag Zeit. Vielen Dank für Ihre Hilfe. Mit freundlichen Grüßen, Anna Schmidt",
+          "explanation": "Good: formal greeting and closing, Sie-form, all three points covered.",
+          "skills": [
+            "message_writing",
+            "formal_register"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 2",
+          "brief": {
+            "minWords": 25,
+            "register": "formal",
+            "points": [
+              {
+                "label": "Say you are ill",
+                "keywords": [
+                  "krank"
+                ]
+              },
+              {
+                "label": "Ask for an appointment",
+                "keywords": [
+                  "termin"
+                ]
+              },
+              {
+                "label": "Say when you have time",
+                "keywords": [
+                  "zeit",
+                  "montag",
+                  "dienstag",
+                  "mittwoch",
+                  "donnerstag",
+                  "freitag",
+                  "morgen",
+                  "vormittag",
+                  "nachmittag"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "gmsg_3",
+          "kind": "multipleChoice",
+          "prompt": "Which greeting fits a message to a friend?",
+          "options": [
+            "Liebe Anna,",
+            "Sehr geehrte Frau Anna,",
+            "Hochachtungsvoll"
+          ],
+          "answer": "Liebe Anna,",
+          "explanation": "Liebe/Lieber + first name is informal.",
+          "skills": [
+            "message_writing",
+            "informal_register"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "gmsg_4",
+          "kind": "multipleChoice",
+          "prompt": "Which closing fits a message to a doctor?",
+          "options": [
+            "Mit freundlichen Grüßen",
+            "Bis bald!",
+            "Tschüss"
+          ],
+          "answer": "Mit freundlichen Grüßen",
+          "explanation": "Formal messages close with Mit freundlichen Grüßen.",
+          "skills": [
+            "message_writing",
+            "formal_register"
+          ],
+          "area": "writing"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Nachricht",
+          "en": "message",
+          "article": "die",
+          "example": "Ich schreibe dir eine Nachricht.",
+          "exampleEn": "I am writing you a message."
+        },
+        {
+          "de": "Glückwunsch",
+          "en": "congratulations",
+          "article": "der",
+          "example": "Herzlichen Glückwunsch!",
+          "exampleEn": "Congratulations!"
+        },
+        {
+          "de": "Geburtstag",
+          "en": "birthday",
+          "article": "der",
+          "example": "Morgen ist mein Geburtstag.",
+          "exampleEn": "Tomorrow is my birthday."
+        },
+        {
+          "de": "mitbringen",
+          "en": "to bring along",
+          "example": "Ich bringe Kuchen mit.",
+          "exampleEn": "I'll bring cake."
+        },
+        {
+          "de": "krank",
+          "en": "ill",
+          "example": "Ich bin krank.",
+          "exampleEn": "I am ill."
+        },
+        {
+          "de": "Termin",
+          "en": "appointment",
+          "article": "der",
+          "example": "Ich habe einen Termin.",
+          "exampleEn": "I have an appointment."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Work"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "a1_regular_verbs",
+        "a1_goethe_forms"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "a1_goethe_reading",
+      "level": "a1",
+      "unit": "Goethe A1",
+      "title": "Goethe A1 · Reading notes and signs",
+      "durationMinutes": 16,
+      "objective": "Find specific facts in short notes, signs and ads, as in the Lesen module.",
+      "introduction": "Goethe A1 Lesen uses everyday texts: notes, signs, ads. You do not need every word. Read the question first, then scan the text for the fact: a number, a day, a place. For Richtig/Falsch, check the exact detail; a small change (Herr instead of Frau) makes it Falsch.",
+      "examples": [
+        "Sprechzeiten: Mo–Fr 8–12 Uhr — opening hours",
+        "Zu verkaufen: Fahrrad, 80 Euro — for sale",
+        "ab 17 Uhr — from 5 p.m."
+      ],
+      "exercises": [
+        {
+          "id": "gread_1",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Das Paket ist bei Herrn Braun.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Falsch",
+          "explanation": "The note says the package is with Frau Kaya.",
+          "skills": [
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Liebe Frau Weber,\nich bin heute nicht zu Hause. Ihr Paket ist bei Frau Kaya, Nummer 12. Sie ist ab 17 Uhr da.\nViele Grüße\nHerr Braun",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gread_2",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Frau Kaya ist ab 17 Uhr zu Hause.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Richtig",
+          "explanation": "“Sie ist ab 17 Uhr da” means she is there from 5 p.m.",
+          "skills": [
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Liebe Frau Weber,\nich bin heute nicht zu Hause. Ihr Paket ist bei Frau Kaya, Nummer 12. Sie ist ab 17 Uhr da.\nViele Grüße\nHerr Braun",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gread_3",
+          "kind": "multipleChoice",
+          "prompt": "Ist die Praxis am Mittwochnachmittag offen?",
+          "options": [
+            "Nein, sie ist geschlossen",
+            "Ja, bis 18 Uhr",
+            "Nur bis 15 Uhr"
+          ],
+          "answer": "Nein, sie ist geschlossen",
+          "explanation": "On Wednesday the practice is open only 8–12.",
+          "skills": [
+            "reading_signs"
+          ],
+          "area": "reading",
+          "context": "Praxis Dr. Berger\nSprechzeiten:\nMo, Di, Do: 8–12 Uhr und 15–18 Uhr\nMi, Fr: 8–12 Uhr\nSa, So: geschlossen",
+          "examPart": "Lesen Teil 2"
+        },
+        {
+          "id": "gread_4",
+          "kind": "multipleChoice",
+          "prompt": "An welchen Tagen ist die Praxis nachmittags offen?",
+          "options": [
+            "Mo, Di, Do",
+            "Mi, Fr",
+            "Sa, So"
+          ],
+          "answer": "Mo, Di, Do",
+          "explanation": "Only Monday, Tuesday and Thursday list 15–18 Uhr.",
+          "skills": [
+            "reading_signs"
+          ],
+          "area": "reading",
+          "context": "Praxis Dr. Berger\nSprechzeiten:\nMo, Di, Do: 8–12 Uhr und 15–18 Uhr\nMi, Fr: 8–12 Uhr\nSa, So: geschlossen",
+          "examPart": "Lesen Teil 2"
+        },
+        {
+          "id": "gread_5",
+          "kind": "multipleChoice",
+          "prompt": "Wann kann man anrufen?",
+          "options": [
+            "am Wochenende",
+            "jeden Tag",
+            "nur abends"
+          ],
+          "answer": "am Wochenende",
+          "explanation": "“Nur am Wochenende anrufen” means only call at the weekend.",
+          "skills": [
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Zu verkaufen: Fahrrad, 80 Euro. Fast neu.\nTel. 0151 234 5678.\nNur am Wochenende anrufen!",
+          "examPart": "Lesen Teil 3"
+        },
+        {
+          "id": "gread_6",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Das Fahrrad kostet 80 Euro.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Richtig",
+          "explanation": "The ad states 80 Euro.",
+          "skills": [
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Zu verkaufen: Fahrrad, 80 Euro. Fast neu.\nTel. 0151 234 5678.\nNur am Wochenende anrufen!",
+          "examPart": "Lesen Teil 3"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Paket",
+          "en": "parcel",
+          "article": "das",
+          "example": "Das Paket ist da.",
+          "exampleEn": "The parcel is here."
+        },
+        {
+          "de": "Sprechzeiten",
+          "en": "opening hours (plural)",
+          "article": "die",
+          "example": "Die Sprechzeiten sind am Montag.",
+          "exampleEn": "The opening hours are on Monday."
+        },
+        {
+          "de": "geschlossen",
+          "en": "closed",
+          "example": "Heute ist geschlossen.",
+          "exampleEn": "It is closed today."
+        },
+        {
+          "de": "offen",
+          "en": "open",
+          "example": "Das Geschäft ist offen.",
+          "exampleEn": "The shop is open."
+        },
+        {
+          "de": "verkaufen",
+          "en": "to sell",
+          "example": "Ich verkaufe mein Fahrrad.",
+          "exampleEn": "I am selling my bicycle."
+        },
+        {
+          "de": "anrufen",
+          "en": "to call",
+          "example": "Bitte rufen Sie an!",
+          "exampleEn": "Please call!"
+        }
+      ],
+      "topics": [
+        "Everyday life"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "a1_articles",
+        "a1_regular_verbs"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "a1_goethe_listening",
+      "level": "a1",
+      "unit": "Goethe A1",
+      "title": "Goethe A1 · Listening",
+      "durationMinutes": 16,
+      "objective": "Pick out numbers, times and places from short announcements and messages, as in the Hören module.",
+      "introduction": "Goethe A1 Hören plays short announcements and phone messages. Read the questions BEFORE you listen, then listen for one fact each: a number, a time, a place. Do not try to understand every word. Tap Listen to hear each clip; if audio is unavailable, read the transcript instead.",
+      "examples": [
+        "Gleis fünf — platform five",
+        "um sieben Uhr abends — at seven in the evening",
+        "zwei Euro fünfzig — 2.50 euros"
+      ],
+      "exercises": [
+        {
+          "id": "glis_1",
+          "kind": "listening",
+          "prompt": "Listen. Auf welchem Gleis fährt der Zug?",
+          "audioText": "Achtung, eine Durchsage: Der Zug nach Berlin hat zehn Minuten Verspätung. Er fährt jetzt auf Gleis fünf.",
+          "options": [
+            "Gleis 5",
+            "Gleis 15",
+            "Gleis 50"
+          ],
+          "answer": "Gleis 5",
+          "explanation": "Gleis fünf is platform 5.",
+          "skills": [
+            "listening_announcements",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 1"
+        },
+        {
+          "id": "glis_2",
+          "kind": "listening",
+          "prompt": "Listen. Wie ist der Zug?",
+          "audioText": "Achtung, eine Durchsage: Der Zug nach Berlin hat zehn Minuten Verspätung. Er fährt jetzt auf Gleis fünf.",
+          "options": [
+            "zehn Minuten zu spät",
+            "pünktlich",
+            "eine Stunde zu spät"
+          ],
+          "answer": "zehn Minuten zu spät",
+          "explanation": "Verspätung means delay: zehn Minuten Verspätung.",
+          "skills": [
+            "listening_announcements"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 1"
+        },
+        {
+          "id": "glis_3",
+          "kind": "listening",
+          "prompt": "Listen. Wann beginnt die Party?",
+          "audioText": "Hallo Sam, hier ist Lena. Ich habe morgen Geburtstag. Die Party beginnt um sieben Uhr abends. Ruf mich bitte zurück.",
+          "options": [
+            "um 7 Uhr",
+            "um 9 Uhr",
+            "um 11 Uhr"
+          ],
+          "answer": "um 7 Uhr",
+          "explanation": "sieben Uhr abends is 7 p.m.",
+          "skills": [
+            "listening_announcements",
+            "telling_time"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 2"
+        },
+        {
+          "id": "glis_4",
+          "kind": "listening",
+          "prompt": "Listen. Was soll Sam tun?",
+          "audioText": "Hallo Sam, hier ist Lena. Ich habe morgen Geburtstag. Die Party beginnt um sieben Uhr abends. Ruf mich bitte zurück.",
+          "options": [
+            "Lena zurückrufen",
+            "zur Party kommen",
+            "eine Nachricht schreiben"
+          ],
+          "answer": "Lena zurückrufen",
+          "explanation": "Ruf mich zurück means call me back.",
+          "skills": [
+            "listening_announcements"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 2"
+        },
+        {
+          "id": "glis_5",
+          "kind": "listening",
+          "prompt": "Listen. Was kostet ein Kilo Äpfel?",
+          "audioText": "Heute im Angebot: Äpfel, ein Kilo nur zwei Euro fünfzig.",
+          "options": [
+            "2,50 Euro",
+            "2,15 Euro",
+            "5,20 Euro"
+          ],
+          "answer": "2,50 Euro",
+          "explanation": "zwei Euro fünfzig is 2.50 euros.",
+          "skills": [
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 3"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Durchsage",
+          "en": "announcement",
+          "article": "die",
+          "example": "Die Durchsage ist laut.",
+          "exampleEn": "The announcement is loud."
+        },
+        {
+          "de": "Gleis",
+          "en": "platform",
+          "article": "das",
+          "example": "Der Zug fährt auf Gleis fünf.",
+          "exampleEn": "The train leaves from platform five."
+        },
+        {
+          "de": "Verspätung",
+          "en": "delay",
+          "article": "die",
+          "example": "Der Zug hat Verspätung.",
+          "exampleEn": "The train is delayed."
+        },
+        {
+          "de": "zurückrufen",
+          "en": "to call back",
+          "example": "Ich rufe dich zurück.",
+          "exampleEn": "I'll call you back."
+        },
+        {
+          "de": "Angebot",
+          "en": "special offer",
+          "article": "das",
+          "example": "Das Angebot gilt heute.",
+          "exampleEn": "The offer is valid today."
+        },
+        {
+          "de": "abends",
+          "en": "in the evening",
+          "example": "Abends lerne ich Deutsch.",
+          "exampleEn": "In the evening I learn German."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "pre_a1_numbers",
+        "a1_time_dates"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "a1_goethe_speaking",
+      "level": "a1",
+      "unit": "Goethe A1",
+      "title": "Goethe A1 · Speaking",
+      "durationMinutes": 14,
+      "objective": "Introduce yourself, ask simple questions, and make polite requests aloud.",
+      "introduction": "The Goethe A1 speaking module has three parts: introduce yourself, ask and answer questions with word cards, and make requests. Speak in full short sentences and stay polite. Tap the microphone, say the sentence, and Sprichst checks what it heard. If the microphone is not available you can type the sentence instead.",
+      "examples": [
+        "Ich heiße Anna und ich komme aus Indien.",
+        "Was sind Sie von Beruf?",
+        "Können Sie das bitte wiederholen?"
+      ],
+      "exercises": [
+        {
+          "id": "gspk_1",
+          "kind": "speaking",
+          "prompt": "Teil 1 · Sich vorstellen. Say: “My name is Anna and I come from India.”",
+          "answer": "Ich heiße Anna und ich komme aus Indien",
+          "explanation": "Name and origin: the first thing every A1 candidate says.",
+          "skills": [
+            "self_introduction_speaking",
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Mein Name ist Anna und ich komme aus Indien"
+          ],
+          "examPart": "Sprechen Teil 1"
+        },
+        {
+          "id": "gspk_2",
+          "kind": "speaking",
+          "prompt": "Teil 1 · Say: “I live in Berlin and I am twenty-four years old.”",
+          "answer": "Ich wohne in Berlin und ich bin vierundzwanzig Jahre alt",
+          "explanation": "Residence and age complete a short self-introduction.",
+          "skills": [
+            "self_introduction_speaking",
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Ich wohne in Berlin und bin vierundzwanzig Jahre alt"
+          ],
+          "examPart": "Sprechen Teil 1"
+        },
+        {
+          "id": "gspk_3",
+          "kind": "speaking",
+          "prompt": "Teil 2 · Ask a question. Say: “What is your profession?” (formal)",
+          "answer": "Was sind Sie von Beruf",
+          "explanation": "Was sind Sie von Beruf? is the formal way to ask about someone's job.",
+          "skills": [
+            "questions_speaking",
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Was bist du von Beruf"
+          ],
+          "examPart": "Sprechen Teil 2"
+        },
+        {
+          "id": "gspk_4",
+          "kind": "speaking",
+          "prompt": "Teil 3 · Make a request. Say: “Can you repeat that, please?” (formal)",
+          "answer": "Können Sie das bitte wiederholen",
+          "explanation": "A polite request that is useful in the exam and in real life.",
+          "skills": [
+            "requests_speaking",
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Kannst du das bitte wiederholen"
+          ],
+          "examPart": "Sprechen Teil 3"
+        },
+        {
+          "id": "gspk_5",
+          "kind": "multipleChoice",
+          "prompt": "You meet your new teacher. Which is polite?",
+          "options": [
+            "Wie heißen Sie?",
+            "Wie heißt du?",
+            "Wer bist du?"
+          ],
+          "answer": "Wie heißen Sie?",
+          "explanation": "Use Sie with teachers and strangers.",
+          "skills": [
+            "self_introduction_speaking",
+            "formal_register"
+          ],
+          "area": "speaking"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "wiederholen",
+          "en": "to repeat",
+          "example": "Bitte wiederholen Sie das.",
+          "exampleEn": "Please repeat that."
+        },
+        {
+          "de": "vorstellen",
+          "en": "to introduce",
+          "example": "Ich stelle mich vor.",
+          "exampleEn": "I introduce myself."
+        },
+        {
+          "de": "Frage",
+          "en": "question",
+          "article": "die",
+          "example": "Ich habe eine Frage.",
+          "exampleEn": "I have a question."
+        },
+        {
+          "de": "antworten",
+          "en": "to answer",
+          "example": "Ich antworte auf die Frage.",
+          "exampleEn": "I answer the question."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Work"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "pre_a1_introductions"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "a2_perfect_haben",
+      "level": "a2",
+      "unit": "Past tense",
+      "title": "Perfect tense with haben",
+      "durationMinutes": 16,
+      "objective": "Talk about the past with haben and a past participle.",
+      "introduction": "The perfect tense uses a form of haben and the past participle at the end of the sentence. Regular verbs form it with ge- and -t (lernen → gelernt); some verbs are irregular (essen → gegessen).",
+      "examples": [
+        "Ich habe Deutsch gelernt. — I learned German.",
+        "Er hat Kaffee getrunken. — He drank coffee.",
+        "Wir haben Pizza gegessen. — We ate pizza."
+      ],
+      "exercises": [
+        {
+          "id": "perf_h_1",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich habe gestern Deutsch ___.” (lernen)",
+          "answer": "gelernt",
+          "explanation": "Regular verbs form the participle with ge- and -t: gelernt.",
+          "skills": [
+            "perfect_haben"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "perf_h_2",
+          "kind": "multipleChoice",
+          "prompt": "Choose the helper verb: “Wir ___ Pizza gegessen.”",
+          "options": [
+            "haben",
+            "sind",
+            "hat"
+          ],
+          "answer": "haben",
+          "explanation": "With wir, haben stays haben; essen takes haben in the perfect.",
+          "skills": [
+            "perfect_haben"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "perf_h_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Sie hat Fußball ___.” (spielen)",
+          "answer": "gespielt",
+          "explanation": "Regular verbs form the participle with ge- and -t: gespielt.",
+          "skills": [
+            "perfect_haben"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "perf_h_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “He drank coffee.”",
+          "options": [
+            "getrunken",
+            "Kaffee",
+            "hat",
+            "Er"
+          ],
+          "answer": "Er hat Kaffee getrunken",
+          "explanation": "The participle goes to the end of the sentence.",
+          "skills": [
+            "perfect_haben",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "perf_h_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “I have bought a book.”",
+          "answer": "Ich habe ein Buch gekauft",
+          "explanation": "haben + the participle at the end: gekauft.",
+          "skills": [
+            "perfect_haben"
+          ],
+          "area": "writing"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "gemacht",
+          "en": "done, made",
+          "example": "Ich habe Hausaufgaben gemacht.",
+          "exampleEn": "I did homework."
+        },
+        {
+          "de": "gespielt",
+          "en": "played",
+          "example": "Sie hat Fußball gespielt.",
+          "exampleEn": "She played football."
+        },
+        {
+          "de": "gekauft",
+          "en": "bought",
+          "example": "Wir haben Brot gekauft.",
+          "exampleEn": "We bought bread."
+        },
+        {
+          "de": "gegessen",
+          "en": "eaten",
+          "example": "Wir haben Pizza gegessen.",
+          "exampleEn": "We ate pizza."
+        },
+        {
+          "de": "getrunken",
+          "en": "drunk",
+          "example": "Er hat Kaffee getrunken.",
+          "exampleEn": "He drank coffee."
+        }
+      ],
+      "topics": [
+        "Everyday life"
+      ],
+      "requires": [
+        "a1_haben"
+      ]
+    },
+    {
+      "id": "a2_perfect_sein",
+      "level": "a2",
+      "unit": "Past tense",
+      "title": "Perfect tense with sein",
+      "durationMinutes": 16,
+      "objective": "Choose sein for verbs of movement and change of state.",
+      "introduction": "Verbs of movement (gehen, fahren, kommen) and change of state form the perfect with sein, not haben: ich bin gegangen, du bist gefahren, er ist gekommen.",
+      "examples": [
+        "Ich bin nach Hause gegangen. — I went home.",
+        "Sie ist nach Berlin gefahren. — She travelled to Berlin.",
+        "Er ist gestern gekommen. — He came yesterday."
+      ],
+      "exercises": [
+        {
+          "id": "perf_s_1",
+          "kind": "multipleChoice",
+          "prompt": "Choose the helper verb: “Ich ___ nach Berlin gefahren.”",
+          "options": [
+            "bin",
+            "habe",
+            "hat"
+          ],
+          "answer": "bin",
+          "explanation": "fahren is a verb of movement, so it uses sein: ich bin gefahren.",
+          "skills": [
+            "perfect_sein"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "perf_s_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Sie ist nach Hause ___.” (gehen)",
+          "answer": "gegangen",
+          "explanation": "The participle of gehen is gegangen.",
+          "skills": [
+            "perfect_sein"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "perf_s_3",
+          "kind": "multipleChoice",
+          "prompt": "Choose the helper verb: “Er ___ gestern gekommen.”",
+          "options": [
+            "ist",
+            "hat",
+            "sind"
+          ],
+          "answer": "ist",
+          "explanation": "kommen uses sein: er ist gekommen.",
+          "skills": [
+            "perfect_sein"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "perf_s_4",
+          "kind": "translation",
+          "prompt": "Translate into German: “I came yesterday.”",
+          "answer": "Ich bin gestern gekommen",
+          "explanation": "kommen uses sein: ich bin gekommen.",
+          "skills": [
+            "perfect_sein"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "perf_s_5",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Wir sind nach Hause gegangen",
+            "Wir haben nach Hause gegangen",
+            "Wir sind nach Hause gehen"
+          ],
+          "answer": "Wir sind nach Hause gegangen",
+          "explanation": "gehen is a verb of movement: sein + gegangen.",
+          "skills": [
+            "perfect_sein"
+          ],
+          "area": "grammar"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "gegangen",
+          "en": "gone, walked",
+          "example": "Ich bin nach Hause gegangen.",
+          "exampleEn": "I went home."
+        },
+        {
+          "de": "gefahren",
+          "en": "travelled, driven",
+          "example": "Sie ist nach Berlin gefahren.",
+          "exampleEn": "She travelled to Berlin."
+        },
+        {
+          "de": "gekommen",
+          "en": "come",
+          "example": "Er ist gestern gekommen.",
+          "exampleEn": "He came yesterday."
+        },
+        {
+          "de": "gestern",
+          "en": "yesterday",
+          "example": "Gestern war ich müde.",
+          "exampleEn": "Yesterday I was tired."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "requires": [
+        "a1_sein"
+      ]
+    },
+    {
+      "id": "a2_dative_mit",
+      "level": "a2",
+      "unit": "Cases",
+      "title": "The dative after mit",
+      "durationMinutes": 16,
+      "objective": "Use the dative case after the preposition mit.",
+      "introduction": "The preposition mit is always followed by the dative case. The articles change: der → dem, das → dem, die → der.",
+      "examples": [
+        "Ich fahre mit dem Bus. — I go by bus.",
+        "Ich fahre mit der Bahn. — I go by train.",
+        "Ich fahre mit dem Auto. — I go by car."
+      ],
+      "exercises": [
+        {
+          "id": "dat_1",
+          "kind": "multipleChoice",
+          "prompt": "Choose the article: “Ich fahre mit ___ Bus.” (der Bus)",
+          "options": [
+            "der",
+            "den",
+            "dem"
+          ],
+          "answer": "dem",
+          "explanation": "After mit, der becomes dem.",
+          "skills": [
+            "dative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "dat_2",
+          "kind": "multipleChoice",
+          "prompt": "Choose the article: “Ich fahre mit ___ Bahn.” (die Bahn)",
+          "options": [
+            "die",
+            "der",
+            "dem"
+          ],
+          "answer": "der",
+          "explanation": "After mit, die becomes der.",
+          "skills": [
+            "dative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "dat_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich fahre mit ___ Auto.” (das Auto)",
+          "answer": "dem",
+          "explanation": "After mit, das becomes dem.",
+          "skills": [
+            "dative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "dat_4",
+          "kind": "translation",
+          "prompt": "Translate into German: “I travel with the train.”",
+          "answer": "Ich fahre mit dem Zug",
+          "explanation": "Zug is masculine, so after mit it takes dem.",
+          "skills": [
+            "dative"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "dat_5",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “I go by bus.”",
+          "options": [
+            "mit",
+            "Bus",
+            "dem",
+            "fahre",
+            "Ich"
+          ],
+          "answer": "Ich fahre mit dem Bus",
+          "explanation": "mit + dem for a masculine noun.",
+          "skills": [
+            "dative",
+            "word_order"
+          ],
+          "area": "grammar"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "mit",
+          "en": "with, by (means of)",
+          "example": "Ich fahre mit dem Bus.",
+          "exampleEn": "I go by bus."
+        },
+        {
+          "de": "Bus",
+          "en": "bus",
+          "article": "der",
+          "example": "Der Bus kommt um acht.",
+          "exampleEn": "The bus comes at eight."
+        },
+        {
+          "de": "Bahn",
+          "en": "train, railway",
+          "article": "die",
+          "example": "Die Bahn ist schnell.",
+          "exampleEn": "The train is fast."
+        },
+        {
+          "de": "Zug",
+          "en": "train",
+          "article": "der",
+          "example": "Der Zug fährt nach München.",
+          "exampleEn": "The train goes to Munich."
+        },
+        {
+          "de": "Fahrrad",
+          "en": "bicycle",
+          "article": "das",
+          "example": "Ich fahre mit dem Fahrrad.",
+          "exampleEn": "I go by bicycle."
+        }
+      ],
+      "topics": [
+        "Travel",
+        "Everyday life"
+      ],
+      "requires": [
+        "a1_articles"
+      ]
+    },
+    {
+      "id": "a2_doctor_appointment",
+      "level": "a2",
+      "unit": "Health",
+      "title": "At the doctor",
+      "durationMinutes": 14,
+      "objective": "Describe symptoms and make an appointment.",
+      "introduction": "To describe symptoms use Ich habe + noun: Ich habe Kopfschmerzen, Ich habe Fieber. For duration use seit + a time: seit gestern (since yesterday). To book: Ich möchte einen Termin vereinbaren.",
+      "examples": [
+        "Ich habe Kopfschmerzen. — I have a headache.",
+        "Ich habe seit gestern Fieber. — I have had a fever since yesterday.",
+        "Ich möchte einen Termin vereinbaren. — I would like to make an appointment."
+      ],
+      "exercises": [
+        {
+          "id": "doc_1",
+          "kind": "multipleChoice",
+          "prompt": "You have a headache. What do you say?",
+          "options": [
+            "Ich habe Kopfschmerzen.",
+            "Ich bin Kopfschmerzen.",
+            "Ich habe ein Kopf."
+          ],
+          "answer": "Ich habe Kopfschmerzen.",
+          "explanation": "Use haben with symptoms.",
+          "skills": [
+            "appointments",
+            "health_vocabulary"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "doc_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich möchte einen ___ vereinbaren.” (appointment)",
+          "answer": "Termin",
+          "explanation": "einen Termin vereinbaren = to make an appointment.",
+          "skills": [
+            "appointments"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "doc_3",
+          "kind": "multipleChoice",
+          "prompt": "The doctor says: “Sie müssen drei Tage im Bett bleiben.” What must you do?",
+          "options": [
+            "stay in bed for three days",
+            "go to work",
+            "take three tablets"
+          ],
+          "answer": "stay in bed for three days",
+          "explanation": "im Bett bleiben means to stay in bed.",
+          "skills": [
+            "health_vocabulary",
+            "reading_dialogues"
+          ],
+          "area": "reading"
+        },
+        {
+          "id": "doc_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “I have had a fever since yesterday.”",
+          "options": [
+            "Fieber",
+            "gestern",
+            "seit",
+            "habe",
+            "Ich"
+          ],
+          "answer": "Ich habe seit gestern Fieber",
+          "explanation": "seit + time, then the noun.",
+          "skills": [
+            "appointments",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "doc_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “I have an appointment on Monday.”",
+          "answer": "Ich habe am Montag einen Termin",
+          "explanation": "am + weekday; einen Termin is the accusative object.",
+          "skills": [
+            "appointments"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Ich habe einen Termin am Montag"
+          ]
+        },
+        {
+          "id": "doc_6",
+          "kind": "listening",
+          "prompt": "Listen. Wann ist der Termin?",
+          "audioText": "Praxis Dr. Berger, guten Tag. Sie möchten einen Termin? Der nächste freie Termin ist am Donnerstag um neun Uhr fünfzehn.",
+          "options": [
+            "Donnerstag, 9:15",
+            "Donnerstag, 9:50",
+            "Dienstag, 9:15"
+          ],
+          "answer": "Donnerstag, 9:15",
+          "explanation": "neun Uhr fünfzehn is 9:15.",
+          "skills": [
+            "appointments",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 2"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Praxis",
+          "en": "doctor's surgery",
+          "article": "die",
+          "example": "Die Praxis öffnet um acht.",
+          "exampleEn": "The surgery opens at eight."
+        },
+        {
+          "de": "Arzt",
+          "en": "doctor (male)",
+          "article": "der",
+          "example": "Der Arzt ist freundlich.",
+          "exampleEn": "The doctor is friendly."
+        },
+        {
+          "de": "Ärztin",
+          "en": "doctor (female)",
+          "article": "die",
+          "example": "Die Ärztin hilft mir.",
+          "exampleEn": "The doctor helps me."
+        },
+        {
+          "de": "Fieber",
+          "en": "fever",
+          "article": "das",
+          "example": "Ich habe Fieber.",
+          "exampleEn": "I have a fever."
+        },
+        {
+          "de": "Tablette",
+          "en": "tablet",
+          "article": "die",
+          "example": "Nehmen Sie eine Tablette.",
+          "exampleEn": "Take a tablet."
+        },
+        {
+          "de": "vereinbaren",
+          "en": "to arrange",
+          "example": "Ich vereinbare einen Termin.",
+          "exampleEn": "I arrange an appointment."
+        }
+      ],
+      "topics": [
+        "Health",
+        "Everyday life"
+      ],
+      "requires": [
+        "a1_modal_verbs"
+      ]
+    },
+    {
+      "id": "a2_goethe_email",
+      "level": "a2",
+      "unit": "Goethe A2",
+      "title": "Goethe A2 · Informal email",
+      "durationMinutes": 18,
+      "objective": "Write a friendly email that apologises, explains and suggests another date.",
+      "introduction": "Goethe A2 writing asks for a short informal email about three content points. A polite structure helps: thank the person, apologise or react, give the reason with weil, and suggest what happens next. Keep it in du-form with a friendly greeting and closing.",
+      "examples": [
+        "Vielen Dank für die Einladung! — Thank you for the invitation!",
+        "Das tut mir leid. — I am sorry.",
+        "Wie wäre es nächste Woche? — How about next week?"
+      ],
+      "exercises": [
+        {
+          "id": "ga2e_1",
+          "kind": "writing",
+          "prompt": "Ihr Freund Tim hat Sie zu einer Party eingeladen. Sie können nicht kommen. Schreiben Sie Tim eine E-Mail (mindestens 35 Wörter): 1) Entschuldigen Sie sich. 2) Erklären Sie, warum Sie nicht kommen können. 3) Schlagen Sie einen anderen Termin vor.",
+          "answer": "Lieber Tim, vielen Dank für die Einladung! Leider kann ich am Samstag nicht kommen, weil ich arbeiten muss. Das tut mir sehr leid. Wie wäre es nächste Woche? Wir können zusammen Kaffee trinken oder essen gehen. Viele Grüße, Sam",
+          "explanation": "Good: informal tone, an apology, a reason with weil, and a concrete new suggestion.",
+          "skills": [
+            "email_informal",
+            "connectors_subordinate"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 1",
+          "brief": {
+            "minWords": 35,
+            "register": "informal",
+            "points": [
+              {
+                "label": "Apologise",
+                "keywords": [
+                  "leid",
+                  "entschuldig",
+                  "schade"
+                ]
+              },
+              {
+                "label": "Give a reason",
+                "keywords": [
+                  "weil",
+                  "muss",
+                  "arbeit",
+                  "krank",
+                  "keine zeit",
+                  "besuch"
+                ]
+              },
+              {
+                "label": "Suggest another date",
+                "keywords": [
+                  "nächste",
+                  "wochenende",
+                  "wie wäre",
+                  "treffen",
+                  "vorschlag"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "ga2e_2",
+          "kind": "cloze",
+          "prompt": "Complete the postcard from a holiday.",
+          "context": "Liebe Julia,\nich {1} dir aus dem Urlaub. Das Wetter ist schön und wir {2} jeden Tag am Strand. Gestern {3} wir ein Boot gemietet. Nächste Woche {4} ich wieder zu Hause.\nViele Grüße, Mara",
+          "gaps": [
+            {
+              "options": [
+                "schreibe",
+                "schreibst",
+                "schreiben"
+              ],
+              "answer": "schreibe"
+            },
+            {
+              "options": [
+                "sind",
+                "hat",
+                "bist"
+              ],
+              "answer": "sind"
+            },
+            {
+              "options": [
+                "haben",
+                "sind",
+                "hat"
+              ],
+              "answer": "haben"
+            },
+            {
+              "options": [
+                "bin",
+                "habe",
+                "ist"
+              ],
+              "answer": "bin"
+            }
+          ],
+          "answer": "schreibe, sind, haben, bin",
+          "explanation": "Match each verb to its subject: ich schreibe, wir sind, wir haben (gemietet), ich bin.",
+          "skills": [
+            "email_informal",
+            "verb_conjugation"
+          ],
+          "area": "grammar",
+          "examPart": "Lesen Teil 4"
+        },
+        {
+          "id": "ga2e_3",
+          "kind": "multipleChoice",
+          "prompt": "Was soll Paul mitbringen?",
+          "options": [
+            "Salat",
+            "Kuchen",
+            "Getränke"
+          ],
+          "answer": "Salat",
+          "explanation": "“Bring bitte Salat mit!” is the request.",
+          "skills": [
+            "reading_email"
+          ],
+          "area": "reading",
+          "context": "Hallo Paul,\nam Samstag mache ich eine Grillparty bei mir im Garten. Sie beginnt um 16 Uhr. Bring bitte Salat mit! Hast du Zeit?\nViele Grüße, Mia",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "ga2e_4",
+          "kind": "multipleChoice",
+          "prompt": "Wann beginnt die Party?",
+          "options": [
+            "um 16 Uhr",
+            "um 6 Uhr",
+            "um 14 Uhr"
+          ],
+          "answer": "um 16 Uhr",
+          "explanation": "“Sie beginnt um 16 Uhr.”",
+          "skills": [
+            "reading_email"
+          ],
+          "area": "reading",
+          "context": "Hallo Paul,\nam Samstag mache ich eine Grillparty bei mir im Garten. Sie beginnt um 16 Uhr. Bring bitte Salat mit! Hast du Zeit?\nViele Grüße, Mia",
+          "examPart": "Lesen Teil 1"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Einladung",
+          "en": "invitation",
+          "article": "die",
+          "example": "Danke für die Einladung!",
+          "exampleEn": "Thanks for the invitation!"
+        },
+        {
+          "de": "leider",
+          "en": "unfortunately",
+          "example": "Leider habe ich keine Zeit.",
+          "exampleEn": "Unfortunately I have no time."
+        },
+        {
+          "de": "entschuldigen",
+          "en": "to apologise, to excuse",
+          "example": "Ich entschuldige mich.",
+          "exampleEn": "I apologise."
+        },
+        {
+          "de": "vorschlagen",
+          "en": "to suggest",
+          "example": "Ich schlage Samstag vor.",
+          "exampleEn": "I suggest Saturday."
+        },
+        {
+          "de": "Urlaub",
+          "en": "holiday, vacation",
+          "article": "der",
+          "example": "Wir machen Urlaub am Meer.",
+          "exampleEn": "We are on holiday by the sea."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel",
+        "Family"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "a2_perfect_haben",
+        "a1_modal_verbs",
+        "a1_goethe_messages"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "b1_opinions_connectors",
+      "level": "b1",
+      "unit": "Opinions",
+      "title": "Giving opinions: weil, obwohl, dass",
+      "durationMinutes": 18,
+      "objective": "Use weil, obwohl and dass to justify and contrast, with the verb at the end.",
+      "introduction": "In a clause introduced by weil (because), obwohl (although) or dass (that), the conjugated verb goes to the END. Ich bleibe zu Hause, weil ich krank bin. This is the core of B1 opinions and of the Goethe B1 forum post.",
+      "examples": [
+        "Ich finde, dass Homeoffice gut ist. — I think that working from home is good.",
+        "Ich bleibe zu Hause, weil ich krank bin. — I stay at home because I am ill.",
+        "Obwohl es regnet, gehe ich spazieren. — Although it is raining, I go for a walk."
+      ],
+      "exercises": [
+        {
+          "id": "b1op_1",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “I stay at home because I am ill.”",
+          "options": [
+            "Ich",
+            "bleibe",
+            "zu",
+            "Hause,",
+            "weil",
+            "ich",
+            "krank",
+            "bin"
+          ],
+          "answer": "Ich bleibe zu Hause, weil ich krank bin",
+          "explanation": "After weil the verb (bin) goes to the end.",
+          "skills": [
+            "connectors_subordinate",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "b1op_2",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Ich lerne Deutsch, weil ich in Berlin arbeiten will.",
+            "Ich lerne Deutsch, weil ich will in Berlin arbeiten.",
+            "Ich lerne Deutsch, weil will ich in Berlin arbeiten."
+          ],
+          "answer": "Ich lerne Deutsch, weil ich in Berlin arbeiten will.",
+          "explanation": "In a weil-clause the conjugated verb (will) is last.",
+          "skills": [
+            "connectors_subordinate",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "b1op_3",
+          "kind": "cloze",
+          "prompt": "Complete the opinion.",
+          "context": "Viele Leute sagen, {1} Homeoffice besser ist. Ich arbeite trotzdem gern im Büro, {2} ich dort Kollegen treffe. {3} es oft regnet, fahre ich mit dem Fahrrad.",
+          "gaps": [
+            {
+              "options": [
+                "dass",
+                "weil",
+                "obwohl"
+              ],
+              "answer": "dass"
+            },
+            {
+              "options": [
+                "weil",
+                "dass",
+                "obwohl"
+              ],
+              "answer": "weil"
+            },
+            {
+              "options": [
+                "Obwohl",
+                "Weil",
+                "Dass"
+              ],
+              "answer": "Obwohl"
+            }
+          ],
+          "answer": "dass, weil, Obwohl",
+          "explanation": "dass introduces a report, weil a reason, obwohl a contrast.",
+          "skills": [
+            "connectors_subordinate"
+          ],
+          "area": "grammar",
+          "examPart": "Lesen Teil 4"
+        },
+        {
+          "id": "b1op_4",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich gehe spazieren, ___ die Sonne scheint.” (although the sun is shining)",
+          "answer": "obwohl",
+          "explanation": "obwohl = although.",
+          "skills": [
+            "connectors_subordinate"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "b1op_5",
+          "kind": "writing",
+          "prompt": "Forum „Homeoffice: Ja oder nein?“ Schreiben Sie einen Beitrag (mindestens 60 Wörter): 1) Sagen Sie Ihre Meinung. 2) Nennen Sie einen Vorteil. 3) Nennen Sie einen Nachteil.",
+          "answer": "Ich finde, dass Homeoffice eine gute Lösung ist. Ein großer Vorteil ist, dass man keinen langen Weg zur Arbeit hat und viel Zeit spart. Außerdem kann man flexibel arbeiten, weil man die Pausen selbst planen darf. Ein Nachteil ist aber, dass man oft allein ist und wenig Kontakt zu den Kollegen hat. Deshalb arbeite ich zwei Tage zu Hause und drei Tage im Büro. Das ist für mich der beste Kompromiss.",
+          "explanation": "Good: opinion, an advantage, a disadvantage, and connectors that join the ideas.",
+          "skills": [
+            "connectors_subordinate",
+            "opinion_writing"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 2",
+          "brief": {
+            "minWords": 60,
+            "register": "essay",
+            "points": [
+              {
+                "label": "State your opinion",
+                "keywords": [
+                  "ich finde",
+                  "meiner meinung",
+                  "ich denke",
+                  "ich glaube",
+                  "meiner ansicht"
+                ]
+              },
+              {
+                "label": "Name an advantage",
+                "keywords": [
+                  "vorteil",
+                  "spart",
+                  "flexibel",
+                  "positiv"
+                ]
+              },
+              {
+                "label": "Name a disadvantage",
+                "keywords": [
+                  "nachteil",
+                  "allein",
+                  "kontakt",
+                  "kollegen",
+                  "einsam",
+                  "schwierig"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Meinung",
+          "en": "opinion",
+          "article": "die",
+          "example": "Meiner Meinung nach ist das gut.",
+          "exampleEn": "In my opinion that is good."
+        },
+        {
+          "de": "Vorteil",
+          "en": "advantage",
+          "article": "der",
+          "example": "Ein Vorteil ist die Zeit.",
+          "exampleEn": "One advantage is the time."
+        },
+        {
+          "de": "Nachteil",
+          "en": "disadvantage",
+          "article": "der",
+          "example": "Ein Nachteil ist der Lärm.",
+          "exampleEn": "One disadvantage is the noise."
+        },
+        {
+          "de": "obwohl",
+          "en": "although",
+          "example": "Obwohl es regnet, gehe ich.",
+          "exampleEn": "Although it is raining, I go."
+        },
+        {
+          "de": "trotzdem",
+          "en": "nevertheless",
+          "example": "Ich gehe trotzdem.",
+          "exampleEn": "I go anyway."
+        },
+        {
+          "de": "Kollege",
+          "en": "colleague (male)",
+          "article": "der",
+          "example": "Mein Kollege hilft mir.",
+          "exampleEn": "My colleague helps me."
+        }
+      ],
+      "topics": [
+        "Work",
+        "Everyday life",
+        "Study"
+      ],
+      "requires": [
+        "a2_dative_mit",
+        "a2_perfect_haben"
+      ]
+    },
+    {
+      "id": "b1_formal_email",
+      "level": "b1",
+      "unit": "Goethe B1",
+      "title": "Goethe B1 · Formal email",
+      "durationMinutes": 20,
+      "objective": "Write a polite formal email that describes a problem, states what you want, and asks for an answer.",
+      "introduction": "Goethe B1 writing includes a formal email. Use Sie throughout, a formal greeting (Sehr geehrte Damen und Herren,) and closing (Mit freundlichen Grüßen). Cover each content point: describe the problem clearly, say exactly what you want, and ask for a prompt reply. Formal phrases: Ich möchte Sie bitten, … / Vielen Dank im Voraus.",
+      "examples": [
+        "Sehr geehrte Damen und Herren, — formal greeting",
+        "Ich möchte Sie bitten, … — I would like to ask you to …",
+        "Vielen Dank im Voraus. — Thank you in advance."
+      ],
+      "exercises": [
+        {
+          "id": "b1fe_1",
+          "kind": "writing",
+          "prompt": "Sie haben im Internet ein Fahrrad bestellt. Es ist kaputt angekommen. Schreiben Sie an die Firma (mindestens 50 Wörter): 1) Beschreiben Sie das Problem. 2) Sagen Sie, was Sie möchten. 3) Bitten Sie um eine schnelle Antwort.",
+          "answer": "Sehr geehrte Damen und Herren, am Montag habe ich bei Ihnen ein Fahrrad bestellt. Leider ist es heute kaputt angekommen, denn der Rahmen ist beschädigt. Deshalb möchte ich das Fahrrad umtauschen oder mein Geld zurückbekommen. Bitte schicken Sie mir so schnell wie möglich eine Antwort, damit ich weiß, wie es weitergeht. Vielen Dank für Ihre Hilfe. Mit freundlichen Grüßen, Anna Schmidt",
+          "explanation": "Good: formal register throughout, a clear problem, a concrete request, and a polite ask for a quick reply.",
+          "skills": [
+            "formal_email",
+            "formal_register",
+            "connectors_subordinate"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 3",
+          "brief": {
+            "minWords": 50,
+            "register": "formal",
+            "points": [
+              {
+                "label": "Describe the problem",
+                "keywords": [
+                  "kaputt",
+                  "defekt",
+                  "beschädigt",
+                  "problem"
+                ]
+              },
+              {
+                "label": "Say what you want",
+                "keywords": [
+                  "möchte",
+                  "erwarte",
+                  "ersatz",
+                  "geld zurück",
+                  "umtausch",
+                  "erstatt"
+                ]
+              },
+              {
+                "label": "Ask for a quick reply",
+                "keywords": [
+                  "antwort",
+                  "schnell",
+                  "bald",
+                  "melden",
+                  "rückmeldung"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "b1fe_2",
+          "kind": "multipleChoice",
+          "prompt": "Which opening is correct for a formal email?",
+          "options": [
+            "Sehr geehrte Damen und Herren,",
+            "Hallo Leute,",
+            "Liebe Firma,"
+          ],
+          "answer": "Sehr geehrte Damen und Herren,",
+          "explanation": "Use Sehr geehrte … when you do not know the person.",
+          "skills": [
+            "formal_email",
+            "formal_register"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "b1fe_3",
+          "kind": "multipleChoice",
+          "prompt": "Which closing is formal?",
+          "options": [
+            "Mit freundlichen Grüßen",
+            "Bis bald!",
+            "Tschüss"
+          ],
+          "answer": "Mit freundlichen Grüßen",
+          "explanation": "It is the standard formal closing.",
+          "skills": [
+            "formal_email",
+            "formal_register"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "b1fe_4",
+          "kind": "cloze",
+          "prompt": "Complete the formal enquiry.",
+          "context": "{1} Damen und Herren,\nich {2} mich für Ihren Deutschkurs. Können {3} mir bitte Informationen schicken? Vielen Dank im {4}.",
+          "gaps": [
+            {
+              "options": [
+                "Sehr geehrte",
+                "Liebe",
+                "Hallo"
+              ],
+              "answer": "Sehr geehrte"
+            },
+            {
+              "options": [
+                "interessiere",
+                "interessiert",
+                "interessieren"
+              ],
+              "answer": "interessiere"
+            },
+            {
+              "options": [
+                "Sie",
+                "du",
+                "ihr"
+              ],
+              "answer": "Sie"
+            },
+            {
+              "options": [
+                "Voraus",
+                "Vorraus",
+                "Vorher"
+              ],
+              "answer": "Voraus"
+            }
+          ],
+          "answer": "Sehr geehrte, interessiere, Sie, Voraus",
+          "explanation": "Formal: Sehr geehrte, Sie-form, and the fixed phrase im Voraus.",
+          "skills": [
+            "formal_email",
+            "formal_register"
+          ],
+          "area": "writing",
+          "examPart": "Lesen Teil 4"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Firma",
+          "en": "company",
+          "article": "die",
+          "example": "Die Firma hat ein Büro in Berlin.",
+          "exampleEn": "The company has an office in Berlin."
+        },
+        {
+          "de": "bestellen",
+          "en": "to order",
+          "example": "Ich bestelle ein Buch.",
+          "exampleEn": "I order a book."
+        },
+        {
+          "de": "kaputt",
+          "en": "broken",
+          "example": "Das Fahrrad ist kaputt.",
+          "exampleEn": "The bicycle is broken."
+        },
+        {
+          "de": "Antwort",
+          "en": "answer, reply",
+          "article": "die",
+          "example": "Ich warte auf Ihre Antwort.",
+          "exampleEn": "I am waiting for your reply."
+        },
+        {
+          "de": "Ersatz",
+          "en": "replacement",
+          "article": "der",
+          "example": "Ich möchte einen Ersatz.",
+          "exampleEn": "I would like a replacement."
+        },
+        {
+          "de": "sich interessieren",
+          "en": "to be interested",
+          "example": "Ich interessiere mich für Kunst.",
+          "exampleEn": "I am interested in art."
+        }
+      ],
+      "topics": [
+        "Work",
+        "Study"
+      ],
+      "goals": [
+        "goethe",
+        "work"
+      ],
+      "requires": [
+        "b1_opinions_connectors",
+        "a2_goethe_email"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "b2_testdaf_graph",
+      "level": "b2",
+      "unit": "TestDaF",
+      "title": "TestDaF · Describing a graph",
+      "durationMinutes": 22,
+      "objective": "Describe the development shown in a graph, point out what stands out, and suggest a reason.",
+      "introduction": "The TestDaF writing task asks you to describe a graph and then argue. Structure the description: name the topic (Die Grafik zeigt …), report the development with numbers (Der Anteil ist von 20 auf 35 Prozent gestiegen), point out what stands out (Besonders auffällig ist, dass …), offer a reason, and close with a conclusion (Insgesamt lässt sich sagen, dass …). Use connectors to make the text flow.",
+      "examples": [
+        "Die Grafik zeigt … — The graph shows …",
+        "Der Anteil ist von 20 auf 35 Prozent gestiegen. — The share rose from 20 to 35 percent.",
+        "Insgesamt lässt sich sagen, dass … — Overall, it can be said that …"
+      ],
+      "exercises": [
+        {
+          "id": "b2gr_1",
+          "kind": "cloze",
+          "prompt": "Complete the description of the graph.",
+          "context": "Die Grafik {1} den Anteil der Studierenden, die mit dem Fahrrad zur Universität fahren. Im Jahr 2010 {2} der Anteil bei 20 Prozent. Bis 2020 ist er auf 35 Prozent {3}. Besonders {4}, dass der Anstieg nach 2015 am stärksten war.",
+          "gaps": [
+            {
+              "options": [
+                "zeigt",
+                "zeigen",
+                "gezeigt"
+              ],
+              "answer": "zeigt"
+            },
+            {
+              "options": [
+                "lag",
+                "lagen",
+                "liegt"
+              ],
+              "answer": "lag"
+            },
+            {
+              "options": [
+                "gestiegen",
+                "gesunken",
+                "gefallen"
+              ],
+              "answer": "gestiegen"
+            },
+            {
+              "options": [
+                "fällt auf",
+                "fällt ab",
+                "fällt ein"
+              ],
+              "answer": "fällt auf"
+            }
+          ],
+          "answer": "zeigt, lag, gestiegen, fällt auf",
+          "explanation": "Typical graph language: zeigt, lag bei, gestiegen, fällt auf.",
+          "skills": [
+            "graph_description",
+            "connectors_subordinate"
+          ],
+          "area": "writing",
+          "examPart": "Schriftlicher Ausdruck"
+        },
+        {
+          "id": "b2gr_2",
+          "kind": "multipleChoice",
+          "prompt": "Wie hat sich der Anteil entwickelt?",
+          "options": [
+            "Er ist gestiegen.",
+            "Er ist gesunken.",
+            "Er ist gleich geblieben."
+          ],
+          "answer": "Er ist gestiegen.",
+          "explanation": "The figures rise from 20% to 35%.",
+          "skills": [
+            "graph_description",
+            "reading_graphs"
+          ],
+          "area": "reading",
+          "context": "Anteil der Studierenden mit Fahrrad\n2010: 20 %\n2015: 24 %\n2020: 35 %",
+          "examPart": "Leseverstehen"
+        },
+        {
+          "id": "b2gr_3",
+          "kind": "multipleChoice",
+          "prompt": "Which word introduces a contrast?",
+          "options": [
+            "jedoch",
+            "deshalb",
+            "außerdem"
+          ],
+          "answer": "jedoch",
+          "explanation": "jedoch means however; deshalb gives a result, außerdem adds a point.",
+          "skills": [
+            "graph_description",
+            "connectors_subordinate"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "b2gr_4",
+          "kind": "writing",
+          "prompt": "Beschreiben Sie die Grafik in mindestens 70 Wörtern: 1) Nennen Sie das Thema der Grafik. 2) Beschreiben Sie die Entwicklung. 3) Nennen Sie einen möglichen Grund.",
+          "answer": "Die Grafik zeigt den Anteil der Studierenden, die mit dem Fahrrad zur Universität fahren. Im Jahr 2010 lag der Anteil bei 20 Prozent. Bis 2015 ist er auf 24 Prozent gestiegen, und bis 2020 hat er 35 Prozent erreicht. Besonders auffällig ist, dass der Anstieg nach 2015 am stärksten war. Ein möglicher Grund dafür ist, dass viele Studierende etwas für die Umwelt tun möchten. Außerdem sind Fahrräder günstiger als Busse und Autos. Insgesamt lässt sich sagen, dass das Fahrrad immer beliebter wird.",
+          "explanation": "Good: topic, development with figures, a stand-out observation, a reason, and a conclusion.",
+          "skills": [
+            "graph_description",
+            "essay_writing"
+          ],
+          "area": "writing",
+          "examPart": "Schriftlicher Ausdruck",
+          "brief": {
+            "minWords": 70,
+            "register": "essay",
+            "points": [
+              {
+                "label": "Name the topic of the graph",
+                "keywords": [
+                  "grafik",
+                  "diagramm",
+                  "zeigt",
+                  "thema"
+                ]
+              },
+              {
+                "label": "Describe the development",
+                "keywords": [
+                  "gestiegen",
+                  "steigt",
+                  "anstieg",
+                  "zugenommen",
+                  "35 prozent"
+                ]
+              },
+              {
+                "label": "Give a possible reason",
+                "keywords": [
+                  "grund",
+                  "weil",
+                  "deshalb",
+                  "liegt daran",
+                  "umwelt",
+                  "preise"
+                ]
+              }
+            ]
+          },
+          "context": "Anteil der Studierenden mit Fahrrad\n2010: 20 %\n2015: 24 %\n2020: 35 %"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Grafik",
+          "en": "graph, chart",
+          "article": "die",
+          "example": "Die Grafik zeigt die Entwicklung.",
+          "exampleEn": "The graph shows the development."
+        },
+        {
+          "de": "Anteil",
+          "en": "share, proportion",
+          "article": "der",
+          "example": "Der Anteil liegt bei 20 Prozent.",
+          "exampleEn": "The share is 20 percent."
+        },
+        {
+          "de": "Entwicklung",
+          "en": "development",
+          "article": "die",
+          "example": "Die Entwicklung ist positiv.",
+          "exampleEn": "The development is positive."
+        },
+        {
+          "de": "Anstieg",
+          "en": "rise, increase",
+          "article": "der",
+          "example": "Es gibt einen starken Anstieg.",
+          "exampleEn": "There is a strong rise."
+        },
+        {
+          "de": "auffällig",
+          "en": "striking",
+          "example": "Besonders auffällig ist der Anstieg.",
+          "exampleEn": "The rise is particularly striking."
+        },
+        {
+          "de": "insgesamt",
+          "en": "overall",
+          "example": "Insgesamt lässt sich sagen, dass …",
+          "exampleEn": "Overall, it can be said that …"
+        }
+      ],
+      "topics": [
+        "Study",
+        "Work",
+        "Culture"
+      ],
+      "goals": [
+        "testdaf"
+      ],
+      "requires": [
+        "b1_opinions_connectors"
+      ],
+      "exam": "testdaf"
+    }
+  ],
+  "dialogues": [
+    {
+      "id": "d_intro",
+      "title": "Meeting someone new",
+      "level": "preA1",
+      "topics": [
+        "Everyday life",
+        "Family"
+      ],
+      "turns": [
+        {
+          "text": "Hallo! Ich bin Lena. Wie heißt du?",
+          "english": "Hello! I'm Lena. What's your name?"
+        },
+        {
+          "intent": "Say your name.",
+          "options": [
+            "Ich heiße Sam.",
+            "Ich bin heißen Sam.",
+            "Mein heiße Sam."
+          ],
+          "answer": "Ich heiße Sam."
+        },
+        {
+          "text": "Freut mich! Woher kommst du?",
+          "english": "Nice to meet you! Where are you from?"
+        },
+        {
+          "intent": "Say that you come from India.",
+          "options": [
+            "Ich komme aus Indien.",
+            "Ich kommen aus Indien.",
+            "Ich bin Indien."
+          ],
+          "answer": "Ich komme aus Indien."
+        },
+        {
+          "text": "Und wo wohnst du jetzt?",
+          "english": "And where do you live now?"
+        },
+        {
+          "intent": "Say that you live in Berlin.",
+          "options": [
+            "Ich wohne in Berlin.",
+            "Ich wohnen in Berlin.",
+            "Ich lebe Berlin in."
+          ],
+          "answer": "Ich wohne in Berlin."
+        }
+      ]
+    },
+    {
+      "id": "d_bakery",
+      "title": "At the bakery",
+      "level": "a1",
+      "topics": [
+        "Food",
+        "Travel",
+        "Everyday life"
+      ],
+      "turns": [
+        {
+          "text": "Guten Morgen! Was darf es sein?",
+          "english": "Good morning! What can I get you?"
+        },
+        {
+          "intent": "Greet and ask for two bread rolls.",
+          "options": [
+            "Guten Morgen! Zwei Brötchen, bitte.",
+            "Gute Nacht! Ich bin ein Brötchen.",
+            "Tschüss! Zwei Brot kaufen."
+          ],
+          "answer": "Guten Morgen! Zwei Brötchen, bitte."
+        },
+        {
+          "text": "Sonst noch etwas?",
+          "english": "Anything else?"
+        },
+        {
+          "intent": "Say you would also like a coffee.",
+          "options": [
+            "Ja, ich möchte auch einen Kaffee.",
+            "Nein, ich bin Kaffee.",
+            "Ja, ich habe eine Kaffee."
+          ],
+          "answer": "Ja, ich möchte auch einen Kaffee."
+        },
+        {
+          "text": "Das macht vier Euro zwanzig.",
+          "english": "That comes to 4.20 euros."
+        },
+        {
+          "intent": "Ask if you can pay by card.",
+          "options": [
+            "Kann ich mit Karte bezahlen?",
+            "Ich kann Karte sein?",
+            "Bezahlen ich mit Karte kann?"
+          ],
+          "answer": "Kann ich mit Karte bezahlen?"
+        },
+        {
+          "text": "Ja, natürlich. Hier bitte.",
+          "english": "Yes, of course. Here you go."
+        },
+        {
+          "intent": "Say thank you and goodbye.",
+          "options": [
+            "Danke schön! Auf Wiedersehen!",
+            "Bitte schön! Guten Morgen!",
+            "Wie geht's? Danke!"
+          ],
+          "answer": "Danke schön! Auf Wiedersehen!"
+        }
+      ]
+    },
+    {
+      "id": "d_directions",
+      "title": "Asking the way",
+      "level": "a1",
+      "topics": [
+        "Travel"
+      ],
+      "turns": [
+        {
+          "intent": "Politely ask where the station is.",
+          "options": [
+            "Entschuldigung, wo ist der Bahnhof?",
+            "Bahnhof Entschuldigung wo ist?",
+            "Wo bist du Bahnhof?"
+          ],
+          "answer": "Entschuldigung, wo ist der Bahnhof?"
+        },
+        {
+          "text": "Gehen Sie geradeaus und dann links.",
+          "english": "Go straight on and then left."
+        },
+        {
+          "intent": "Ask whether it is far.",
+          "options": [
+            "Ist das weit?",
+            "Bist du weit?",
+            "Das weit ist?"
+          ],
+          "answer": "Ist das weit?"
+        },
+        {
+          "text": "Nein, nur fünf Minuten zu Fuß.",
+          "english": "No, only five minutes on foot."
+        },
+        {
+          "intent": "Thank them.",
+          "options": [
+            "Vielen Dank!",
+            "Viele Bitte!",
+            "Danke Bahnhof!"
+          ],
+          "answer": "Vielen Dank!"
+        }
+      ]
+    },
+    {
+      "id": "d_cafe",
+      "title": "In a café",
+      "level": "a1",
+      "topics": [
+        "Food",
+        "Travel"
+      ],
+      "turns": [
+        {
+          "text": "Guten Tag! Was möchten Sie trinken?",
+          "english": "Hello! What would you like to drink?"
+        },
+        {
+          "intent": "Ask for a tea with milk.",
+          "options": [
+            "Ich möchte einen Tee mit Milch, bitte.",
+            "Ich bin Tee mit Milch.",
+            "Einen Tee ich möchte Milch."
+          ],
+          "answer": "Ich möchte einen Tee mit Milch, bitte."
+        },
+        {
+          "text": "Gern. Möchten Sie auch etwas essen?",
+          "english": "Gladly. Would you also like something to eat?"
+        },
+        {
+          "intent": "Say no, just a drink.",
+          "options": [
+            "Nein, danke. Nur etwas zu trinken.",
+            "Nein, ich bin trinken.",
+            "Ja, nur ich Getränk."
+          ],
+          "answer": "Nein, danke. Nur etwas zu trinken."
+        },
+        {
+          "text": "Kein Problem.",
+          "english": "No problem."
+        },
+        {
+          "intent": "Ask for the bill.",
+          "options": [
+            "Die Rechnung, bitte.",
+            "Rechnung ich bitte?",
+            "Ich Rechnung bin bitte."
+          ],
+          "answer": "Die Rechnung, bitte."
+        }
+      ]
+    },
+    {
+      "id": "d_appointment",
+      "title": "Making a doctor's appointment",
+      "level": "a2",
+      "topics": [
+        "Health",
+        "Everyday life"
+      ],
+      "turns": [
+        {
+          "text": "Praxis Dr. Berger, guten Tag.",
+          "english": "Dr. Berger's surgery, hello."
+        },
+        {
+          "intent": "Say you would like to make an appointment.",
+          "options": [
+            "Guten Tag, ich möchte einen Termin vereinbaren.",
+            "Guten Tag, ich bin ein Termin.",
+            "Guten Tag, ich Termin möchte haben vereinbaren."
+          ],
+          "answer": "Guten Tag, ich möchte einen Termin vereinbaren."
+        },
+        {
+          "text": "Haben Sie Beschwerden?",
+          "english": "Do you have any symptoms?"
+        },
+        {
+          "intent": "Say you have had a fever since yesterday.",
+          "options": [
+            "Ja, ich habe seit gestern Fieber.",
+            "Ja, ich bin seit gestern Fieber.",
+            "Ja, ich habe gestern seit Fieber."
+          ],
+          "answer": "Ja, ich habe seit gestern Fieber."
+        },
+        {
+          "text": "Wir haben morgen um zehn Uhr einen Termin frei.",
+          "english": "We have a free appointment tomorrow at ten."
+        },
+        {
+          "intent": "Say that suits you and thank them.",
+          "options": [
+            "Morgen um zehn passt gut, vielen Dank.",
+            "Morgen um zehn passt gut, ich vielen Dank.",
+            "Morgen um zehn gut passt, Dank vielen."
+          ],
+          "answer": "Morgen um zehn passt gut, vielen Dank."
+        }
+      ]
+    },
+    {
+      "id": "d_hotel",
+      "title": "Checking in at a hotel",
+      "level": "a2",
+      "topics": [
+        "Travel"
+      ],
+      "turns": [
+        {
+          "text": "Guten Abend! Wie kann ich Ihnen helfen?",
+          "english": "Good evening! How can I help you?"
+        },
+        {
+          "intent": "Say you have a room booked in the name Kumar.",
+          "options": [
+            "Guten Abend, ich habe ein Zimmer auf den Namen Kumar reserviert.",
+            "Guten Abend, ich reserviert Zimmer Kumar habe.",
+            "Guten Abend, ich bin ein Zimmer Kumar."
+          ],
+          "answer": "Guten Abend, ich habe ein Zimmer auf den Namen Kumar reserviert."
+        },
+        {
+          "text": "Ja, ein Einzelzimmer für zwei Nächte. Möchten Sie frühstücken?",
+          "english": "Yes, a single room for two nights. Would you like breakfast?"
+        },
+        {
+          "intent": "Say yes and ask what time breakfast is.",
+          "options": [
+            "Ja, gern. Um wie viel Uhr gibt es Frühstück?",
+            "Ja, gern. Wie viel Uhr Frühstück gibt es um?",
+            "Ja, gern. Um wie viel Frühstück Uhr?"
+          ],
+          "answer": "Ja, gern. Um wie viel Uhr gibt es Frühstück?"
+        },
+        {
+          "text": "Das Frühstück gibt es von sieben bis zehn Uhr.",
+          "english": "Breakfast is from seven to ten."
+        },
+        {
+          "intent": "Thank them and ask for the key.",
+          "options": [
+            "Vielen Dank. Kann ich bitte den Schlüssel haben?",
+            "Vielen Dank. Ich Schlüssel kann haben bitte?",
+            "Vielen Dank. Kann Schlüssel bitte ich den haben?"
+          ],
+          "answer": "Vielen Dank. Kann ich bitte den Schlüssel haben?"
+        }
+      ]
+    },
+    {
+      "id": "d_opinion",
+      "title": "Talking about working from home",
+      "level": "b1",
+      "topics": [
+        "Work",
+        "Everyday life"
+      ],
+      "turns": [
+        {
+          "text": "Was denkst du über Homeoffice?",
+          "english": "What do you think about working from home?"
+        },
+        {
+          "intent": "Say you find it good because you save time.",
+          "options": [
+            "Ich finde es gut, weil ich viel Zeit spare.",
+            "Ich finde es gut, weil ich spare viel Zeit.",
+            "Ich finde gut es, weil viel Zeit ich spare."
+          ],
+          "answer": "Ich finde es gut, weil ich viel Zeit spare."
+        },
+        {
+          "text": "Aber vermisst du nicht deine Kollegen?",
+          "english": "But don't you miss your colleagues?"
+        },
+        {
+          "intent": "Admit it is a disadvantage but not a big problem.",
+          "options": [
+            "Das ist ein Nachteil, aber es ist kein großes Problem.",
+            "Das ist ein Nachteil, aber kein großes ist Problem.",
+            "Das ein Nachteil ist, aber es kein Problem großes ist."
+          ],
+          "answer": "Das ist ein Nachteil, aber es ist kein großes Problem."
         }
       ]
     }

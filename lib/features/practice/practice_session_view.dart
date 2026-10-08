@@ -6,6 +6,7 @@ import '../../app/theme/app_theme.dart';
 import '../../app/theme/breakpoints.dart';
 import '../../domain/learning/exercise_evaluator.dart';
 import '../../domain/models/learning_models.dart';
+import '../../shared/widgets/app_widgets.dart';
 import '../learn/exercises/exercise_runner.dart';
 
 /// A short, targeted practice round over exercises from any lesson.
@@ -31,7 +32,7 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
   @override
   Widget build(BuildContext context) {
     final results = _results;
-    return Scaffold(
+    return GlassPage(
       appBar: AppBar(title: Text(widget.title)),
       body: SafeArea(
         child: Center(
@@ -44,6 +45,7 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
                   ? ExerciseRunner(
                       exercises: widget.exercises,
                       finishLabel: 'Finish practice',
+                      retryMissed: true,
                       onFinished: _finish,
                     )
                   : Column(
@@ -51,8 +53,10 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
                         Expanded(
                           child: SessionSummary(
                             title: 'Nice work!',
-                            correct: results.where((r) => r.isCorrect).length,
-                            total: results.length,
+                            correct: results
+                                .where((r) => r.isCorrect && !r.isRetry)
+                                .length,
+                            total: results.where((r) => !r.isRetry).length,
                             xpEarned: _xpEarned,
                           ),
                         ),
@@ -71,12 +75,12 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
 
   Future<void> _finish(List<ExerciseResult> results) async {
     try {
-      final xp =
+      final outcome =
           await ref.read(appControllerProvider).completePractice(results);
       if (!mounted) return;
       setState(() {
         _results = results;
-        _xpEarned = xp;
+        _xpEarned = outcome.xpEarned;
       });
     } catch (_) {
       if (!mounted) return;

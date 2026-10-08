@@ -47,6 +47,31 @@ class SkillStat {
       );
 }
 
+/// What a learner has done with one specific exercise. It lets the planner
+/// rotate content (not repeat what was just seen) and notice exercises that
+/// keep going wrong.
+class ExerciseStat {
+  const ExerciseStat({
+    required this.attempts,
+    required this.correct,
+    required this.lastAnsweredAt,
+  });
+
+  final int attempts;
+  final int correct;
+  final DateTime lastAnsweredAt;
+
+  /// Smoothed accuracy, as for [SkillStat].
+  double get accuracy => (correct + 1) / (attempts + 2);
+
+  ExerciseStat recorded({required bool isCorrect, required DateTime at}) =>
+      ExerciseStat(
+        attempts: attempts + 1,
+        correct: correct + (isCorrect ? 1 : 0),
+        lastAnsweredAt: at,
+      );
+}
+
 /// Whole calendar days from [from] to [to], ignoring time of day.
 ///
 /// Compared as UTC dates so daylight-saving shifts cannot turn a 23-hour day

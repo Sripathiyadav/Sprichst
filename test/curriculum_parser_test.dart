@@ -39,13 +39,17 @@ String _course(List<Map<String, dynamic>> exercises,
 void main() {
   testWidgets('the repository loads the course through the asset bundle',
       (tester) async {
-    final lessons = await LocalLearningRepository().loadLessons();
-    expect(lessons, hasLength(9));
+    // Assets over 50 KB are decoded on a separate isolate, which needs real
+    // async rather than the widget tester's fake clock.
+    final lessons = (await tester.runAsync(
+      () => LocalLearningRepository().loadLessons(),
+    ))!;
+    expect(lessons, hasLength(25));
   });
 
   test('parses the bundled course', () {
     final lessons = loadCourse();
-    expect(lessons, hasLength(9));
+    expect(lessons, hasLength(25));
     expect(lessons.first.exercises.first.skills, isNotEmpty);
   });
 
