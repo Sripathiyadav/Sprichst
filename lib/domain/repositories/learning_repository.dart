@@ -25,8 +25,15 @@ abstract class AIRepository {
     TutorContext context,
   );
 
-  Future<List<int>> synthesizeSpeech(
+  /// Speaks [text]. [voice] is a voice id from [listVoices] (null for the
+  /// gateway's default) and [speechRate] is in words per minute.
+  Future<SpeechAudio> synthesizeSpeech(
     String text,
-    TutorContext context,
-  );
+    TutorContext context, {
+    String? voice,
+    int? speechRate,
+  });
+
+  /// The voices the gateway can speak with.
+  Future<VoiceList> listVoices();
 }

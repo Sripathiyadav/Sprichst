@@ -89,11 +89,23 @@ uvicorn app.main:app --reload --port 8000
 
 Open `http://127.0.0.1:8000/health`; its `ollama` value should be `available`.
 
-For development, point an `ApiAIRepository` at `http://127.0.0.1:8000`. For an Android emulator use `10.0.2.2` instead of `127.0.0.1`; for a real phone, do not expose Ollama directly. Put the gateway behind HTTPS, verify Firebase ID tokens server-side, and use a private tunnel or a server you control.
+The app finds the gateway by itself in development (`lib/app/ai_server_url.dart`): the iOS simulator, desktop and web use `http://127.0.0.1:8000`, and the Android emulator uses `http://10.0.2.2:8000`, its alias for your computer. Both were checked end to end (voices, chat, speech, playback, transcription).
 
-## 7. Connect the app to the gateway
+For a real phone on the same Wi-Fi:
 
-Replace `MockAIRepository` in `lib/app/app_controller.dart` with an HTTP-backed `AIRepository`. Send the learner’s level, current lesson, selected weak skills, and recent mistakes—not their whole Firestore document. Use the JSON endpoints the gateway exposes. Treat malformed model data and an unavailable model as graceful in-app errors, never as a reason to block learning.
+1. Start the gateway with `ai-server/run.sh`. It listens on your network (a plain `uvicorn ... --reload` only listens on this computer, which a phone cannot reach) and prints the address to use.
+2. If macOS asks whether Python may accept incoming connections, choose Allow. If you missed it: System Settings → Network → Firewall → Options, and allow the Python that runs the server.
+3. In the app, open Account → AI & voice → AI server, enter that address (for example `192.168.1.20`) and tap Save and test. The result says what is wrong if it fails. The address is remembered on that phone.
+
+Alternatively, bake the address in at build time with `flutter run --dart-define=AI_SERVER_URL=http://<your-computer's-LAN-IP>:8000`.
+
+iOS and debug Android builds are allowed to use plain HTTP on the local network for this (`NSAllowsLocalNetworking` in `Info.plist`; a debug-only `network_security_config.xml`). Release builds must use HTTPS. Only do this on a network you trust: the gateway has no authentication. Do not expose Ollama directly. For anything beyond your own desk, put the gateway behind HTTPS, verify Firebase ID tokens server-side, and use a private tunnel or a server you control.
+
+Android blocks plain HTTP by default. `android/app/src/main/res/xml/network_security_config.xml` allows it only for the device's own loopback address, which `just_audio` needs to play the tutor's speech.
+
+## 7. On-device AI and the gateway
+
+The app already uses the gateway through `HybridAIRepository` (`lib/app/app_controller.dart`): the AI Coach runs on the phone once its models are downloaded, and uses the gateway only as the learner's setting allows. See [on-device-ai.md](on-device-ai.md) for the models, platform requirements (iOS 16.4+) and the one-time keychain prompt during the first iOS build.
 
 ## 8. Add content before adding more features
 

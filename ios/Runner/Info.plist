@@ -38,6 +38,16 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>54358857337-c1nve0fppgkfq0oibndipab8bspje6a9.apps.googleusercontent.com</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Development: lets the app reach the AI server on your own network over
+		     plain HTTP (for example http://192.168.1.20:8000). Anything on the
+		     public internet still has to use HTTPS. -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Sprichst connects to the AI server on your local network so your tutor can answer and speak.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Sprichst uses the microphone only while you record yourself speaking German, so your tutor can hear and correct you. Recordings are not kept after they are transcribed.</string>
 	<key>LSRequiresIPhoneOS</key>

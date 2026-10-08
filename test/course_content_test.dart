@@ -125,6 +125,37 @@ void main() {
     }
   });
 
+  test('each exam family trains all four modules at every level it covers', () {
+    for (final family in ['goethe', 'testdaf']) {
+      final exercises = [
+        for (final l in lessons.where((l) => l.exam == family))
+          ...l.exercises.where((e) => e.examPart != null),
+      ];
+      for (final area in [
+        SkillArea.reading,
+        SkillArea.listening,
+        SkillArea.writing,
+        SkillArea.speaking,
+      ]) {
+        expect(exercises.where((e) => e.area == area), isNotEmpty,
+            reason: '$family has no ${area.label} tasks');
+      }
+    }
+  });
+
+  test('every level from A1 to B2 has a real body of lessons', () {
+    for (final entry in {
+      CefrLevel.a1: 10,
+      CefrLevel.a2: 10,
+      CefrLevel.b1: 8,
+      CefrLevel.b2: 8,
+    }.entries) {
+      expect(lessons.where((l) => l.level == entry.key).length,
+          greaterThanOrEqualTo(entry.value),
+          reason: entry.key.label);
+    }
+  });
+
   test('exam lessons are tagged and aimed at the matching goal', () {
     final exam = lessons.where((l) => l.exam != null);
     expect(exam, isNotEmpty);

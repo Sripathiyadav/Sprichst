@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import 'on_device_ai_page.dart';
+import 'ai_server_section.dart';
+import 'voice_picker.dart';
+
 import '../onboarding/onboarding_view.dart' show GoalPicker;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,7 +89,7 @@ class AccountView extends ConsumerWidget {
                 icon: Icons.smart_toy_outlined,
                 title: 'AI & voice',
                 subtitle:
-                    '${profile.aiProviderPreference.label} · ${profile.voice} · ${profile.speechRate} wpm',
+                    '${profile.aiProviderPreference.label} · ${VoiceList.offline.labelOf(profile.voice)} · ${profile.speechRate} wpm',
                 onTap: () => _push(context, const _AIAndVoicePage()),
               ),
               SettingsTile(
@@ -676,12 +680,25 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
     return SettingsPage(
       title: 'AI & voice',
       subtitle:
-          'The app sends requests to the Sprichst gateway, never directly to a model provider. Provider and voice choices are saved for the account; live gateway routing stays server-controlled.',
+          'The coach runs on this phone once its models are downloaded, so it works without internet. An AI server is optional.',
       children: [
         SettingsSection(
-          title: 'Tutor provider',
+          title: 'On-device AI',
+          children: [
+            SettingsTile(
+              icon: Icons.offline_bolt_outlined,
+              title: 'Models on this phone',
+              subtitle: _onDeviceSummary(ref),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => const OnDeviceAIPage())),
+            ),
+          ],
+        ),
+        const AiServerSection(),
+        SettingsSection(
+          title: 'Where the tutor runs',
           description:
-              'Automatic is the recommended saved preference. The current gateway configuration controls live routing and fallback.',
+              'Automatic is recommended: private and offline, with the AI server filling in for anything not downloaded.',
           children: [
             for (final provider in AIProviderPreference.values)
               RadioListTile<AIProviderPreference>(
@@ -700,18 +717,9 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
         SettingsSection(
           title: 'Voice',
           children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: DropdownButtonFormField<String>(
-                value: profile.voice,
-                decoration: const InputDecoration(labelText: 'Tutor voice'),
-                items: const [
-                  DropdownMenuItem(value: 'Anna', child: Text('Anna'))
-                ],
-                onChanged: (value) {
-                  if (value != null) _save(profile.copyWith(voice: value));
-                },
-              ),
+            VoicePicker(
+              selectedId: profile.voice,
+              onChanged: (id) => _save(profile.copyWith(voice: id)),
             ),
             ListTile(
               contentPadding:
@@ -721,9 +729,9 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
             ),
             Slider(
               value: _speechRate,
-              min: 150,
-              max: 300,
-              divisions: 15,
+              min: minSpeechRate.toDouble(),
+              max: maxSpeechRate.toDouble(),
+              divisions: (maxSpeechRate - minSpeechRate) ~/ 10,
               label: '${_speechRate.round()} wpm',
               onChanged: (value) => setState(() => _speechRate = value),
               onChangeEnd: (value) => _save(
@@ -731,6 +739,30 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
+          ],
+        ),
+        SettingsSection(
+          title: 'Hands-free voice mode',
+          description:
+              'In voice mode the tutor listens, replies and listens again on its own. This sets how long a pause ends your turn: choose Long if you like to think while you speak.',
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: SegmentedButton<int>(
+                showSelectedIcon: false,
+                segments: [
+                  for (final choice in voicePauseChoices.entries)
+                    ButtonSegment(value: choice.key, label: Text(choice.value)),
+                ],
+                selected: {
+                  voicePauseChoices.containsKey(profile.voicePauseMs)
+                      ? profile.voicePauseMs
+                      : defaultVoicePauseMs,
+                },
+                onSelectionChanged: (value) =>
+                    _save(profile.copyWith(voicePauseMs: value.first)),
+              ),
+            ),
           ],
         ),
         SettingsSection(
@@ -764,6 +796,21 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
 
   Future<void> _save(LearningProfile updated) {
     return ref.read(appControllerProvider).updateProfile(updated);
+  }
+
+  String _onDeviceSummary(WidgetRef ref) {
+    final models = ref.watch(modelManagerProvider);
+    if (!models.isSupported) return 'Not available in the browser';
+    if (!models.isReady) return 'Checking…';
+    final tutor = models.activeTutor;
+    final speech = models.activeSpeechModel;
+    if (tutor == null && speech == null) {
+      return 'Not downloaded yet · recommended: ${models.recommendedTutorModel.label}';
+    }
+    return [
+      tutor == null ? 'No tutor yet' : 'Tutor: ${tutor.label}',
+      speech == null ? 'no speech recognition' : speech.label,
+    ].join(' · ');
   }
 }
 
@@ -863,22 +910,16 @@ class _PrivacyAndDataPage extends ConsumerWidget {
             title: 'AI and speech',
             children: [
               SettingsTile(
+                icon: Icons.offline_bolt_outlined,
+                title: 'On this phone',
+                subtitle:
+                    'With the models downloaded, your messages, recordings and the tutor\'s speech are processed on your phone and never leave it.',
+              ),
+              SettingsTile(
                 icon: Icons.psychology_outlined,
-                title: 'Cloud AI',
+                title: 'AI server (optional)',
                 subtitle:
-                    'When the gateway is configured to use Groq, your tutor message and the existing compact learning context are sent through Sprichst to that provider.',
-              ),
-              SettingsTile(
-                icon: Icons.mic_none_outlined,
-                title: 'Speech recognition',
-                subtitle:
-                    'Voice recordings are sent to the Sprichst gateway for local Whisper transcription in the current setup.',
-              ),
-              SettingsTile(
-                icon: Icons.volume_up_outlined,
-                title: 'Speech playback',
-                subtitle:
-                    'Tutor speech is synthesized by the local gateway. Voice and speed preferences are saved for future gateway support.',
+                    'If you choose "AI server first", or something is not downloaded yet, your message or recording and a compact learning context go to the Sprichst AI server, which may use a cloud provider such as Groq.',
               ),
             ],
           ),

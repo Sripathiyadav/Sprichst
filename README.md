@@ -8,6 +8,7 @@ Sprichst is a Flutter German-learning MVP built around a curriculum and learning
 - Responsive app shell: bottom navigation on phones, navigation rail on tablets, and an expanded desktop rail
 - Light, dark, and system appearance modes, saved with the learner profile
 - Central Account area for profile, learning preferences, AI/voice preferences, reminder preferences, privacy, support, and licenses
+- On-device AI: the AI Coach (chat, corrections, speech recognition and voice) runs on the phone after a one-time model download, and works with no internet. The app recommends a model for the phone's memory; the learner can pick any. See [docs/on-device-ai.md](docs/on-device-ai.md)
 - Onboarding (explanation language + starting CEFR level)
 - Home, roadmap (units, per-lesson status, real level progress), lesson runner, XP, progress matrix, and AI Coach screens
 - Adaptive learning: a deterministic planner picks the next review, weak-skill practice, or lesson from your own answers; practice is limited to lessons you have started, difficulty follows your accuracy per skill, missed exercises are retried and respaced, and finishing a level well moves you up
@@ -17,7 +18,7 @@ Sprichst is a Flutter German-learning MVP built around a curriculum and learning
 - Five games: Artikel-Rausch (swipe der/die/das), Memory, Buchstabensalat (word scramble), Wortle (five-letter German word), and Gespräch (conversation fill-ups), with combos, stars, daily quests and badges
 - Insights drawn from how you answer (recognition vs. recall, weakest and strongest mode). Sprichst deliberately does not use "learning styles" such as VARK, which research has not supported; see `docs/learning-design.md`
 - Learning engine: eight exercise types with deterministic evaluation, per-skill accuracy, weak-skill tracking, mistake reviews, and targeted practice
-- 25 lessons from Pre-A1 to B2 in `curriculum/course.json`, with 150 vocabulary words, 7 dialogues, and Goethe A1–B1 and TestDaF task lessons
+- 48 lessons from Pre-A1 to B2 in `curriculum/course.json`, with 308 vocabulary words, 13 dialogues, Goethe A1–B2 task lessons and a four-part TestDaF track (reading, listening, written argument, speaking)
 - Deterministic spaced repetition for reviews and flashcards (Again → 10 minutes; successful recalls grow the gap)
 - On-device persistence through `shared_preferences`, so progress survives an app restart
 - Separate reset-learning-progress and reauthenticated delete-account flows
@@ -47,6 +48,8 @@ The app runs immediately in local-first demo mode. It deliberately does not requ
 
 ## Run the AI gateway (optional)
 
+The coach runs on the phone without it (see [docs/on-device-ai.md](docs/on-device-ai.md)); the gateway adds a larger cloud or desktop model for learners who choose "AI server first", and fills in for anything not downloaded yet.
+
 ```bash
 ollama pull qwen2.5:0.5b-instruct
 ollama serve
@@ -57,7 +60,20 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-Check `http://127.0.0.1:8000/health`. Before connecting a mobile device or exposing the service, read [docs/SETUP.md](docs/SETUP.md): the gateway must remain behind authentication and HTTPS.
+Check `http://127.0.0.1:8000/health`. To use the gateway from a real phone, start it with `./run.sh` instead and enter the address it prints in Account → AI & voice → AI server.
+
+### Voices (open-source, optional)
+
+The tutor speaks with [Piper](https://github.com/OHF-Voice/piper1-gpl) voices that run on your own machine. Without them the gateway uses the macOS voice, so voice features still work.
+
+```bash
+cd ai-server
+pip install -r requirements-voices.txt            # the Piper engine
+python3 scripts/download_voices.py                # Thorsten (recommended, CC0)
+python3 scripts/download_voices.py --all          # every voice in the catalogue
+```
+
+Voices are saved to `~/.sprichst/voices` (set `PIPER_VOICES_DIR` to change it). Learners pick a voice, hear a preview and set the speed under Account → AI & voice; a voice that is not installed falls back to the best one that is. See [docs/voice.md](docs/voice.md) for the catalogue, licences and how hands-free voice mode works. Before connecting a mobile device or exposing the service, read [docs/SETUP.md](docs/SETUP.md): the gateway must remain behind authentication and HTTPS.
 
 ## Preview the app without signing in
 

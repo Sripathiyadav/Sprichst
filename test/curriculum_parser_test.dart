@@ -44,12 +44,12 @@ void main() {
     final lessons = (await tester.runAsync(
       () => LocalLearningRepository().loadLessons(),
     ))!;
-    expect(lessons, hasLength(25));
+    expect(lessons.length, greaterThanOrEqualTo(40));
   });
 
   test('parses the bundled course', () {
     final lessons = loadCourse();
-    expect(lessons, hasLength(25));
+    expect(lessons.length, greaterThanOrEqualTo(40));
     expect(lessons.first.exercises.first.skills, isNotEmpty);
   });
 

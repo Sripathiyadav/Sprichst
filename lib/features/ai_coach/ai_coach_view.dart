@@ -4,10 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/breakpoints.dart';
+import '../../data/on_device/model_catalogue.dart';
+import '../../data/on_device/on_device_ai_repository.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../account/on_device_ai_page.dart';
 import 'services/audio_player_service.dart';
 import 'services/audio_recorder_service.dart';
+import 'voice/voice_mode_view.dart';
+import 'voice/voice_session.dart';
 
 class AICoachView extends ConsumerStatefulWidget {
   const AICoachView({super.key});
@@ -51,9 +56,10 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         builder: (context, constraints) {
           final conversation = Column(
             children: [
+              const _OfflineSetupBanner(),
               Expanded(
                 child: _messages.isEmpty
-                    ? const _CoachEmptyState()
+                    ? _CoachEmptyState(onVoiceMode: _openVoiceMode)
                     : ListView.separated(
                         itemCount: _messages.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -85,6 +91,14 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  IconButton.filledTonal(
+                    tooltip: 'Voice mode: talk hands-free',
+                    onPressed: _sending || _recording || _transcribing
+                        ? null
+                        : _openVoiceMode,
+                    icon: const Icon(Icons.graphic_eq),
+                  ),
+                  const SizedBox(width: 4),
                   IconButton.filled(
                     tooltip: _recording ? 'Stop recording' : 'Record German',
                     onPressed:
@@ -184,6 +198,25 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     );
   }
 
+  /// Opens the hands-free conversation and keeps what was said in the chat.
+  Future<void> _openVoiceMode() async {
+    final turns = await Navigator.of(context).push<List<VoiceTurn>>(
+      MaterialPageRoute(builder: (_) => const VoiceModeView()),
+    );
+    if (!mounted || turns == null || turns.isEmpty) return;
+    setState(() {
+      for (final turn in turns) {
+        _messages
+          ..add(_Message(text: turn.user, fromUser: true))
+          ..add(_Message(
+            text: turn.tutor,
+            fromUser: false,
+            speechText: turn.speech,
+          ));
+      }
+    });
+  }
+
   Future<void> _toggleRecording() async {
     if (_recording) {
       await _stopRecording();
@@ -214,6 +247,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 
   /// Plain-language reason a voice turn failed; the raw error goes to the log.
   String _voiceErrorMessage(Object error) {
+    if (error is ModelNotInstalledException) return error.toString();
     final text = error.toString();
     if (text.contains('No speech was detected')) {
       return 'I did not catch that. Hold the phone closer and try again.';
@@ -224,7 +258,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     if (text.contains('SocketException') ||
         text.contains('ClientException') ||
         text.contains('Connection')) {
-      return 'Could not reach your tutor. Check your connection and that the AI gateway is running.';
+      return 'Could not reach the AI server. Check that it is running and that the address is right in Account → AI & voice → AI server.';
     }
     return 'The voice conversation did not work this time. Please try again.';
   }
@@ -312,6 +346,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         ),
       );
       _sending = true;
+      _text.clear(); // the message is on screen now; leave the box empty
     });
 
     try {
@@ -353,29 +388,30 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       });
 
       if (speakResponse && speechText.isNotEmpty) {
-        final audio = await ref.read(aiRepositoryProvider).synthesizeSpeech(
-              speechText,
-              app.tutorContext,
-            );
+        final audio = await app.speak(speechText);
 
-        await _audioPlayer.playBytes(audio);
+        await _audioPlayer.playBytes(audio.bytes);
       }
     } catch (error) {
       if (mounted) {
         setState(() {
           _messages.add(
-            const _Message(
-              text: 'I could not reach the coach. Please try again.',
+            _Message(
+              text: error is ModelNotInstalledException
+                  ? error.toString()
+                  : 'I could not reach the coach. Check Account → AI & voice → AI server, then try again.',
               fromUser: false,
             ),
           );
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('AI Coach error: $error'),
-          ),
-        );
+        if (error is! ModelNotInstalledException) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('AI Coach error: $error'),
+            ),
+          );
+        }
       }
     } finally {
       if (mounted) {
@@ -396,12 +432,9 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     try {
       final app = ref.read(appControllerProvider);
 
-      final audio = await ref.read(aiRepositoryProvider).synthesizeSpeech(
-            speechText,
-            app.tutorContext,
-          );
+      final audio = await app.speak(speechText);
 
-      await _audioPlayer.playBytes(audio);
+      await _audioPlayer.playBytes(audio.bytes);
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -414,8 +447,55 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   }
 }
 
+/// Shown until a tutor model is on the phone: the coach then works offline.
+class _OfflineSetupBanner extends ConsumerWidget {
+  const _OfflineSetupBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final models = ref.watch(modelManagerProvider);
+    models.ensureLoaded();
+    if (!models.isSupported || !models.isReady || models.activeTutor != null) {
+      return const SizedBox.shrink();
+    }
+    final tutor = models.recommendedTutorModel;
+    final downloading = models.progressOf(tutor.id);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: SoftCard(
+        color: context.softSurface,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(children: [
+          const Icon(Icons.offline_bolt_outlined),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: downloading != null
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Downloading ${tutor.label}…'),
+                      const SizedBox(height: AppSpacing.xs),
+                      LinearProgressIndicator(value: downloading),
+                    ],
+                  )
+                : Text(
+                    'Use the coach without internet: download ${tutor.label} (${formatBytes(tutor.downloadBytes)}), recommended for this phone.'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => const OnDeviceAIPage())),
+            child: const Text('Set up'),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
 class _CoachEmptyState extends StatelessWidget {
-  const _CoachEmptyState();
+  const _CoachEmptyState({required this.onVoiceMode});
+
+  final VoidCallback onVoiceMode;
 
   @override
   Widget build(BuildContext context) {
@@ -437,8 +517,14 @@ class _CoachEmptyState extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Write a sentence or use the microphone to talk with your tutor.',
+                'Write a sentence, or just talk: voice mode listens, answers aloud and listens again, with no buttons in between.',
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: onVoiceMode,
+                icon: const Icon(Icons.graphic_eq),
+                label: const Text('Start voice conversation'),
               ),
             ],
           ),

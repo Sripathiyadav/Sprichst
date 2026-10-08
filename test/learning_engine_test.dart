@@ -103,7 +103,8 @@ void main() {
         () {
       expect(curriculum.firstIncomplete((id) => id == 'pre_a1_greetings')!.id,
           'pre_a1_introductions');
-      expect(curriculum.firstIncomplete((_) => true)!.id, 'b2_testdaf_graph');
+      expect(curriculum.firstIncomplete((_) => true)!.id,
+          curriculum.lessons.last.id);
     });
 
     test('interleaves exercises across skills without duplicates', () {
@@ -280,7 +281,26 @@ void main() {
       expect(decoded.currentLevel, CefrLevel.a1);
       expect(decoded.isLessonCompleted('pre_a1_greetings'), isTrue);
       expect(decoded.scores.vocabulary, .6);
-      expect(decoded.speechRate, 230);
+      expect(decoded.speechRate, defaultSpeechRate);
+      expect(decoded.voice, defaultVoiceId);
+      expect(decoded.voicePauseMs, defaultVoicePauseMs);
+    });
+
+    test('keeps a saved voice (including the old system name) and pause', () {
+      final saved = ProfileCodec.decode({
+        'name': 'Sam',
+        'voice': 'Anna',
+        'speechRate': 200,
+        'voicePauseMs': 1800,
+      }, decodeDate: decode);
+      expect(saved.voice, 'Anna');
+      expect(saved.speechRate, 200);
+      expect(saved.voicePauseMs, 1800);
+      final again = ProfileCodec.decode(
+          ProfileCodec.encode(saved, encodeDate: (d) => d.toIso8601String()),
+          decodeDate: decode);
+      expect(again.voice, 'Anna');
+      expect(again.voicePauseMs, 1800);
     });
   });
 }

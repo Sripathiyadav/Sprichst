@@ -8,6 +8,7 @@
 //   PREVIEW_STYLE      = glass | standard        (default glass)
 //   PREVIEW_INTENSITY  = 0..100                  (default 60)
 //   PREVIEW_GOAL       = everyday | travel | work | goethe | testdaf
+//   PREVIEW_REAL_AI    = true: use the real AI repository (server/on-device) instead of the mock
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +31,7 @@ import 'package:sprichst/features/auth/auth_view_model.dart';
 const _appearance = String.fromEnvironment('PREVIEW_APPEARANCE');
 const _style = String.fromEnvironment('PREVIEW_STYLE');
 const _goal = String.fromEnvironment('PREVIEW_GOAL');
+const _realAi = bool.fromEnvironment('PREVIEW_REAL_AI');
 const _intensity = int.fromEnvironment('PREVIEW_INTENSITY', defaultValue: 60);
 
 class _PreviewUser implements User {
@@ -138,7 +140,7 @@ void main() {
     overrides: [
       authRepositoryProvider.overrideWithValue(_PreviewAuth()),
       learningRepositoryProvider.overrideWithValue(_PreviewLearning()),
-      aiRepositoryProvider.overrideWithValue(MockAIRepository()),
+      if (!_realAi) aiRepositoryProvider.overrideWithValue(MockAIRepository()),
     ],
     child: const SprichstApp(),
   ));

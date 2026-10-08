@@ -4,7 +4,8 @@ Sprichst AI Gateway.
 The Flutter client calls this service instead of Ollama directly.
 
 Text generation can use Groq/Qwen or local Ollama depending on
-AI_PROVIDER. Whisper transcription and macOS TTS remain local.
+AI_PROVIDER. Whisper transcription and text-to-speech (open-source
+Piper voices, with the macOS voice as a fallback) remain local.
 """
 
 from __future__ import annotations
@@ -23,6 +24,14 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
+
+from .voices import (
+    PiperEngine,
+    Voice,
+    VoiceCatalogue,
+    default_voices_dir,
+    system_say_command,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -94,8 +103,6 @@ WHISPER_LANGUAGE = os.getenv(
     "de",
 )
 
-TTS_VOICE = "Anna"
-TTS_RATE = "200"
 
 
 # ---------------------------------------------------------------------------
@@ -103,8 +110,8 @@ TTS_RATE = "200"
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
-    title="Sprichts AI Gateway",
-    version="0.1.0",
+    title="Sprichst AI Gateway",
+    version="0.2.0",
 )
 
 app.add_middleware(
@@ -113,6 +120,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Voice-Used", "X-Voice-Fallback"],
 )
 
 
@@ -163,6 +171,25 @@ class CorrectRequest(BaseModel):
     )
 
 
+class SpeakRequest(BaseModel):
+    message: str = Field(
+        min_length=1,
+        max_length=MAX_TEXT_LENGTH,
+    )
+
+    # A voice id from /v1/voices. Older app versions send a system voice name
+    # such as "Anna"; unknown or uninstalled voices fall back to the best one
+    # that works (see X-Voice-Fallback in the response).
+    voice: str | None = Field(default=None, max_length=80)
+
+    # Speaking speed in words per minute (the app's speed slider).
+    rate: int | None = Field(default=None, ge=100, le=400)
+
+    context: LearningContext = Field(
+        default_factory=LearningContext,
+    )
+
+
 class ChatRequest(BaseModel):
     message: str = Field(
         min_length=1,
@@ -187,7 +214,7 @@ def _system_prompt(context: LearningContext) -> str:
     )
 
     return f"""
-You are Sprichts, a careful German tutor.
+You are Sprichst, a careful German tutor.
 
 The learner is at {context.level}.
 
@@ -847,12 +874,23 @@ The learner's weak skills are:
 
 
 # ---------------------------------------------------------------------------
-# Local macOS TTS
+# Text to speech: open-source Piper voices, with the system voice as fallback
 # ---------------------------------------------------------------------------
+
+voice_catalogue = VoiceCatalogue(voices_dir=default_voices_dir())
+piper_engine = PiperEngine(voice_catalogue)
+
+
+@app.get("/v1/voices")
+def list_voices() -> dict[str, Any]:
+    """The voices the learner can choose from, and which are installed."""
+
+    return voice_catalogue.listing()
+
 
 @app.post("/v1/speak")
 def speak(
-    request: ChatRequest,
+    request: SpeakRequest,
 ) -> Response:
 
     text = request.message.strip()
@@ -863,118 +901,97 @@ def speak(
             detail="Speech text cannot be empty.",
         )
 
-    with tempfile.TemporaryDirectory(
-        prefix="sprichst_tts_",
-    ) as temp_dir:
+    voice, is_fallback = voice_catalogue.resolve(request.voice)
 
+    try:
+        if voice.engine == "piper":
+            audio = piper_engine.synthesize(text, voice, request.rate)
+        else:
+            audio = _speak_with_system_voice(text, voice, request.rate)
+    except HTTPException:
+        raise
+    except Exception as error:  # a broken model must not take the app down
+        raise HTTPException(
+            status_code=500,
+            detail=f"Speech synthesis failed with {voice.label}: {error}",
+        ) from error
+
+    return Response(
+        content=audio,
+        media_type="audio/wav",
+        headers={
+            "Content-Disposition": "inline; filename=speech.wav",
+            "X-Voice-Used": voice.id,
+            "X-Voice-Fallback": "true" if is_fallback else "false",
+        },
+    )
+
+
+def _speak_with_system_voice(
+    text: str,
+    voice: Voice,
+    wpm: int | None,
+) -> bytes:
+    """Speak with the operating system's voice (macOS ``say``)."""
+
+    if not Path("/usr/bin/say").exists():
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "No voice is installed. Run "
+                "'python3 scripts/download_voices.py de_DE-thorsten-medium' "
+                "in ai-server and install the 'piper-tts' package."
+            ),
+        )
+
+    with tempfile.TemporaryDirectory(prefix="sprichst_tts_") as temp_dir:
         temp_path = Path(temp_dir)
-
         aiff_path = temp_path / "speech.aiff"
         wav_path = temp_path / "speech.wav"
 
-        try:
-            say_result = subprocess.run(
-                [
-                    "/usr/bin/say",
-                    "-v",
-                    TTS_VOICE,
-                    "-r",
-                    TTS_RATE,
-                    "-o",
-                    str(aiff_path),
-                    text,
-                ],
-                capture_output=True,
-                text=True,
-                timeout=30,
-                check=False,
-            )
-
-        except subprocess.TimeoutExpired as error:
-            raise HTTPException(
-                status_code=504,
-                detail="Speech synthesis timed out.",
-            ) from error
-
-        except OSError as error:
-            raise HTTPException(
-                status_code=500,
-                detail="Could not start macOS speech synthesis.",
-            ) from error
-
-        if say_result.returncode != 0:
+        say_result = _run(
+            system_say_command(voice.model, wpm, aiff_path, text),
+            "macOS speech synthesis",
+        )
+        if not aiff_path.exists() or aiff_path.stat().st_size == 0:
             raise HTTPException(
                 status_code=500,
                 detail=(
-                    "macOS speech synthesis failed: "
-                    f"{say_result.stderr.strip()}"
+                    "Speech synthesis did not produce audio"
+                    f"{': ' + say_result if say_result else '.'}"
                 ),
             )
 
-        if (
-            not aiff_path.exists()
-            or aiff_path.stat().st_size == 0
-        ):
-            raise HTTPException(
-                status_code=500,
-                detail="Speech synthesis did not produce an AIFF file.",
-            )
-
-        convert_command = [
-            "/usr/bin/afconvert",
-            "-f",
-            "WAVE",
-            "-d",
-            "LEI16@16000",
-            str(aiff_path),
-            str(wav_path),
-        ]
-
-        try:
-            convert_result = subprocess.run(
-                convert_command,
-                capture_output=True,
-                text=True,
-                timeout=30,
-                check=False,
-            )
-
-        except subprocess.TimeoutExpired as error:
-            raise HTTPException(
-                status_code=504,
-                detail="Audio conversion timed out.",
-            ) from error
-
-        except OSError as error:
-            raise HTTPException(
-                status_code=500,
-                detail="Could not start audio conversion.",
-            ) from error
-
-        if convert_result.returncode != 0:
-            raise HTTPException(
-                status_code=500,
-                detail=(
-                    "Audio conversion failed: "
-                    f"{convert_result.stderr.strip()}"
-                ),
-            )
-
-        if (
-            not wav_path.exists()
-            or wav_path.stat().st_size == 0
-        ):
+        _run(
+            [
+                "/usr/bin/afconvert", "-f", "WAVE", "-d", "LEI16@16000",
+                str(aiff_path), str(wav_path),
+            ],
+            "Audio conversion",
+        )
+        if not wav_path.exists() or wav_path.stat().st_size == 0:
             raise HTTPException(
                 status_code=500,
                 detail="Speech synthesis produced an empty audio file.",
             )
+        return wav_path.read_bytes()
 
-        return Response(
-            content=wav_path.read_bytes(),
-            media_type="audio/wav",
-            headers={
-                "Content-Disposition": (
-                    "inline; filename=speech.wav"
-                ),
-            },
+
+def _run(command: list[str], what: str) -> str:
+    """Run a helper process; returns its stderr, raises HTTP errors on failure."""
+
+    try:
+        result = subprocess.run(
+            command, capture_output=True, text=True, timeout=30, check=False,
         )
+    except subprocess.TimeoutExpired as error:
+        raise HTTPException(status_code=504, detail=f"{what} timed out.") from error
+    except OSError as error:
+        raise HTTPException(status_code=500, detail=f"Could not start {what.lower()}.") from error
+
+    if result.returncode != 0:
+        raise HTTPException(
+            status_code=500,
+            detail=f"{what} failed: {result.stderr.strip()}",
+        )
+    return result.stderr.strip()

@@ -75,10 +75,15 @@ class MockAIRepository implements AIRepository {
   }
 
   @override
-  Future<List<int>> synthesizeSpeech(
+  Future<SpeechAudio> synthesizeSpeech(
     String text,
-    TutorContext context,
-  ) {
+    TutorContext context, {
+    String? voice,
+    int? speechRate,
+  }) {
     throw UnsupportedError('Speech playback requires the local AI gateway.');
   }
+
+  @override
+  Future<VoiceList> listVoices() async => VoiceList.offline;
 }

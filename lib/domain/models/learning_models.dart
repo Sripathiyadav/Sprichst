@@ -2,11 +2,13 @@ import 'exam_models.dart';
 import 'gamification_models.dart';
 import 'progress_models.dart';
 import 'vocab_models.dart';
+import 'voice_models.dart';
 
 export 'exam_models.dart';
 export 'gamification_models.dart';
 export 'progress_models.dart';
 export 'vocab_models.dart';
+export 'voice_models.dart';
 
 enum CefrLevel { preA1, a1, a2, b1, b2, c1 }
 
@@ -45,15 +47,18 @@ enum AIProviderPreference { automatic, groq, local }
 extension AIProviderPreferenceLabel on AIProviderPreference {
   String get label => switch (this) {
         AIProviderPreference.automatic => 'Automatic',
-        AIProviderPreference.groq => 'Groq',
-        AIProviderPreference.local => 'Local',
+        AIProviderPreference.groq => 'AI server first',
+        AIProviderPreference.local => 'This phone only',
       };
 
+  // `groq` and `local` keep their stored names so saved profiles still load.
   String get description => switch (this) {
         AIProviderPreference.automatic =>
-          'Use the cloud tutor when available, with a local fallback.',
-        AIProviderPreference.groq => 'Use the configured cloud tutor.',
-        AIProviderPreference.local => 'Use the configured local model.',
+          'Use the models on this phone; use the AI server only for anything not downloaded yet.',
+        AIProviderPreference.groq =>
+          'Use the AI server when it can be reached (better answers), and this phone when offline.',
+        AIProviderPreference.local =>
+          'Never send anything off the phone. Needs the models downloaded.',
       };
 }
 
@@ -391,6 +396,7 @@ class LearningProfile {
     required this.aiModel,
     required this.voice,
     required this.speechRate,
+    required this.voicePauseMs,
     required this.advancedAiControls,
     required this.lessonRemindersEnabled,
     required this.reviewRemindersEnabled,
@@ -434,8 +440,9 @@ class LearningProfile {
         glassIntensity: defaultGlassIntensity,
         aiProviderPreference: AIProviderPreference.automatic,
         aiModel: 'Qwen',
-        voice: 'Anna',
-        speechRate: 230,
+        voice: defaultVoiceId,
+        speechRate: defaultSpeechRate,
+        voicePauseMs: defaultVoicePauseMs,
         advancedAiControls: false,
         lessonRemindersEnabled: false,
         reviewRemindersEnabled: false,
@@ -477,6 +484,9 @@ class LearningProfile {
   final String aiModel;
   final String voice;
   final int speechRate;
+
+  /// How long a pause ends your turn in hands-free voice mode.
+  final int voicePauseMs;
   final bool advancedAiControls;
   final bool lessonRemindersEnabled;
   final bool reviewRemindersEnabled;
@@ -526,6 +536,7 @@ class LearningProfile {
     String? aiModel,
     String? voice,
     int? speechRate,
+    int? voicePauseMs,
     bool? advancedAiControls,
     bool? lessonRemindersEnabled,
     bool? reviewRemindersEnabled,
@@ -561,6 +572,7 @@ class LearningProfile {
         aiModel: aiModel ?? this.aiModel,
         voice: voice ?? this.voice,
         speechRate: speechRate ?? this.speechRate,
+        voicePauseMs: voicePauseMs ?? this.voicePauseMs,
         advancedAiControls: advancedAiControls ?? this.advancedAiControls,
         lessonRemindersEnabled:
             lessonRemindersEnabled ?? this.lessonRemindersEnabled,
@@ -604,6 +616,7 @@ class LearningProfile {
         aiModel: aiModel,
         voice: voice,
         speechRate: speechRate,
+        voicePauseMs: voicePauseMs,
         advancedAiControls: advancedAiControls,
         lessonRemindersEnabled: lessonRemindersEnabled,
         reviewRemindersEnabled: reviewRemindersEnabled,
@@ -612,7 +625,8 @@ class LearningProfile {
 }
 
 /// The compact, trusted learner state shared with the AI tutor. Learning
-/// signals only: name, provider, and voice preferences never leave the device.
+/// signals only: name and provider preferences never leave the device. (The
+/// chosen voice and speed are sent only with a request to speak.)
 class TutorContext {
   const TutorContext({
     required this.level,

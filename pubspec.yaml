@@ -50,6 +50,12 @@ dependencies:
   path_provider: ^2.1.6
   just_audio_web: ^0.4.16
   web: ^1.1.1
+  llamadart: 0.8.24
+  llamadart_llama_cpp_flutter: 0.0.19
+  sherpa_onnx: ^1.13.8
+  device_info_plus: ^13.2.0
+  archive: ^4.1.0
+  crypto: ^3.0.7
 dev_dependencies:
   flutter_test:
     sdk: flutter

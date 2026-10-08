@@ -38,11 +38,8 @@ class _SpeakButtonState extends ConsumerState<SpeakButton> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      final app = ref.read(appControllerProvider);
-      final audio = await ref
-          .read(aiRepositoryProvider)
-          .synthesizeSpeech(widget.text, app.tutorContext);
-      await _player.playBytes(audio);
+      final audio = await ref.read(appControllerProvider).speak(widget.text);
+      await _player.playBytes(audio.bytes);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -1,7 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/ai/ai_server_settings.dart';
 import '../data/ai/http_ai_repository.dart';
+import '../data/ai/hybrid_ai_repository.dart';
+import '../data/on_device/model_manager.dart';
+import '../data/on_device/on_device_ai_repository.dart';
+import '../data/on_device/on_device_runtime.dart';
 import '../data/firestore/firestore_learning_repository.dart';
 import '../domain/games/game_models.dart';
 import '../domain/games/word_pool.dart';
@@ -24,17 +29,46 @@ import '../domain/repositories/learning_repository.dart';
 final learningRepositoryProvider = Provider<LearningRepository>((ref) {
   return FirestoreLearningRepository();
 });
-final aiRepositoryProvider = Provider<AIRepository>((ref) {
-  return HttpAIRepository(
-    baseUrl: 'http://127.0.0.1:8000',
+
+/// Where the AI gateway is, remembered on this device.
+final aiServerSettingsProvider = ChangeNotifierProvider<AiServerSettings>(
+    (ref) => AiServerSettings()..load());
+
+final onDeviceRuntimeProvider =
+    Provider<OnDeviceRuntime>((ref) => createOnDeviceRuntime());
+
+/// Models downloaded to this phone, and downloads in progress.
+final modelManagerProvider = ChangeNotifierProvider<ModelManager>(
+    (ref) => ModelManager(ref.watch(onDeviceRuntimeProvider)));
+
+/// The tutor runs on the phone; the AI server is optional (see
+/// [HybridAIRepository] for how the learner's preference picks between them).
+final Provider<AIRepository> aiRepositoryProvider =
+    Provider<AIRepository>((ref) {
+  final models = ref.read(modelManagerProvider);
+  return HybridAIRepository(
+    onDevice: OnDeviceAIRepository(models),
+    server: HttpAIRepository.dynamic(
+        baseUrl: () => ref.read(aiServerSettingsProvider).url),
+    models: models,
   );
 });
 
 final appControllerProvider = ChangeNotifierProvider<AppController>((ref) {
-  return AppController(
+  final ai = ref.watch(aiRepositoryProvider);
+  final controller = AppController(
     learningRepository: ref.watch(learningRepositoryProvider),
-    aiRepository: ref.watch(aiRepositoryProvider),
+    aiRepository: ai,
   );
+  // The repository follows the learner's setting. It is wired here, in one
+  // direction only: reading the controller from inside the repository's own
+  // provider is a circular dependency that fails every coach request.
+  if (ai is HybridAIRepository) {
+    ai.preference = () =>
+        controller.profile?.aiProviderPreference ??
+        AIProviderPreference.automatic;
+  }
+  return controller;
 });
 
 class AppController extends ChangeNotifier {
@@ -326,6 +360,31 @@ class AppController extends ChangeNotifier {
     return _planner.buildSession(current, curriculum,
         now: DateTime.now(), skillIds: skillIds, limit: limit);
   }
+
+  /// Speaks [text] with the learner's chosen voice and speed. [voice] overrides
+  /// the saved voice (used to preview voices in settings).
+  Future<SpeechAudio> speak(String text, {String? voice}) {
+    final current = _requireProfile();
+    return _aiRepository.synthesizeSpeech(
+      text,
+      tutorContext,
+      voice: voice ?? current.voice,
+      speechRate: current.speechRate,
+    );
+  }
+
+  /// The voices the gateway offers, or the built-in list when it is offline.
+  Future<VoiceList> loadVoices() async {
+    try {
+      return await _aiRepository.listVoices();
+    } catch (_) {
+      return VoiceList.offline;
+    }
+  }
+
+  /// Transcribes a recorded clip.
+  Future<String> transcribe(AudioCapture audio) async =>
+      (await _aiRepository.transcribeAudio(audio, tutorContext)).text;
 
   Future<CoachReply> correctGerman(String text) =>
       _aiRepository.correctGerman(text, tutorContext);

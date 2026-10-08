@@ -15,6 +15,8 @@ import 'package:sprichst/domain/repositories/auth_repository.dart';
 import 'package:sprichst/domain/repositories/learning_repository.dart';
 import 'package:sprichst/features/auth/auth_view_model.dart';
 
+import 'on_device_fakes.dart';
+
 /// The real course file, parsed straight from disk (tests run from the root).
 List<Lesson> loadCourse() =>
     CurriculumParser.parse(File('curriculum/course.json').readAsStringSync());
@@ -94,6 +96,7 @@ List<Override> testOverrides(InMemoryLearningRepository learning,
           .overrideWithValue(auth ?? FakeAuthRepository(signedIn: signedIn)),
       learningRepositoryProvider.overrideWithValue(learning),
       aiRepositoryProvider.overrideWithValue(MockAIRepository()),
+      onDeviceRuntimeProvider.overrideWithValue(FakeRuntime()),
     ];
 
 /// Pumps the whole app at [size] with the platform in [brightness].

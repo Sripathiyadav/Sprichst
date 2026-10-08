@@ -949,7 +949,10 @@
           "skills": [
             "ordering_food"
           ],
-          "area": "writing"
+          "area": "writing",
+          "alternatives": [
+            "Die Rechnung bitte"
+          ]
         },
         {
           "id": "food_6",
@@ -3120,6 +3123,1336 @@
       "exam": "goethe"
     },
     {
+      "id": "a2_separable_verbs",
+      "level": "a2",
+      "unit": "Daily life",
+      "title": "Daily routine: separable verbs",
+      "durationMinutes": 14,
+      "objective": "Use separable verbs such as aufstehen and einkaufen in main clauses and with modal verbs.",
+      "introduction": "Many German verbs have a prefix that separates: aufstehen → Ich stehe um sieben Uhr auf. In a main clause the verb is in position 2 and the prefix goes to the very end. With a modal verb the whole verb stays together at the end: Ich muss früh aufstehen.",
+      "examples": [
+        "Ich stehe um sieben Uhr auf. — I get up at seven.",
+        "Sie kauft am Samstag ein. — She goes shopping on Saturday.",
+        "Ich muss früh aufstehen. — I have to get up early."
+      ],
+      "exercises": [
+        {
+          "id": "sv_1",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Ich stehe um sieben Uhr auf.",
+            "Ich aufstehe um sieben Uhr.",
+            "Ich auf stehe um sieben Uhr."
+          ],
+          "answer": "Ich stehe um sieben Uhr auf.",
+          "explanation": "The prefix auf goes to the end of the main clause.",
+          "skills": [
+            "separable_verbs",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "sv_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Der Zug kommt um acht Uhr ___.” (arrives)",
+          "answer": "an",
+          "explanation": "ankommen: Der Zug kommt an.",
+          "skills": [
+            "separable_verbs"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "sv_3",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “She goes shopping on Saturday.”",
+          "options": [
+            "Sie",
+            "kauft",
+            "am",
+            "Samstag",
+            "ein"
+          ],
+          "answer": "Sie kauft am Samstag ein",
+          "explanation": "Verb in position 2, prefix at the end.",
+          "skills": [
+            "separable_verbs",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "sv_4",
+          "kind": "multipleChoice",
+          "prompt": "What does “Ich rufe dich morgen an” mean?",
+          "options": [
+            "I will call you tomorrow.",
+            "I am calling you today.",
+            "I called you yesterday."
+          ],
+          "answer": "I will call you tomorrow.",
+          "explanation": "anrufen = to call; morgen = tomorrow.",
+          "skills": [
+            "separable_verbs"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "sv_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “I get up at six.”",
+          "answer": "Ich stehe um sechs Uhr auf",
+          "explanation": "aufstehen is separable: stehe … auf.",
+          "skills": [
+            "separable_verbs"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Um sechs Uhr stehe ich auf"
+          ]
+        },
+        {
+          "id": "sv_6",
+          "kind": "listening",
+          "prompt": "Listen. Wann kommt die Person im Büro an?",
+          "audioText": "Ich stehe jeden Tag um halb sieben auf, frühstücke und fahre dann mit dem Bus zur Arbeit. Um acht Uhr komme ich im Büro an.",
+          "options": [
+            "um 8:00",
+            "um 6:30",
+            "um 7:30"
+          ],
+          "answer": "um 8:00",
+          "explanation": "“Um acht Uhr komme ich im Büro an.”",
+          "skills": [
+            "separable_verbs",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "aufstehen",
+          "en": "to get up",
+          "example": "Ich stehe früh auf.",
+          "exampleEn": "I get up early."
+        },
+        {
+          "de": "einkaufen",
+          "en": "to go shopping",
+          "example": "Wir kaufen heute ein.",
+          "exampleEn": "We go shopping today."
+        },
+        {
+          "de": "ankommen",
+          "en": "to arrive",
+          "example": "Der Bus kommt um neun an.",
+          "exampleEn": "The bus arrives at nine."
+        },
+        {
+          "de": "abfahren",
+          "en": "to depart",
+          "example": "Der Zug fährt um acht ab.",
+          "exampleEn": "The train leaves at eight."
+        },
+        {
+          "de": "fernsehen",
+          "en": "to watch TV",
+          "example": "Abends sehe ich fern.",
+          "exampleEn": "In the evening I watch TV."
+        },
+        {
+          "de": "aufräumen",
+          "en": "to tidy up",
+          "example": "Ich räume mein Zimmer auf.",
+          "exampleEn": "I tidy my room."
+        },
+        {
+          "de": "Wecker",
+          "en": "alarm clock",
+          "article": "der",
+          "example": "Der Wecker klingelt um sechs.",
+          "exampleEn": "The alarm clock rings at six."
+        },
+        {
+          "de": "Alltag",
+          "en": "everyday life",
+          "article": "der",
+          "example": "Im Alltag habe ich wenig Zeit.",
+          "exampleEn": "In everyday life I have little time."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Work"
+      ],
+      "requires": [
+        "a1_word_order",
+        "a1_modal_verbs"
+      ]
+    },
+    {
+      "id": "a2_comparison",
+      "level": "a2",
+      "unit": "Describing things",
+      "title": "Comparing: besser, am besten",
+      "durationMinutes": 14,
+      "objective": "Compare people and things with the comparative and superlative.",
+      "introduction": "Add -er for the comparative (schnell → schneller) and use als for the comparison: Der Zug ist schneller als der Bus. For the superlative use am + -sten: am schnellsten. Short adjectives often add an umlaut (groß → größer, alt → älter), and a few are irregular: gut – besser – am besten, gern – lieber – am liebsten. For equality use so … wie.",
+      "examples": [
+        "Der Zug ist schneller als der Bus. — The train is faster than the bus.",
+        "Ich trinke lieber Tee als Kaffee. — I prefer tea to coffee.",
+        "Das ist am schönsten. — That is the most beautiful."
+      ],
+      "exercises": [
+        {
+          "id": "cmp_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Berlin ist ___ als Hamburg.” (bigger)",
+          "options": [
+            "größer",
+            "großer",
+            "mehr groß"
+          ],
+          "answer": "größer",
+          "explanation": "groß → größer, with an umlaut.",
+          "skills": [
+            "comparison"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "cmp_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich trinke ___ Tee als Kaffee.” (I prefer tea to coffee)",
+          "answer": "lieber",
+          "explanation": "gern – lieber – am liebsten.",
+          "skills": [
+            "comparison"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "cmp_3",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Der ICE ist am ___.” (the fastest)",
+          "options": [
+            "schnellsten",
+            "schnellster",
+            "schneller"
+          ],
+          "answer": "schnellsten",
+          "explanation": "am + adjective + -sten.",
+          "skills": [
+            "comparison"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "cmp_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “My brother is older than me.”",
+          "options": [
+            "Mein",
+            "Bruder",
+            "ist",
+            "älter",
+            "als",
+            "ich"
+          ],
+          "answer": "Mein Bruder ist älter als ich",
+          "explanation": "alt → älter; comparison with als.",
+          "skills": [
+            "comparison",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "cmp_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “The coffee is hotter than the tea.”",
+          "answer": "Der Kaffee ist heißer als der Tee",
+          "explanation": "heiß → heißer, then als.",
+          "skills": [
+            "comparison"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "cmp_6",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Heute ist es so warm ___ gestern.” (as warm as)",
+          "options": [
+            "wie",
+            "als",
+            "wie als"
+          ],
+          "answer": "wie",
+          "explanation": "Equality uses so … wie; inequality uses als.",
+          "skills": [
+            "comparison"
+          ],
+          "area": "grammar"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "billig",
+          "en": "cheap",
+          "example": "Das Brot ist billig.",
+          "exampleEn": "The bread is cheap."
+        },
+        {
+          "de": "teuer",
+          "en": "expensive",
+          "example": "Das Hotel ist teuer.",
+          "exampleEn": "The hotel is expensive."
+        },
+        {
+          "de": "gesund",
+          "en": "healthy",
+          "example": "Obst ist gesund.",
+          "exampleEn": "Fruit is healthy."
+        },
+        {
+          "de": "langsam",
+          "en": "slow",
+          "example": "Der Bus ist langsam.",
+          "exampleEn": "The bus is slow."
+        },
+        {
+          "de": "interessant",
+          "en": "interesting",
+          "example": "Das Buch ist interessant.",
+          "exampleEn": "The book is interesting."
+        },
+        {
+          "de": "Wetter",
+          "en": "weather",
+          "article": "das",
+          "example": "Das Wetter ist heute schön.",
+          "exampleEn": "The weather is nice today."
+        },
+        {
+          "de": "Unterschied",
+          "en": "difference",
+          "article": "der",
+          "example": "Es gibt einen großen Unterschied.",
+          "exampleEn": "There is a big difference."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "requires": [
+        "a1_sein"
+      ]
+    },
+    {
+      "id": "a2_two_way_prepositions",
+      "level": "a2",
+      "unit": "Places",
+      "title": "Where? Where to? in, auf, an, neben",
+      "durationMinutes": 16,
+      "objective": "Choose dative for position (wo?) and accusative for movement (wohin?) with two-way prepositions.",
+      "introduction": "The prepositions in, auf, an, über, unter, vor, hinter, neben and zwischen take the dative when you say where something IS (Wo? Das Buch liegt auf dem Tisch) and the accusative when something MOVES to a place (Wohin? Ich lege das Buch auf den Tisch). Contractions: in dem → im, in das → ins, an dem → am.",
+      "examples": [
+        "Das Buch liegt auf dem Tisch. — The book is lying on the table.",
+        "Ich lege das Buch auf den Tisch. — I put the book on the table.",
+        "Wir gehen ins Kino. — We are going to the cinema."
+      ],
+      "exercises": [
+        {
+          "id": "tw_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Das Buch liegt ___ Tisch.” (on the table: where?)",
+          "options": [
+            "auf dem",
+            "auf den",
+            "auf der"
+          ],
+          "answer": "auf dem",
+          "explanation": "Position (wo?) → dative; der Tisch → dem Tisch.",
+          "skills": [
+            "two_way_prepositions",
+            "dative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "tw_2",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Ich lege das Buch ___ Tisch.” (onto the table: where to?)",
+          "options": [
+            "auf den",
+            "auf dem",
+            "auf der"
+          ],
+          "answer": "auf den",
+          "explanation": "Movement (wohin?) → accusative; der Tisch → den Tisch.",
+          "skills": [
+            "two_way_prepositions",
+            "accusative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "tw_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Wir gehen ___ Kino.” (We go to the cinema.)",
+          "answer": "ins",
+          "explanation": "Movement → accusative; in das = ins.",
+          "skills": [
+            "two_way_prepositions"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "tw_4",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Die Lampe hängt ___ Tisch.” (above the table)",
+          "options": [
+            "über dem",
+            "über den",
+            "über die"
+          ],
+          "answer": "über dem",
+          "explanation": "The lamp is already hanging there (wo?) → dative.",
+          "skills": [
+            "two_way_prepositions",
+            "dative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "tw_5",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “I put the lamp next to the sofa.”",
+          "options": [
+            "Ich",
+            "stelle",
+            "die",
+            "Lampe",
+            "neben",
+            "das",
+            "Sofa"
+          ],
+          "answer": "Ich stelle die Lampe neben das Sofa",
+          "explanation": "stellen = movement → accusative (das Sofa).",
+          "skills": [
+            "two_way_prepositions",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "tw_6",
+          "kind": "translation",
+          "prompt": "Translate into German: “The children are playing in the garden.”",
+          "answer": "Die Kinder spielen im Garten",
+          "explanation": "Position → dative; in dem = im.",
+          "skills": [
+            "two_way_prepositions"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Die Kinder spielen in dem Garten"
+          ]
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Sofa",
+          "en": "sofa",
+          "article": "das",
+          "example": "Das Sofa steht im Wohnzimmer.",
+          "exampleEn": "The sofa is in the living room."
+        },
+        {
+          "de": "Regal",
+          "en": "shelf",
+          "article": "das",
+          "example": "Die Bücher stehen im Regal.",
+          "exampleEn": "The books are on the shelf."
+        },
+        {
+          "de": "Schrank",
+          "en": "cupboard, wardrobe",
+          "article": "der",
+          "example": "Der Schrank ist groß.",
+          "exampleEn": "The wardrobe is big."
+        },
+        {
+          "de": "Wand",
+          "en": "wall",
+          "article": "die",
+          "example": "Das Bild hängt an der Wand.",
+          "exampleEn": "The picture hangs on the wall."
+        },
+        {
+          "de": "Kino",
+          "en": "cinema",
+          "article": "das",
+          "example": "Das Kino ist neben dem Park.",
+          "exampleEn": "The cinema is next to the park."
+        },
+        {
+          "de": "legen",
+          "en": "to lay, put (flat)",
+          "example": "Ich lege das Buch auf den Tisch.",
+          "exampleEn": "I put the book on the table."
+        },
+        {
+          "de": "stellen",
+          "en": "to stand, put (upright)",
+          "example": "Ich stelle die Flasche auf den Tisch.",
+          "exampleEn": "I put the bottle on the table."
+        },
+        {
+          "de": "hängen",
+          "en": "to hang",
+          "example": "Das Bild hängt an der Wand.",
+          "exampleEn": "The picture hangs on the wall."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "requires": [
+        "a2_dative_mit",
+        "a1_accusative"
+      ]
+    },
+    {
+      "id": "a2_preterite_basics",
+      "level": "a2",
+      "unit": "Past events",
+      "title": "The past: war, hatte, konnte",
+      "durationMinutes": 14,
+      "objective": "Talk about the past with the simple past of sein, haben and the modal verbs.",
+      "introduction": "For sein, haben and the modal verbs, Germans usually use the simple past (Präteritum) even in conversation: ich war, du warst, er war, wir waren; ich hatte; ich konnte, musste, wollte. Other verbs use the perfect (Ich habe gearbeitet).",
+      "examples": [
+        "Gestern war ich krank. — Yesterday I was ill.",
+        "Er hatte keine Zeit. — He had no time.",
+        "Ich konnte nicht kommen. — I could not come."
+      ],
+      "exercises": [
+        {
+          "id": "pt_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Gestern ___ ich krank.”",
+          "options": [
+            "war",
+            "bin",
+            "wurde"
+          ],
+          "answer": "war",
+          "explanation": "ich war is the simple past of sein.",
+          "skills": [
+            "preterite_sein_haben"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pt_2",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Letztes Jahr ___ wir in Spanien.” (we were)",
+          "answer": "waren",
+          "explanation": "wir waren.",
+          "skills": [
+            "preterite_sein_haben"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pt_3",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Er ___ keine Zeit.” (he had)",
+          "options": [
+            "hatte",
+            "hat",
+            "hatten"
+          ],
+          "answer": "hatte",
+          "explanation": "er hatte.",
+          "skills": [
+            "preterite_sein_haben"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pt_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “I could not come.”",
+          "options": [
+            "Ich",
+            "konnte",
+            "nicht",
+            "kommen"
+          ],
+          "answer": "Ich konnte nicht kommen",
+          "explanation": "konnte (past of können) is in position 2; the infinitive goes last.",
+          "skills": [
+            "preterite_modals",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pt_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “We had to work yesterday.”",
+          "answer": "Wir mussten gestern arbeiten",
+          "explanation": "müssen → musste, mussten.",
+          "skills": [
+            "preterite_modals"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Gestern mussten wir arbeiten"
+          ]
+        },
+        {
+          "id": "pt_6",
+          "kind": "listening",
+          "prompt": "Listen. Warum konnte die Schwester nicht kommen?",
+          "audioText": "Am Samstag war ich bei meiner Oma. Wir hatten viel Spaß. Leider konnte meine Schwester nicht kommen, denn sie musste arbeiten.",
+          "options": [
+            "Sie musste arbeiten.",
+            "Sie war krank.",
+            "Sie hatte keine Zeit."
+          ],
+          "answer": "Sie musste arbeiten.",
+          "explanation": "“… denn sie musste arbeiten.”",
+          "skills": [
+            "preterite_modals",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Oma",
+          "en": "grandma",
+          "article": "die",
+          "example": "Meine Oma wohnt in Wien.",
+          "exampleEn": "My grandma lives in Vienna."
+        },
+        {
+          "de": "Spaß",
+          "en": "fun",
+          "article": "der",
+          "example": "Wir haben viel Spaß.",
+          "exampleEn": "We have a lot of fun."
+        },
+        {
+          "de": "früher",
+          "en": "earlier, in the past",
+          "example": "Früher wohnte ich in Köln.",
+          "exampleEn": "I used to live in Cologne."
+        },
+        {
+          "de": "damals",
+          "en": "back then",
+          "example": "Damals hatte ich kein Auto.",
+          "exampleEn": "Back then I had no car."
+        },
+        {
+          "de": "Reise",
+          "en": "trip, journey",
+          "article": "die",
+          "example": "Die Reise war lang.",
+          "exampleEn": "The trip was long."
+        },
+        {
+          "de": "Ferien",
+          "en": "holidays (plural)",
+          "article": "die",
+          "example": "Die Ferien beginnen im Juli.",
+          "exampleEn": "The holidays begin in July."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Family",
+        "Travel"
+      ],
+      "requires": [
+        "a1_sein",
+        "a1_haben",
+        "a1_modal_verbs"
+      ]
+    },
+    {
+      "id": "a2_housing",
+      "level": "a2",
+      "unit": "Living",
+      "title": "Looking for a flat",
+      "durationMinutes": 16,
+      "objective": "Read a flat advert and write a short enquiry using wishes and comparisons.",
+      "introduction": "Flat adverts are compact: 2-Zimmer-Wohnung, 55 m², Küche, Balkon, Miete 650 € warm (including heating costs). Key words: Miete, Nebenkosten (running costs), Kaution (deposit), Besichtigung (viewing). In an enquiry use polite modal forms: Kann ich die Wohnung am Samstag ansehen?",
+      "examples": [
+        "Die Miete beträgt 650 Euro. — The rent is 650 euros.",
+        "Kann ich die Wohnung ansehen? — Can I view the flat?",
+        "Ich suche eine Wohnung mit Balkon. — I am looking for a flat with a balcony."
+      ],
+      "exercises": [
+        {
+          "id": "ho_1",
+          "kind": "multipleChoice",
+          "prompt": "Wie viel kostet die Wohnung im Monat?",
+          "options": [
+            "650 Euro",
+            "55 Euro",
+            "1. Mai"
+          ],
+          "answer": "650 Euro",
+          "explanation": "“Miete 650 € warm” is the monthly rent.",
+          "skills": [
+            "housing",
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "2-Zimmer-Wohnung, 55 m², Küche und Balkon.\nMiete 650 € warm. Frei ab 1. Mai.\nBesichtigung: Samstag, 11 Uhr.\nTel. 0170 998877"
+        },
+        {
+          "id": "ho_2",
+          "kind": "multipleChoice",
+          "prompt": "Wann kann man die Wohnung ansehen?",
+          "options": [
+            "am Samstag um 11 Uhr",
+            "am 1. Mai",
+            "am Montag um 11 Uhr"
+          ],
+          "answer": "am Samstag um 11 Uhr",
+          "explanation": "“Besichtigung: Samstag, 11 Uhr.”",
+          "skills": [
+            "housing",
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "2-Zimmer-Wohnung, 55 m², Küche und Balkon.\nMiete 650 € warm. Frei ab 1. Mai.\nBesichtigung: Samstag, 11 Uhr.\nTel. 0170 998877"
+        },
+        {
+          "id": "ho_3",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Die Wohnung hat einen Balkon.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Richtig",
+          "explanation": "The advert lists Küche und Balkon.",
+          "skills": [
+            "housing",
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "2-Zimmer-Wohnung, 55 m², Küche und Balkon.\nMiete 650 € warm. Frei ab 1. Mai.\nBesichtigung: Samstag, 11 Uhr.\nTel. 0170 998877"
+        },
+        {
+          "id": "ho_4",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich suche eine ___ in der Stadt.” (flat)",
+          "answer": "Wohnung",
+          "explanation": "die Wohnung = the flat.",
+          "skills": [
+            "housing"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "ho_5",
+          "kind": "cloze",
+          "prompt": "Complete the enquiry.",
+          "context": "Guten Tag, ich {1} eine Wohnung. Die Miete darf nicht {2} als 700 Euro sein. Kann ich die Wohnung am Samstag {3}?",
+          "gaps": [
+            {
+              "options": [
+                "suche",
+                "suchst",
+                "suchen"
+              ],
+              "answer": "suche"
+            },
+            {
+              "options": [
+                "höher",
+                "hoch",
+                "am höchsten"
+              ],
+              "answer": "höher"
+            },
+            {
+              "options": [
+                "ansehen",
+                "sehe an",
+                "ansehe"
+              ],
+              "answer": "ansehen"
+            }
+          ],
+          "answer": "suche, höher, ansehen",
+          "explanation": "ich suche; höher als (comparative); after kann the separable verb stays together: ansehen.",
+          "skills": [
+            "housing",
+            "comparison",
+            "separable_verbs"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "ho_6",
+          "kind": "translation",
+          "prompt": "Translate into German: “I am looking for a flat with a balcony.”",
+          "answer": "Ich suche eine Wohnung mit Balkon",
+          "explanation": "mit + dative: mit Balkon (no article needed) or mit einem Balkon.",
+          "skills": [
+            "housing"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Ich suche eine Wohnung mit einem Balkon"
+          ]
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Wohnung",
+          "en": "flat, apartment",
+          "article": "die",
+          "example": "Die Wohnung ist hell.",
+          "exampleEn": "The flat is bright."
+        },
+        {
+          "de": "Miete",
+          "en": "rent",
+          "article": "die",
+          "example": "Die Miete ist hoch.",
+          "exampleEn": "The rent is high."
+        },
+        {
+          "de": "Balkon",
+          "en": "balcony",
+          "article": "der",
+          "example": "Wir frühstücken auf dem Balkon.",
+          "exampleEn": "We have breakfast on the balcony."
+        },
+        {
+          "de": "Kaution",
+          "en": "deposit",
+          "article": "die",
+          "example": "Die Kaution beträgt zwei Monatsmieten.",
+          "exampleEn": "The deposit is two months' rent."
+        },
+        {
+          "de": "Nebenkosten",
+          "en": "running costs (plural)",
+          "article": "die",
+          "example": "Die Nebenkosten sind nicht hoch.",
+          "exampleEn": "The running costs are not high."
+        },
+        {
+          "de": "Besichtigung",
+          "en": "viewing",
+          "article": "die",
+          "example": "Die Besichtigung ist am Samstag.",
+          "exampleEn": "The viewing is on Saturday."
+        },
+        {
+          "de": "möbliert",
+          "en": "furnished",
+          "example": "Das Zimmer ist möbliert.",
+          "exampleEn": "The room is furnished."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Work"
+      ],
+      "requires": [
+        "a2_comparison",
+        "a2_separable_verbs"
+      ]
+    },
+    {
+      "id": "a2_goethe_reading_listening",
+      "level": "a2",
+      "unit": "Goethe A2",
+      "title": "Goethe A2 · Reading and listening",
+      "durationMinutes": 20,
+      "objective": "Answer Richtig/Falsch and multiple-choice questions on short emails, notices, announcements and messages, as in the Goethe A2 Lesen and Hören modules.",
+      "introduction": "In Goethe A2 Lesen you read short texts (emails, notices, adverts) and answer Richtig/Falsch or choose a, b or c. In Hören you hear short announcements and dialogues, usually twice. Read the questions first, underline numbers, days and times, and choose the answer that matches what the text says, not what you assume.",
+      "examples": [
+        "Richtig oder Falsch? — True or false?",
+        "Bis Mittwoch antworten. — Reply by Wednesday.",
+        "Der Zug hat Verspätung. — The train is delayed."
+      ],
+      "exercises": [
+        {
+          "id": "ga2rl_1",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Jonas möchte am Freitag im Restaurant feiern.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Richtig",
+          "explanation": "He invites Karin to a birthday meal on Friday.",
+          "skills": [
+            "reading_email"
+          ],
+          "area": "reading",
+          "context": "Liebe Karin,\nich habe am Freitag Geburtstag und möchte mit dir und ein paar Freunden essen gehen. Wir treffen uns um 19 Uhr im Restaurant „Adler“ in der Hauptstraße. Kannst du kommen? Bitte antworte bis Mittwoch.\nLiebe Grüße, Jonas",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "ga2rl_2",
+          "kind": "multipleChoice",
+          "prompt": "Wann treffen sich die Freunde?",
+          "options": [
+            "um 19 Uhr",
+            "um 17 Uhr",
+            "am Mittwoch"
+          ],
+          "answer": "um 19 Uhr",
+          "explanation": "“Wir treffen uns um 19 Uhr.”",
+          "skills": [
+            "reading_email"
+          ],
+          "area": "reading",
+          "context": "Liebe Karin,\nich habe am Freitag Geburtstag und möchte mit dir und ein paar Freunden essen gehen. Wir treffen uns um 19 Uhr im Restaurant „Adler“ in der Hauptstraße. Kannst du kommen? Bitte antworte bis Mittwoch.\nLiebe Grüße, Jonas",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "ga2rl_3",
+          "kind": "multipleChoice",
+          "prompt": "Bis wann soll Karin antworten?",
+          "options": [
+            "bis Mittwoch",
+            "bis Freitag",
+            "bis 19 Uhr"
+          ],
+          "answer": "bis Mittwoch",
+          "explanation": "“Bitte antworte bis Mittwoch.”",
+          "skills": [
+            "reading_email"
+          ],
+          "area": "reading",
+          "context": "Liebe Karin,\nich habe am Freitag Geburtstag und möchte mit dir und ein paar Freunden essen gehen. Wir treffen uns um 19 Uhr im Restaurant „Adler“ in der Hauptstraße. Kannst du kommen? Bitte antworte bis Mittwoch.\nLiebe Grüße, Jonas",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "ga2rl_4",
+          "kind": "multipleChoice",
+          "prompt": "Wie lange darf man Bücher leihen?",
+          "options": [
+            "drei Wochen",
+            "drei Tage",
+            "drei Monate"
+          ],
+          "answer": "drei Wochen",
+          "explanation": "“Bücher können Sie drei Wochen leihen.”",
+          "skills": [
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Stadtbibliothek – Neue Öffnungszeiten ab 1. September:\nMontag bis Freitag 10–19 Uhr, Samstag 10–14 Uhr. Sonntag geschlossen.\nBücher können Sie drei Wochen leihen.",
+          "examPart": "Lesen Teil 2"
+        },
+        {
+          "id": "ga2rl_5",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Am Sonntag ist die Bibliothek geöffnet.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Falsch",
+          "explanation": "“Sonntag geschlossen.”",
+          "skills": [
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Stadtbibliothek – Neue Öffnungszeiten ab 1. September:\nMontag bis Freitag 10–19 Uhr, Samstag 10–14 Uhr. Sonntag geschlossen.\nBücher können Sie drei Wochen leihen.",
+          "examPart": "Lesen Teil 2"
+        },
+        {
+          "id": "ga2rl_6",
+          "kind": "cloze",
+          "prompt": "Complete the reply.",
+          "context": "Liebe Eva,\ndanke {1} deine Einladung. Ich komme sehr {2}. Wir treffen uns {3} 18 Uhr am Bahnhof.",
+          "gaps": [
+            {
+              "options": [
+                "für",
+                "von",
+                "zu"
+              ],
+              "answer": "für"
+            },
+            {
+              "options": [
+                "gern",
+                "gut",
+                "viel"
+              ],
+              "answer": "gern"
+            },
+            {
+              "options": [
+                "um",
+                "in",
+                "am"
+              ],
+              "answer": "um"
+            }
+          ],
+          "answer": "für, gern, um",
+          "explanation": "danke für; gern kommen; um + time.",
+          "skills": [
+            "reading_email"
+          ],
+          "area": "reading",
+          "examPart": "Lesen Teil 3"
+        },
+        {
+          "id": "ga2rl_7",
+          "kind": "listening",
+          "prompt": "Wann fährt der Zug ab?",
+          "audioText": "Achtung an Gleis vier: Der Zug nach Hamburg hat zehn Minuten Verspätung. Er fährt um vierzehn Uhr fünfundzwanzig ab.",
+          "options": [
+            "um 14:25",
+            "um 14:15",
+            "um 14:35"
+          ],
+          "answer": "um 14:25",
+          "explanation": "The new departure time is 14:25.",
+          "skills": [
+            "listening_announcements",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 1"
+        },
+        {
+          "id": "ga2rl_8",
+          "kind": "listening",
+          "prompt": "Was kostet das Zimmer pro Nacht?",
+          "audioText": "Guten Tag, ich möchte ein Zimmer für zwei Nächte. – Ein Einzelzimmer oder ein Doppelzimmer? – Ein Doppelzimmer, bitte, wir sind zu zweit. – Das kostet neunzig Euro pro Nacht mit Frühstück.",
+          "options": [
+            "90 Euro",
+            "19 Euro",
+            "80 Euro"
+          ],
+          "answer": "90 Euro",
+          "explanation": "neunzig = 90.",
+          "skills": [
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 2"
+        },
+        {
+          "id": "ga2rl_9",
+          "kind": "listening",
+          "prompt": "Warum kommt Lisa nicht zum Training?",
+          "audioText": "Hallo Tom, hier ist Lisa. Ich kann heute leider nicht zum Training kommen, weil ich Husten habe. Aber morgen bin ich wieder dabei. Bis dann!",
+          "options": [
+            "Sie ist krank.",
+            "Sie hat keine Zeit.",
+            "Sie muss arbeiten."
+          ],
+          "answer": "Sie ist krank.",
+          "explanation": "Husten (a cough) means she is ill.",
+          "skills": [
+            "listening_announcements"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 3"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Feier",
+          "en": "celebration, party",
+          "article": "die",
+          "example": "Die Feier beginnt um sieben.",
+          "exampleEn": "The celebration starts at seven."
+        },
+        {
+          "de": "Bahnsteig",
+          "en": "platform",
+          "article": "der",
+          "example": "Der Zug fährt von Bahnsteig vier ab.",
+          "exampleEn": "The train leaves from platform four."
+        },
+        {
+          "de": "Fahrplan",
+          "en": "timetable",
+          "article": "der",
+          "example": "Im Fahrplan steht die Abfahrtszeit.",
+          "exampleEn": "The departure time is in the timetable."
+        },
+        {
+          "de": "Bibliothek",
+          "en": "library",
+          "article": "die",
+          "example": "Die Bibliothek ist heute geöffnet.",
+          "exampleEn": "The library is open today."
+        },
+        {
+          "de": "leihen",
+          "en": "to borrow, lend",
+          "example": "Ich leihe ein Buch.",
+          "exampleEn": "I borrow a book."
+        },
+        {
+          "de": "Doppelzimmer",
+          "en": "double room",
+          "article": "das",
+          "example": "Wir buchen ein Doppelzimmer.",
+          "exampleEn": "We book a double room."
+        },
+        {
+          "de": "Husten",
+          "en": "cough",
+          "article": "der",
+          "example": "Ich habe Husten.",
+          "exampleEn": "I have a cough."
+        },
+        {
+          "de": "Training",
+          "en": "training, practice session",
+          "article": "das",
+          "example": "Das Training beginnt um sieben.",
+          "exampleEn": "Training begins at seven."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel",
+        "Family"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "a1_goethe_reading",
+        "a1_goethe_listening",
+        "a2_housing"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "a2_goethe_speaking_writing",
+      "level": "a2",
+      "unit": "Goethe A2",
+      "title": "Goethe A2 · Speaking and writing",
+      "durationMinutes": 20,
+      "objective": "Write a short informal message and practise the questions, requests and suggestions of the Sprechen module.",
+      "introduction": "Goethe A2 Schreiben Teil 1 is a short message to a friend: cover every point (the task lists them), greet and close, and use du. In Sprechen you ask questions (Teil 2), make requests and suggestions (Teil 3: Können Sie bitte …? Wollen wir …?). Speak in complete sentences and stay polite.",
+      "examples": [
+        "Es tut mir leid, aber … — I am sorry, but …",
+        "Können Sie bitte das Fenster öffnen? — Could you please open the window?",
+        "Wollen wir uns am Samstag treffen? — Shall we meet on Saturday?"
+      ],
+      "exercises": [
+        {
+          "id": "ga2sw_1",
+          "kind": "writing",
+          "prompt": "Sie sind krank und können am Samstag nicht zur Party von Max kommen. Schreiben Sie ihm (mindestens 30 Wörter): 1) Entschuldigen Sie sich. 2) Erklären Sie, warum Sie nicht kommen können. 3) Schlagen Sie einen neuen Termin vor.",
+          "answer": "Lieber Max, es tut mir leid, aber ich kann am Samstag nicht zu deiner Party kommen. Ich bin seit gestern krank und habe Fieber. Wollen wir uns nächste Woche treffen? Am Dienstag habe ich Zeit. Viele Grüße, Sam",
+          "explanation": "Good: you apologised, gave a reason, suggested a new date, and used du with a greeting and closing.",
+          "skills": [
+            "message_writing",
+            "informal_register"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 1",
+          "brief": {
+            "minWords": 30,
+            "register": "informal",
+            "points": [
+              {
+                "label": "Apologise",
+                "keywords": [
+                  "tut mir leid",
+                  "entschuldigung",
+                  "entschuldige",
+                  "leider"
+                ]
+              },
+              {
+                "label": "Explain why you cannot come",
+                "keywords": [
+                  "krank",
+                  "fieber",
+                  "erkältet",
+                  "grippe"
+                ]
+              },
+              {
+                "label": "Suggest a new date",
+                "keywords": [
+                  "nächste woche",
+                  "dienstag",
+                  "wollen wir",
+                  "treffen",
+                  "vorschlagen"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "ga2sw_2",
+          "kind": "speaking",
+          "prompt": "Say in German: “Could you please open the window?”",
+          "answer": "Können Sie bitte das Fenster öffnen",
+          "explanation": "Können Sie bitte … is the polite request form.",
+          "skills": [
+            "speaking_practice",
+            "requests_speaking"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Könnten Sie bitte das Fenster öffnen"
+          ],
+          "examPart": "Sprechen Teil 3"
+        },
+        {
+          "id": "ga2sw_3",
+          "kind": "speaking",
+          "prompt": "Ask in German: “What time does the course begin?”",
+          "answer": "Wann beginnt der Kurs",
+          "explanation": "A question with a question word: verb in position 2.",
+          "skills": [
+            "speaking_practice",
+            "questions_speaking"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Um wie viel Uhr beginnt der Kurs"
+          ],
+          "examPart": "Sprechen Teil 2"
+        },
+        {
+          "id": "ga2sw_4",
+          "kind": "speaking",
+          "prompt": "Say in German: “I have been learning German for six months.”",
+          "answer": "Ich lerne seit sechs Monaten Deutsch",
+          "explanation": "seit + dative for a period that is still going on.",
+          "skills": [
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Seit sechs Monaten lerne ich Deutsch"
+          ],
+          "examPart": "Sprechen Teil 1"
+        },
+        {
+          "id": "ga2sw_5",
+          "kind": "speaking",
+          "prompt": "Suggest in German: “Shall we meet on Saturday at three?”",
+          "answer": "Wollen wir uns am Samstag um drei Uhr treffen",
+          "explanation": "Wollen wir … is the usual way to suggest something.",
+          "skills": [
+            "speaking_practice",
+            "requests_speaking"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Treffen wir uns am Samstag um drei Uhr"
+          ],
+          "examPart": "Sprechen Teil 3"
+        },
+        {
+          "id": "ga2sw_6",
+          "kind": "multipleChoice",
+          "prompt": "You want to ask a stranger politely to pass the salt. What do you say?",
+          "options": [
+            "Könnten Sie mir bitte das Salz geben?",
+            "Gib Salz!",
+            "Ich will Salz haben jetzt."
+          ],
+          "answer": "Könnten Sie mir bitte das Salz geben?",
+          "explanation": "Polite requests use Können/Könnten Sie … bitte …?",
+          "skills": [
+            "requests_speaking",
+            "formal_register"
+          ],
+          "area": "speaking",
+          "examPart": "Sprechen Teil 3"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Party",
+          "en": "party",
+          "article": "die",
+          "example": "Die Party beginnt um acht.",
+          "exampleEn": "The party starts at eight."
+        },
+        {
+          "de": "Besserung",
+          "en": "recovery, improvement",
+          "article": "die",
+          "example": "Gute Besserung!",
+          "exampleEn": "Get well soon!"
+        },
+        {
+          "de": "Monat",
+          "en": "month",
+          "article": "der",
+          "example": "Ein Monat hat dreißig Tage.",
+          "exampleEn": "A month has thirty days."
+        },
+        {
+          "de": "Vorschlag",
+          "en": "suggestion",
+          "article": "der",
+          "example": "Das ist ein guter Vorschlag.",
+          "exampleEn": "That is a good suggestion."
+        },
+        {
+          "de": "öffnen",
+          "en": "to open",
+          "example": "Bitte öffnen Sie das Fenster.",
+          "exampleEn": "Please open the window."
+        },
+        {
+          "de": "Kurs",
+          "en": "course",
+          "article": "der",
+          "example": "Der Kurs beginnt im März.",
+          "exampleEn": "The course starts in March."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Study"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "a1_goethe_speaking",
+        "a2_goethe_email",
+        "a2_preterite_basics"
+      ],
+      "exam": "goethe"
+    },
+    {
       "id": "b1_opinions_connectors",
       "level": "b1",
       "unit": "Opinions",
@@ -3527,6 +4860,1365 @@
       "exam": "goethe"
     },
     {
+      "id": "b1_relative_clauses",
+      "level": "b1",
+      "unit": "Complex sentences",
+      "title": "Relative clauses: der, die, das",
+      "durationMinutes": 16,
+      "objective": "Add information about a noun with a relative clause, with the verb at the end.",
+      "introduction": "A relative clause gives more information about a noun. It starts with a relative pronoun that matches the noun's gender and number, and its case depends on the role in the clause. The verb goes to the end and the clause is set off with commas: Der Mann, der dort steht, ist mein Lehrer. Das Buch, das ich gelesen habe, war spannend.",
+      "examples": [
+        "Der Mann, der dort steht, ist mein Lehrer. — The man who is standing there is my teacher.",
+        "Das Buch, das ich gelesen habe, war spannend. — The book that I read was exciting.",
+        "Die Frau, die ich gestern getroffen habe, arbeitet hier. — The woman I met yesterday works here."
+      ],
+      "exercises": [
+        {
+          "id": "rc_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Der Mann, ___ dort steht, ist mein Lehrer.”",
+          "options": [
+            "der",
+            "den",
+            "dem"
+          ],
+          "answer": "der",
+          "explanation": "The man is the subject of “steht”, so: nominative masculine = der.",
+          "skills": [
+            "relative_clauses",
+            "connectors_subordinate"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rc_2",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Das ist das Buch, ___ ich gelesen habe.”",
+          "options": [
+            "das",
+            "der",
+            "dem"
+          ],
+          "answer": "das",
+          "explanation": "das Buch is the object of “gelesen habe”: accusative neuter = das.",
+          "skills": [
+            "relative_clauses"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rc_3",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Die Frau, ___ ich gestern getroffen habe, arbeitet hier.”",
+          "options": [
+            "die",
+            "der",
+            "den"
+          ],
+          "answer": "die",
+          "explanation": "Feminine accusative = die.",
+          "skills": [
+            "relative_clauses"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rc_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “The film that I saw yesterday was great.”",
+          "options": [
+            "Der",
+            "Film,",
+            "den",
+            "ich",
+            "gestern",
+            "gesehen",
+            "habe,",
+            "war",
+            "toll"
+          ],
+          "answer": "Der Film, den ich gestern gesehen habe, war toll",
+          "explanation": "den = accusative masculine; the verb habe is at the end of the relative clause.",
+          "skills": [
+            "relative_clauses",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rc_5",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Das ist die Kollegin, ___ im Büro neben mir sitzt.”",
+          "answer": "die",
+          "explanation": "Feminine nominative = die.",
+          "skills": [
+            "relative_clauses"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rc_6",
+          "kind": "translation",
+          "prompt": "Translate into German: “I know a restaurant that is cheap.”",
+          "answer": "Ich kenne ein Restaurant, das billig ist",
+          "explanation": "das refers to das Restaurant; ist goes to the end.",
+          "skills": [
+            "relative_clauses"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Ich kenne ein Restaurant, das günstig ist",
+            "Ich kenne ein Restaurant das billig ist",
+            "Ich kenne ein Restaurant das günstig ist"
+          ]
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Film",
+          "en": "film",
+          "article": "der",
+          "example": "Der Film beginnt um acht.",
+          "exampleEn": "The film starts at eight."
+        },
+        {
+          "de": "spannend",
+          "en": "exciting",
+          "example": "Das Buch ist spannend.",
+          "exampleEn": "The book is exciting."
+        },
+        {
+          "de": "Kollegin",
+          "en": "colleague (female)",
+          "article": "die",
+          "example": "Meine Kollegin spricht drei Sprachen.",
+          "exampleEn": "My colleague speaks three languages."
+        },
+        {
+          "de": "treffen",
+          "en": "to meet",
+          "example": "Ich treffe Freunde.",
+          "exampleEn": "I meet friends."
+        },
+        {
+          "de": "kennen",
+          "en": "to know (a person or place)",
+          "example": "Ich kenne die Stadt.",
+          "exampleEn": "I know the city."
+        },
+        {
+          "de": "Relativsatz",
+          "en": "relative clause",
+          "article": "der",
+          "example": "Ein Relativsatz hat das Verb am Ende.",
+          "exampleEn": "A relative clause has the verb at the end."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Study"
+      ],
+      "requires": [
+        "b1_opinions_connectors"
+      ]
+    },
+    {
+      "id": "b1_passive",
+      "level": "b1",
+      "unit": "Complex sentences",
+      "title": "The passive: wird gebaut, wurde gemacht",
+      "durationMinutes": 16,
+      "objective": "Describe what is done without naming who does it, using werden + past participle.",
+      "introduction": "The passive puts the action in focus. Present: Das Essen wird gekocht. Simple past: Das Haus wurde 1990 gebaut. Use von + dative to name the doer: Der Brief wurde von meinem Bruder geschrieben. The participle goes to the end.",
+      "examples": [
+        "Das Essen wird gekocht. — The food is being cooked.",
+        "Das Haus wurde 1990 gebaut. — The house was built in 1990.",
+        "Hier wird Deutsch gesprochen. — German is spoken here."
+      ],
+      "exercises": [
+        {
+          "id": "pv_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Das Haus ___ 1990 gebaut.”",
+          "options": [
+            "wurde",
+            "wird",
+            "ist"
+          ],
+          "answer": "wurde",
+          "explanation": "Past passive: wurde + participle.",
+          "skills": [
+            "passive"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pv_2",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Das Essen ___ jetzt gekocht.”",
+          "options": [
+            "wird",
+            "wurde",
+            "werden"
+          ],
+          "answer": "wird",
+          "explanation": "Present passive: wird + participle.",
+          "skills": [
+            "passive"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pv_3",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “The letter was written by my brother.”",
+          "options": [
+            "Der",
+            "Brief",
+            "wurde",
+            "von",
+            "meinem",
+            "Bruder",
+            "geschrieben"
+          ],
+          "answer": "Der Brief wurde von meinem Bruder geschrieben",
+          "explanation": "wurde in position 2, the participle at the end, von + dative for the doer.",
+          "skills": [
+            "passive",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pv_4",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Hier ___ Deutsch gesprochen.” (is spoken)",
+          "answer": "wird",
+          "explanation": "Present passive: wird gesprochen.",
+          "skills": [
+            "passive"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "pv_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “The room is cleaned every day.”",
+          "answer": "Das Zimmer wird jeden Tag geputzt",
+          "explanation": "wird + participle (geputzt).",
+          "skills": [
+            "passive"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Das Zimmer wird täglich geputzt",
+            "Das Zimmer wird jeden Tag gereinigt"
+          ]
+        },
+        {
+          "id": "pv_6",
+          "kind": "cloze",
+          "prompt": "Complete the text.",
+          "context": "Die Brücke {1} 1950 {2}. Heute {3} sie von vielen Menschen benutzt.",
+          "gaps": [
+            {
+              "options": [
+                "wurde",
+                "wird",
+                "ist"
+              ],
+              "answer": "wurde"
+            },
+            {
+              "options": [
+                "gebaut",
+                "bauen",
+                "baut"
+              ],
+              "answer": "gebaut"
+            },
+            {
+              "options": [
+                "wird",
+                "wurde",
+                "werden"
+              ],
+              "answer": "wird"
+            }
+          ],
+          "answer": "wurde, gebaut, wird",
+          "explanation": "Past passive for 1950, present passive for today.",
+          "skills": [
+            "passive"
+          ],
+          "area": "reading"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Brücke",
+          "en": "bridge",
+          "article": "die",
+          "example": "Die Brücke ist alt.",
+          "exampleEn": "The bridge is old."
+        },
+        {
+          "de": "reparieren",
+          "en": "to repair",
+          "example": "Der Mechaniker repariert das Auto.",
+          "exampleEn": "The mechanic repairs the car."
+        },
+        {
+          "de": "bauen",
+          "en": "to build",
+          "example": "Man baut ein neues Haus.",
+          "exampleEn": "They are building a new house."
+        },
+        {
+          "de": "putzen",
+          "en": "to clean",
+          "example": "Ich putze die Küche.",
+          "exampleEn": "I clean the kitchen."
+        },
+        {
+          "de": "benutzen",
+          "en": "to use",
+          "example": "Viele benutzen die Bahn.",
+          "exampleEn": "Many people use the train."
+        },
+        {
+          "de": "Gebäude",
+          "en": "building",
+          "article": "das",
+          "example": "Das Gebäude ist sehr alt.",
+          "exampleEn": "The building is very old."
+        }
+      ],
+      "topics": [
+        "Work",
+        "Everyday life",
+        "Study"
+      ],
+      "requires": [
+        "a2_perfect_haben",
+        "b1_opinions_connectors"
+      ]
+    },
+    {
+      "id": "b1_konjunktiv2",
+      "level": "b1",
+      "unit": "Wishes and politeness",
+      "title": "Wishes and polite requests: würde, hätte, wäre",
+      "durationMinutes": 16,
+      "objective": "Express wishes, unreal situations and polite requests with the subjunctive.",
+      "introduction": "Use würde + infinitive for most verbs (Ich würde gern reisen), and hätte and wäre for haben and sein. For an unreal condition use wenn + Konjunktiv II: Wenn ich reich wäre, würde ich ein Haus kaufen. Polite requests: Könnten Sie mir helfen? Ich hätte gern einen Kaffee.",
+      "examples": [
+        "Wenn ich Zeit hätte, würde ich reisen. — If I had time, I would travel.",
+        "Ich hätte gern einen Kaffee. — I would like a coffee.",
+        "Könnten Sie mir bitte helfen? — Could you please help me?"
+      ],
+      "exercises": [
+        {
+          "id": "k2_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Wenn ich mehr Zeit ___, würde ich öfter reisen.”",
+          "options": [
+            "hätte",
+            "habe",
+            "hatte"
+          ],
+          "answer": "hätte",
+          "explanation": "An unreal condition uses Konjunktiv II: hätte.",
+          "skills": [
+            "konjunktiv2"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "k2_2",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence is the most polite request?",
+          "options": [
+            "Könnten Sie mir bitte helfen?",
+            "Hilf mir!",
+            "Sie müssen mir helfen."
+          ],
+          "answer": "Könnten Sie mir bitte helfen?",
+          "explanation": "Könnten Sie … bitte …? is polite.",
+          "skills": [
+            "konjunktiv2",
+            "formal_register"
+          ],
+          "area": "speaking"
+        },
+        {
+          "id": "k2_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Ich ___ in Berlin wohnen, wenn ich dort einen Job hätte.” (would live)",
+          "answer": "würde",
+          "explanation": "würde + infinitive.",
+          "skills": [
+            "konjunktiv2"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "k2_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “If I were rich, I would buy a house.”",
+          "options": [
+            "Wenn",
+            "ich",
+            "reich",
+            "wäre,",
+            "würde",
+            "ich",
+            "ein",
+            "Haus",
+            "kaufen"
+          ],
+          "answer": "Wenn ich reich wäre, würde ich ein Haus kaufen",
+          "explanation": "wenn-clause with wäre, then würde in position 2 of the main clause.",
+          "skills": [
+            "konjunktiv2",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "k2_5",
+          "kind": "translation",
+          "prompt": "Translate into German: “I would like to have more time.”",
+          "answer": "Ich hätte gern mehr Zeit",
+          "explanation": "Ich hätte gern … is a polite wish.",
+          "skills": [
+            "konjunktiv2"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Ich hätte gerne mehr Zeit"
+          ]
+        },
+        {
+          "id": "k2_6",
+          "kind": "listening",
+          "prompt": "Was würde die Person zuerst machen?",
+          "audioText": "Wenn ich im Lotto gewinnen würde, würde ich zuerst eine lange Reise machen. Danach würde ich mir ein kleines Haus am Meer kaufen.",
+          "options": [
+            "eine lange Reise machen",
+            "ein Haus kaufen",
+            "weiterarbeiten"
+          ],
+          "answer": "eine lange Reise machen",
+          "explanation": "“… würde ich zuerst eine lange Reise machen.”",
+          "skills": [
+            "konjunktiv2"
+          ],
+          "area": "listening",
+          "examPart": "Hören"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Lotto",
+          "en": "lottery",
+          "article": "das",
+          "example": "Er spielt jede Woche Lotto.",
+          "exampleEn": "He plays the lottery every week."
+        },
+        {
+          "de": "gewinnen",
+          "en": "to win",
+          "example": "Wir gewinnen das Spiel.",
+          "exampleEn": "We win the game."
+        },
+        {
+          "de": "reich",
+          "en": "rich",
+          "example": "Sie ist sehr reich.",
+          "exampleEn": "She is very rich."
+        },
+        {
+          "de": "Wunsch",
+          "en": "wish",
+          "article": "der",
+          "example": "Mein Wunsch ist eine Reise.",
+          "exampleEn": "My wish is a trip."
+        },
+        {
+          "de": "höflich",
+          "en": "polite",
+          "example": "Er ist immer höflich.",
+          "exampleEn": "He is always polite."
+        },
+        {
+          "de": "Meer",
+          "en": "sea",
+          "article": "das",
+          "example": "Wir fahren ans Meer.",
+          "exampleEn": "We are going to the seaside."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "requires": [
+        "a2_preterite_basics",
+        "b1_opinions_connectors"
+      ]
+    },
+    {
+      "id": "b1_adjective_endings",
+      "level": "b1",
+      "unit": "Complex sentences",
+      "title": "Adjective endings",
+      "durationMinutes": 16,
+      "objective": "Choose the right adjective ending after ein-, der- and no article.",
+      "introduction": "An adjective before a noun takes an ending that shows case, gender and number. After ein-words: ein großer Tisch (masculine nominative), eine neue Lampe, ein kleines Kind, einen großen Hund (masculine accusative). After der/die/das: der große Tisch, die neue Lampe. In the dative, the ending is usually -en: in einem ruhigen Viertel.",
+      "examples": [
+        "Ich habe einen großen Hund. — I have a big dog.",
+        "Das ist eine gute Idee. — That is a good idea.",
+        "Sie hat ein neues rotes Auto. — She has a new red car."
+      ],
+      "exercises": [
+        {
+          "id": "ae_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Ich habe einen ___ Hund.” (big)",
+          "options": [
+            "großen",
+            "großer",
+            "große"
+          ],
+          "answer": "großen",
+          "explanation": "Masculine accusative after ein-: -en.",
+          "skills": [
+            "adjective_endings",
+            "accusative"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "ae_2",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Das ist eine ___ Idee.” (good)",
+          "options": [
+            "gute",
+            "guter",
+            "gutes"
+          ],
+          "answer": "gute",
+          "explanation": "Feminine nominative after eine: -e.",
+          "skills": [
+            "adjective_endings"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "ae_3",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Der ___ Lehrer ist nett.” (new)",
+          "options": [
+            "neue",
+            "neuer",
+            "neuen"
+          ],
+          "answer": "neue",
+          "explanation": "After der, the nominative singular ending is -e.",
+          "skills": [
+            "adjective_endings"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "ae_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “She has a new red car.”",
+          "options": [
+            "Sie",
+            "hat",
+            "ein",
+            "neues",
+            "rotes",
+            "Auto"
+          ],
+          "answer": "Sie hat ein neues rotes Auto",
+          "explanation": "Neuter after ein: -es on each adjective.",
+          "skills": [
+            "adjective_endings",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "ae_5",
+          "kind": "cloze",
+          "prompt": "Complete the advert.",
+          "context": "Ich suche eine {1} Wohnung in einem {2} Viertel. Sie soll einen {3} Balkon haben.",
+          "gaps": [
+            {
+              "options": [
+                "schöne",
+                "schönen",
+                "schönes"
+              ],
+              "answer": "schöne"
+            },
+            {
+              "options": [
+                "ruhigen",
+                "ruhige",
+                "ruhiges"
+              ],
+              "answer": "ruhigen"
+            },
+            {
+              "options": [
+                "großen",
+                "großer",
+                "große"
+              ],
+              "answer": "großen"
+            }
+          ],
+          "answer": "schöne, ruhigen, großen",
+          "explanation": "eine → -e; einem (dative) → -en; einen (masc. accusative) → -en.",
+          "skills": [
+            "adjective_endings"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "ae_6",
+          "kind": "translation",
+          "prompt": "Translate into German: “I am wearing a blue jacket.”",
+          "answer": "Ich trage eine blaue Jacke",
+          "explanation": "Feminine accusative after eine: blaue.",
+          "skills": [
+            "adjective_endings"
+          ],
+          "area": "writing"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Jacke",
+          "en": "jacket",
+          "article": "die",
+          "example": "Die Jacke ist warm.",
+          "exampleEn": "The jacket is warm."
+        },
+        {
+          "de": "tragen",
+          "en": "to wear, to carry",
+          "example": "Er trägt einen Hut.",
+          "exampleEn": "He wears a hat."
+        },
+        {
+          "de": "Viertel",
+          "en": "district, neighbourhood",
+          "article": "das",
+          "example": "Wir wohnen in einem ruhigen Viertel.",
+          "exampleEn": "We live in a quiet neighbourhood."
+        },
+        {
+          "de": "ruhig",
+          "en": "quiet",
+          "example": "Die Straße ist ruhig.",
+          "exampleEn": "The street is quiet."
+        },
+        {
+          "de": "Idee",
+          "en": "idea",
+          "article": "die",
+          "example": "Das ist eine gute Idee.",
+          "exampleEn": "That is a good idea."
+        },
+        {
+          "de": "modern",
+          "en": "modern",
+          "example": "Das Büro ist modern.",
+          "exampleEn": "The office is modern."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "requires": [
+        "a1_accusative",
+        "a2_comparison"
+      ]
+    },
+    {
+      "id": "b1_job_application",
+      "level": "b1",
+      "unit": "Work",
+      "title": "Applying for a job",
+      "durationMinutes": 18,
+      "objective": "Read a job advert, write a formal application, and practise interview phrases.",
+      "introduction": "A job advert lists the job, the working hours, what is expected and how to apply (Bewerbung per E-Mail). In your application, name the job, describe your experience, and ask politely for an interview: Über eine Einladung zu einem Vorstellungsgespräch würde ich mich sehr freuen. Use Sie, a formal greeting and Mit freundlichen Grüßen.",
+      "examples": [
+        "Ich bewerbe mich um die Stelle als Verkäufer. — I am applying for the job as a salesperson.",
+        "Ich habe zwei Jahre Erfahrung. — I have two years of experience.",
+        "Ich arbeite gern im Team. — I like working in a team."
+      ],
+      "exercises": [
+        {
+          "id": "ja_1",
+          "kind": "multipleChoice",
+          "prompt": "Wie viele Stunden pro Woche ist die Arbeitszeit?",
+          "options": [
+            "20",
+            "30",
+            "12"
+          ],
+          "answer": "20",
+          "explanation": "“Arbeitszeit: 20 Stunden pro Woche.”",
+          "skills": [
+            "job_application",
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Wir suchen eine freundliche Verkäuferin für unser Geschäft in der Innenstadt.\nArbeitszeit: 20 Stunden pro Woche.\nErfahrung im Verkauf ist von Vorteil.\nBewerbung bitte per E-Mail an personal@moda-berlin.example"
+        },
+        {
+          "id": "ja_2",
+          "kind": "multipleChoice",
+          "prompt": "Was ist von Vorteil?",
+          "options": [
+            "Erfahrung im Verkauf",
+            "ein eigenes Auto",
+            "gute Englischkenntnisse"
+          ],
+          "answer": "Erfahrung im Verkauf",
+          "explanation": "“Erfahrung im Verkauf ist von Vorteil.”",
+          "skills": [
+            "job_application",
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Wir suchen eine freundliche Verkäuferin für unser Geschäft in der Innenstadt.\nArbeitszeit: 20 Stunden pro Woche.\nErfahrung im Verkauf ist von Vorteil.\nBewerbung bitte per E-Mail an personal@moda-berlin.example"
+        },
+        {
+          "id": "ja_3",
+          "kind": "multipleChoice",
+          "prompt": "Wie soll man sich bewerben?",
+          "options": [
+            "per E-Mail",
+            "persönlich im Geschäft",
+            "per Telefon"
+          ],
+          "answer": "per E-Mail",
+          "explanation": "“Bewerbung bitte per E-Mail.”",
+          "skills": [
+            "job_application",
+            "reading_notices"
+          ],
+          "area": "reading",
+          "context": "Wir suchen eine freundliche Verkäuferin für unser Geschäft in der Innenstadt.\nArbeitszeit: 20 Stunden pro Woche.\nErfahrung im Verkauf ist von Vorteil.\nBewerbung bitte per E-Mail an personal@moda-berlin.example"
+        },
+        {
+          "id": "ja_4",
+          "kind": "writing",
+          "prompt": "Schreiben Sie eine kurze Bewerbung auf die Stelle (mindestens 50 Wörter): 1) Sagen Sie, auf welche Stelle Sie sich bewerben. 2) Beschreiben Sie Ihre Erfahrung. 3) Bitten Sie um ein Vorstellungsgespräch.",
+          "answer": "Sehr geehrte Damen und Herren, ich bewerbe mich um die Stelle als Verkäuferin in Ihrem Geschäft. Ich habe zwei Jahre Erfahrung im Verkauf, weil ich in einem Supermarkt gearbeitet habe. Außerdem bin ich freundlich und arbeite gern im Team. Über eine Einladung zu einem Vorstellungsgespräch würde ich mich sehr freuen. Mit freundlichen Grüßen, Sam Kumar",
+          "explanation": "Good: formal register, the job named, experience described, and a polite request for an interview.",
+          "skills": [
+            "job_application",
+            "formal_email",
+            "formal_register"
+          ],
+          "area": "writing",
+          "examPart": null,
+          "brief": {
+            "minWords": 50,
+            "register": "formal",
+            "points": [
+              {
+                "label": "Name the job",
+                "keywords": [
+                  "stelle",
+                  "bewerbe",
+                  "verkäuf"
+                ]
+              },
+              {
+                "label": "Describe your experience",
+                "keywords": [
+                  "erfahrung",
+                  "gearbeitet",
+                  "jahre"
+                ]
+              },
+              {
+                "label": "Ask for an interview",
+                "keywords": [
+                  "gespräch",
+                  "einladung",
+                  "vorstellung"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "ja_5",
+          "kind": "speaking",
+          "prompt": "Say in German: “I am applying for the job as a salesperson.”",
+          "answer": "Ich bewerbe mich um die Stelle als Verkäufer",
+          "explanation": "sich bewerben um + accusative.",
+          "skills": [
+            "job_application",
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Ich bewerbe mich um die Stelle als Verkäuferin"
+          ]
+        },
+        {
+          "id": "ja_6",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence fits a job interview?",
+          "options": [
+            "Ich bin zuverlässig und arbeite gern im Team.",
+            "Ich habe keine Lust.",
+            "Wie viel Geld bekomme ich sofort?"
+          ],
+          "answer": "Ich bin zuverlässig und arbeite gern im Team.",
+          "explanation": "Show strengths politely and positively.",
+          "skills": [
+            "job_application",
+            "formal_register"
+          ],
+          "area": "speaking"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Stelle",
+          "en": "job, position",
+          "article": "die",
+          "example": "Die Stelle ist noch frei.",
+          "exampleEn": "The position is still open."
+        },
+        {
+          "de": "Bewerbung",
+          "en": "application",
+          "article": "die",
+          "example": "Ich schicke meine Bewerbung heute.",
+          "exampleEn": "I am sending my application today."
+        },
+        {
+          "de": "Erfahrung",
+          "en": "experience",
+          "article": "die",
+          "example": "Ich habe viel Erfahrung.",
+          "exampleEn": "I have a lot of experience."
+        },
+        {
+          "de": "Vorstellungsgespräch",
+          "en": "job interview",
+          "article": "das",
+          "example": "Das Vorstellungsgespräch ist am Montag.",
+          "exampleEn": "The interview is on Monday."
+        },
+        {
+          "de": "zuverlässig",
+          "en": "reliable",
+          "example": "Er ist sehr zuverlässig.",
+          "exampleEn": "He is very reliable."
+        },
+        {
+          "de": "Lebenslauf",
+          "en": "CV, résumé",
+          "article": "der",
+          "example": "Ich schicke meinen Lebenslauf mit.",
+          "exampleEn": "I am sending my CV with it."
+        },
+        {
+          "de": "Verkäufer",
+          "en": "salesperson (male)",
+          "article": "der",
+          "example": "Der Verkäufer ist freundlich.",
+          "exampleEn": "The salesperson is friendly."
+        }
+      ],
+      "topics": [
+        "Work"
+      ],
+      "goals": [
+        "work"
+      ],
+      "requires": [
+        "b1_formal_email"
+      ]
+    },
+    {
+      "id": "b1_goethe_reading_listening",
+      "level": "b1",
+      "unit": "Goethe B1",
+      "title": "Goethe B1 · Reading and listening",
+      "durationMinutes": 22,
+      "objective": "Understand a blog post, a radio report and a phone message, as in the Goethe B1 Lesen and Hören modules.",
+      "introduction": "Goethe B1 Lesen uses longer texts such as blog posts and articles with Richtig/Falsch and multiple-choice questions. Hören uses announcements, radio reports and phone messages. Read the questions first. Look for the exact detail asked about, and watch for distractors that repeat words from the text but change the meaning.",
+      "examples": [
+        "Richtig oder Falsch? — True or false?",
+        "Der Autor vermisst den Kontakt. — The author misses the contact.",
+        "Das Auto ist am Donnerstag fertig. — The car is ready on Thursday."
+      ],
+      "exercises": [
+        {
+          "id": "gb1_1",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Der Autor arbeitet seit einem Jahr im Homeoffice.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Richtig",
+          "explanation": "“Seit einem Jahr arbeite ich im Homeoffice.”",
+          "skills": [
+            "reading_blog"
+          ],
+          "area": "reading",
+          "context": "Seit einem Jahr arbeite ich im Homeoffice. Anfangs fand ich das toll, weil ich keinen Stau mehr hatte. Aber nach ein paar Monaten habe ich gemerkt, dass mir der Kontakt zu meinen Kollegen fehlt. Deshalb gehe ich jetzt zweimal pro Woche in ein Co-Working-Büro. Dort arbeite ich zwar auch allein, aber ich sehe wenigstens andere Menschen.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb1_2",
+          "kind": "multipleChoice",
+          "prompt": "Warum fand der Autor Homeoffice anfangs gut?",
+          "options": [
+            "Er hatte keinen Stau mehr.",
+            "Er hatte mehr Kollegen.",
+            "Er verdiente mehr Geld."
+          ],
+          "answer": "Er hatte keinen Stau mehr.",
+          "explanation": "“… weil ich keinen Stau mehr hatte.”",
+          "skills": [
+            "reading_blog"
+          ],
+          "area": "reading",
+          "context": "Seit einem Jahr arbeite ich im Homeoffice. Anfangs fand ich das toll, weil ich keinen Stau mehr hatte. Aber nach ein paar Monaten habe ich gemerkt, dass mir der Kontakt zu meinen Kollegen fehlt. Deshalb gehe ich jetzt zweimal pro Woche in ein Co-Working-Büro. Dort arbeite ich zwar auch allein, aber ich sehe wenigstens andere Menschen.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb1_3",
+          "kind": "multipleChoice",
+          "prompt": "Was vermisst der Autor?",
+          "options": [
+            "den Kontakt zu Kollegen",
+            "sein Büro in der Stadt",
+            "den Weg zur Arbeit"
+          ],
+          "answer": "den Kontakt zu Kollegen",
+          "explanation": "“… mir der Kontakt zu meinen Kollegen fehlt.”",
+          "skills": [
+            "reading_blog"
+          ],
+          "area": "reading",
+          "context": "Seit einem Jahr arbeite ich im Homeoffice. Anfangs fand ich das toll, weil ich keinen Stau mehr hatte. Aber nach ein paar Monaten habe ich gemerkt, dass mir der Kontakt zu meinen Kollegen fehlt. Deshalb gehe ich jetzt zweimal pro Woche in ein Co-Working-Büro. Dort arbeite ich zwar auch allein, aber ich sehe wenigstens andere Menschen.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb1_4",
+          "kind": "multipleChoice",
+          "prompt": "Was macht der Autor jetzt zweimal pro Woche?",
+          "options": [
+            "Er arbeitet in einem Co-Working-Büro.",
+            "Er arbeitet im Café.",
+            "Er fährt zur Firma."
+          ],
+          "answer": "Er arbeitet in einem Co-Working-Büro.",
+          "explanation": "“… gehe ich jetzt zweimal pro Woche in ein Co-Working-Büro.”",
+          "skills": [
+            "reading_blog"
+          ],
+          "area": "reading",
+          "context": "Seit einem Jahr arbeite ich im Homeoffice. Anfangs fand ich das toll, weil ich keinen Stau mehr hatte. Aber nach ein paar Monaten habe ich gemerkt, dass mir der Kontakt zu meinen Kollegen fehlt. Deshalb gehe ich jetzt zweimal pro Woche in ein Co-Working-Büro. Dort arbeite ich zwar auch allein, aber ich sehe wenigstens andere Menschen.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb1_5",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? “Im Co-Working-Büro arbeitet der Autor mit Kollegen zusammen.”",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Falsch",
+          "explanation": "“Dort arbeite ich zwar auch allein.”",
+          "skills": [
+            "reading_blog"
+          ],
+          "area": "reading",
+          "context": "Seit einem Jahr arbeite ich im Homeoffice. Anfangs fand ich das toll, weil ich keinen Stau mehr hatte. Aber nach ein paar Monaten habe ich gemerkt, dass mir der Kontakt zu meinen Kollegen fehlt. Deshalb gehe ich jetzt zweimal pro Woche in ein Co-Working-Büro. Dort arbeite ich zwar auch allein, aber ich sehe wenigstens andere Menschen.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb1_6",
+          "kind": "listening",
+          "prompt": "Was ist in der Stadt neu?",
+          "audioText": "Liebe Hörerinnen und Hörer, heute geht es um das Radfahren in der Stadt. In unserer Stadt gibt es seit diesem Jahr zwanzig Kilometer neue Radwege. Viele Menschen nutzen jetzt das Fahrrad statt des Autos. Das ist gut für die Umwelt und für die Gesundheit.",
+          "options": [
+            "zwanzig Kilometer Radwege",
+            "ein neues Parkhaus",
+            "kostenlose Fahrräder"
+          ],
+          "answer": "zwanzig Kilometer Radwege",
+          "explanation": "“… zwanzig Kilometer neue Radwege.”",
+          "skills": [
+            "listening_announcements"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 2"
+        },
+        {
+          "id": "gb1_7",
+          "kind": "listening",
+          "prompt": "Was sagt der Sprecher über das Radfahren?",
+          "audioText": "Liebe Hörerinnen und Hörer, heute geht es um das Radfahren in der Stadt. In unserer Stadt gibt es seit diesem Jahr zwanzig Kilometer neue Radwege. Viele Menschen nutzen jetzt das Fahrrad statt des Autos. Das ist gut für die Umwelt und für die Gesundheit.",
+          "options": [
+            "Es ist gut für Umwelt und Gesundheit.",
+            "Es ist teurer als Autofahren.",
+            "Es ist gefährlich."
+          ],
+          "answer": "Es ist gut für Umwelt und Gesundheit.",
+          "explanation": "“Das ist gut für die Umwelt und für die Gesundheit.”",
+          "skills": [
+            "listening_announcements"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 2"
+        },
+        {
+          "id": "gb1_8",
+          "kind": "listening",
+          "prompt": "Wann kann man das Auto abholen?",
+          "audioText": "Guten Tag, hier ist Frau Schmidt von der Autowerkstatt. Ihr Auto ist leider erst am Donnerstag fertig, weil wir ein Ersatzteil bestellen mussten. Sie können es ab sechzehn Uhr abholen. Wenn Sie Fragen haben, rufen Sie uns bitte zurück.",
+          "options": [
+            "am Donnerstag ab 16 Uhr",
+            "am Mittwoch ab 16 Uhr",
+            "am Donnerstag ab 6 Uhr"
+          ],
+          "answer": "am Donnerstag ab 16 Uhr",
+          "explanation": "“… erst am Donnerstag fertig … ab sechzehn Uhr.”",
+          "skills": [
+            "listening_announcements",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 3"
+        },
+        {
+          "id": "gb1_9",
+          "kind": "cloze",
+          "prompt": "Complete the formal email.",
+          "context": "Sehr geehrter Herr Braun,\nich {1} Ihnen wegen meiner Bestellung. Das Paket {2} noch nicht angekommen, {3} ich vor zwei Wochen bestellt habe.",
+          "gaps": [
+            {
+              "options": [
+                "schreibe",
+                "schreibst",
+                "schreiben"
+              ],
+              "answer": "schreibe"
+            },
+            {
+              "options": [
+                "ist",
+                "hat",
+                "wird"
+              ],
+              "answer": "ist"
+            },
+            {
+              "options": [
+                "obwohl",
+                "weil",
+                "dass"
+              ],
+              "answer": "obwohl"
+            }
+          ],
+          "answer": "schreibe, ist, obwohl",
+          "explanation": "ich schreibe; ist angekommen; obwohl = although.",
+          "skills": [
+            "formal_email",
+            "connectors_subordinate"
+          ],
+          "area": "writing",
+          "examPart": "Sprachbausteine"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Stau",
+          "en": "traffic jam",
+          "article": "der",
+          "example": "Wir stehen im Stau.",
+          "exampleEn": "We are stuck in a traffic jam."
+        },
+        {
+          "de": "Radweg",
+          "en": "cycle path",
+          "article": "der",
+          "example": "Der Radweg ist neu.",
+          "exampleEn": "The cycle path is new."
+        },
+        {
+          "de": "Umwelt",
+          "en": "environment",
+          "article": "die",
+          "example": "Die Umwelt ist wichtig.",
+          "exampleEn": "The environment is important."
+        },
+        {
+          "de": "Gesundheit",
+          "en": "health",
+          "article": "die",
+          "example": "Gesundheit ist wichtig.",
+          "exampleEn": "Health is important."
+        },
+        {
+          "de": "Werkstatt",
+          "en": "workshop, garage",
+          "article": "die",
+          "example": "Das Auto ist in der Werkstatt.",
+          "exampleEn": "The car is in the garage."
+        },
+        {
+          "de": "Ersatzteil",
+          "en": "spare part",
+          "article": "das",
+          "example": "Das Ersatzteil kommt morgen.",
+          "exampleEn": "The spare part arrives tomorrow."
+        },
+        {
+          "de": "abholen",
+          "en": "to pick up",
+          "example": "Ich hole das Paket ab.",
+          "exampleEn": "I pick up the parcel."
+        },
+        {
+          "de": "vermissen",
+          "en": "to miss",
+          "example": "Ich vermisse meine Familie.",
+          "exampleEn": "I miss my family."
+        }
+      ],
+      "topics": [
+        "Work",
+        "Everyday life",
+        "Travel"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "b1_formal_email",
+        "b1_passive"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "b1_goethe_speaking_writing",
+      "level": "b1",
+      "unit": "Goethe B1",
+      "title": "Goethe B1 · Speaking and writing",
+      "durationMinutes": 22,
+      "objective": "Write an informal email with three content points and practise planning, presenting and reacting in the Sprechen module.",
+      "introduction": "Goethe B1 Schreiben Teil 1 is an informal email: cover all three points in about 80 words, with a greeting and closing, using du. In Sprechen you plan something together (Teil 1), give a short presentation (Teil 2) and react to questions (Teil 3). Useful phrases: Ich würde vorschlagen, dass …; Meiner Meinung nach …; Da stimme ich dir zu; Leider sehe ich das anders.",
+      "examples": [
+        "Meiner Meinung nach ist das eine gute Idee. — In my opinion that is a good idea.",
+        "Ich würde vorschlagen, dass wir uns am Bahnhof treffen. — I would suggest that we meet at the station.",
+        "Ich möchte Ihnen heute etwas über … erzählen. — Today I would like to tell you about …"
+      ],
+      "exercises": [
+        {
+          "id": "gb1s_1",
+          "kind": "writing",
+          "prompt": "Ihre Freundin Anna zieht in eine neue Stadt. Schreiben Sie ihr eine E-Mail (mindestens 60 Wörter): 1) Gratulieren Sie ihr zur neuen Wohnung. 2) Erzählen Sie, was Sie letztes Wochenende gemacht haben. 3) Laden Sie sie zu einem Besuch ein.",
+          "answer": "Liebe Anna, herzlichen Glückwunsch zu deiner neuen Wohnung! Ich freue mich sehr für dich, weil du so lange gesucht hast. Letztes Wochenende habe ich meine Eltern besucht und wir haben zusammen gekocht. Es war ein schöner Tag. Hast du im Sommer Lust, mich zu besuchen? Du kannst gern ein paar Tage bei mir wohnen, denn ich habe ein Gästezimmer. Viele Grüße, Sam",
+          "explanation": "Good: congratulations, a short report on the weekend, an invitation, and an informal greeting and closing.",
+          "skills": [
+            "message_writing",
+            "informal_register",
+            "perfect_haben"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 1",
+          "brief": {
+            "minWords": 60,
+            "register": "informal",
+            "points": [
+              {
+                "label": "Congratulate her on the new flat",
+                "keywords": [
+                  "glückwunsch",
+                  "gratulier",
+                  "freue mich"
+                ]
+              },
+              {
+                "label": "Say what you did last weekend",
+                "keywords": [
+                  "wochenende",
+                  "besucht",
+                  "gekocht",
+                  "gemacht"
+                ]
+              },
+              {
+                "label": "Invite her to visit",
+                "keywords": [
+                  "besuchen",
+                  "einladen",
+                  "lade",
+                  "komm",
+                  "wohnen"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "gb1s_2",
+          "kind": "speaking",
+          "prompt": "Say in German: “In my opinion, that is a good idea.”",
+          "answer": "Meiner Meinung nach ist das eine gute Idee",
+          "explanation": "Meiner Meinung nach + verb in position 2.",
+          "skills": [
+            "speaking_practice",
+            "opinion_speaking"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Ich finde dass das eine gute Idee ist"
+          ],
+          "examPart": "Sprechen Teil 3"
+        },
+        {
+          "id": "gb1s_3",
+          "kind": "speaking",
+          "prompt": "Say in German: “I would suggest that we meet at the station.”",
+          "answer": "Ich würde vorschlagen dass wir uns am Bahnhof treffen",
+          "explanation": "dass-clause with the verb at the end.",
+          "skills": [
+            "speaking_practice",
+            "konjunktiv2"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Ich schlage vor dass wir uns am Bahnhof treffen"
+          ],
+          "examPart": "Sprechen Teil 1"
+        },
+        {
+          "id": "gb1s_4",
+          "kind": "speaking",
+          "prompt": "Say in German: “Unfortunately I cannot agree with you.”",
+          "answer": "Leider kann ich Ihnen nicht zustimmen",
+          "explanation": "zustimmen takes the dative: Ihnen.",
+          "skills": [
+            "speaking_practice",
+            "opinion_speaking"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Da stimme ich Ihnen leider nicht zu"
+          ],
+          "examPart": "Sprechen Teil 3"
+        },
+        {
+          "id": "gb1s_5",
+          "kind": "speaking",
+          "prompt": "Say in German: “My presentation is about working from home.”",
+          "answer": "Meine Präsentation handelt vom Homeoffice",
+          "explanation": "handeln von + dative: vom Homeoffice.",
+          "skills": [
+            "speaking_practice"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Ich spreche heute über das Homeoffice",
+            "Mein Thema ist das Homeoffice"
+          ],
+          "examPart": "Sprechen Teil 2"
+        },
+        {
+          "id": "gb1s_6",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence is the best start for a short presentation?",
+          "options": [
+            "Ich möchte Ihnen heute etwas über das Homeoffice erzählen.",
+            "Also, äh, keine Ahnung.",
+            "Das war es schon."
+          ],
+          "answer": "Ich möchte Ihnen heute etwas über das Homeoffice erzählen.",
+          "explanation": "Announce your topic clearly and politely.",
+          "skills": [
+            "speaking_practice",
+            "formal_register"
+          ],
+          "area": "speaking",
+          "examPart": "Sprechen Teil 2"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Umzug",
+          "en": "move (to a new home)",
+          "article": "der",
+          "example": "Der Umzug ist am Samstag.",
+          "exampleEn": "The move is on Saturday."
+        },
+        {
+          "de": "Besuch",
+          "en": "visit",
+          "article": "der",
+          "example": "Wir bekommen morgen Besuch.",
+          "exampleEn": "We have visitors tomorrow."
+        },
+        {
+          "de": "zustimmen",
+          "en": "to agree",
+          "example": "Ich stimme dir zu.",
+          "exampleEn": "I agree with you."
+        },
+        {
+          "de": "Präsentation",
+          "en": "presentation",
+          "article": "die",
+          "example": "Die Präsentation dauert zehn Minuten.",
+          "exampleEn": "The presentation takes ten minutes."
+        },
+        {
+          "de": "Gästezimmer",
+          "en": "guest room",
+          "article": "das",
+          "example": "Du kannst im Gästezimmer schlafen.",
+          "exampleEn": "You can sleep in the guest room."
+        }
+      ],
+      "topics": [
+        "Everyday life",
+        "Work",
+        "Study"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "b1_goethe_reading_listening",
+        "b1_konjunktiv2"
+      ],
+      "exam": "goethe"
+    },
+    {
       "id": "b2_testdaf_graph",
       "level": "b2",
       "unit": "TestDaF",
@@ -3727,6 +6419,1800 @@
       ],
       "requires": [
         "b1_opinions_connectors"
+      ],
+      "exam": "testdaf"
+    },
+    {
+      "id": "b2_connectors_advanced",
+      "level": "b2",
+      "unit": "Argumentation",
+      "title": "Connectors: je … desto, nicht nur … sondern auch",
+      "durationMinutes": 18,
+      "objective": "Build longer arguments with paired connectors and adverbs that contrast or conclude.",
+      "introduction": "B2 writing and speaking rely on connectors that link whole ideas. Pairs: nicht nur … sondern auch (not only … but also), je … desto (the more … the more), zwar … aber (it is true … but), weder … noch (neither … nor), entweder … oder (either … or). Adverbs such as dennoch and trotzdem (nevertheless) and daher (therefore) are followed by the verb in position 2: Er ist krank. Dennoch geht er zur Arbeit.",
+      "examples": [
+        "Das Produkt ist nicht nur billig, sondern auch gut. — The product is not only cheap but also good.",
+        "Je mehr ich lerne, desto besser verstehe ich. — The more I learn, the better I understand.",
+        "Er ist krank. Dennoch geht er zur Arbeit. — He is ill. Nevertheless he goes to work."
+      ],
+      "exercises": [
+        {
+          "id": "bc_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Das Produkt ist nicht nur billig, ___ auch gut.”",
+          "options": [
+            "sondern",
+            "aber",
+            "denn"
+          ],
+          "answer": "sondern",
+          "explanation": "nicht nur … sondern auch.",
+          "skills": [
+            "advanced_connectors"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "bc_2",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “___ mehr ich übe, ___ besser werde ich.”",
+          "options": [
+            "Je … desto",
+            "Nicht nur … sondern auch",
+            "Weder … noch"
+          ],
+          "answer": "Je … desto",
+          "explanation": "je + comparative … desto + comparative.",
+          "skills": [
+            "advanced_connectors",
+            "comparison"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "bc_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Er ist krank. ___ geht er zur Arbeit.” (Nevertheless; begin with a capital letter)",
+          "answer": "Dennoch",
+          "explanation": "dennoch is followed by the verb in position 2. (Trotzdem works too.)",
+          "skills": [
+            "advanced_connectors"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "bc_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “The more I learn, the better I understand.”",
+          "options": [
+            "Je",
+            "mehr",
+            "ich",
+            "lerne,",
+            "desto",
+            "besser",
+            "verstehe",
+            "ich"
+          ],
+          "answer": "Je mehr ich lerne, desto besser verstehe ich",
+          "explanation": "After desto the verb comes second: besser verstehe ich.",
+          "skills": [
+            "advanced_connectors",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "bc_5",
+          "kind": "cloze",
+          "prompt": "Complete the text.",
+          "context": "Ich lerne Deutsch, {1} ich in Deutschland studieren möchte. Ich übe jeden Tag, {2} ich mein Ziel erreiche. Ich habe {3} wenig Zeit, aber ich bleibe motiviert.",
+          "gaps": [
+            {
+              "options": [
+                "weil",
+                "obwohl",
+                "falls"
+              ],
+              "answer": "weil"
+            },
+            {
+              "options": [
+                "damit",
+                "weil",
+                "dass"
+              ],
+              "answer": "damit"
+            },
+            {
+              "options": [
+                "zwar",
+                "nur",
+                "auch"
+              ],
+              "answer": "zwar"
+            }
+          ],
+          "answer": "weil, damit, zwar",
+          "explanation": "weil gives a reason, damit a purpose, zwar … aber concedes a point.",
+          "skills": [
+            "advanced_connectors",
+            "connectors_subordinate"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "bc_6",
+          "kind": "translation",
+          "prompt": "Translate into German: “The city is not only big but also beautiful.”",
+          "answer": "Die Stadt ist nicht nur groß, sondern auch schön",
+          "explanation": "nicht nur … sondern auch.",
+          "skills": [
+            "advanced_connectors"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Die Stadt ist nicht nur groß sondern auch schön"
+          ]
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Ziel",
+          "en": "goal, aim",
+          "article": "das",
+          "example": "Mein Ziel ist das Zertifikat.",
+          "exampleEn": "My goal is the certificate."
+        },
+        {
+          "de": "erreichen",
+          "en": "to reach, achieve",
+          "example": "Ich möchte mein Ziel erreichen.",
+          "exampleEn": "I want to reach my goal."
+        },
+        {
+          "de": "motiviert",
+          "en": "motivated",
+          "example": "Sie ist sehr motiviert.",
+          "exampleEn": "She is very motivated."
+        },
+        {
+          "de": "Ausnahme",
+          "en": "exception",
+          "article": "die",
+          "example": "Es gibt eine Ausnahme.",
+          "exampleEn": "There is one exception."
+        },
+        {
+          "de": "Folge",
+          "en": "consequence",
+          "article": "die",
+          "example": "Das hat viele Folgen.",
+          "exampleEn": "That has many consequences."
+        },
+        {
+          "de": "Voraussetzung",
+          "en": "prerequisite",
+          "article": "die",
+          "example": "Eine Voraussetzung ist das Zertifikat B2.",
+          "exampleEn": "One prerequisite is the B2 certificate."
+        }
+      ],
+      "topics": [
+        "Study",
+        "Work",
+        "Culture"
+      ],
+      "requires": [
+        "b1_opinions_connectors",
+        "b1_adjective_endings"
+      ]
+    },
+    {
+      "id": "b2_nominalization",
+      "level": "b2",
+      "unit": "Academic style",
+      "title": "Academic style: nouns instead of verbs",
+      "durationMinutes": 18,
+      "objective": "Turn clauses into noun phrases and use fixed verb-noun combinations, as academic German does.",
+      "introduction": "Academic and exam German prefers nouns: Weil die Preise steigen … becomes Wegen steigender Preise … (wegen takes the genitive). Common noun forms: entscheiden → die Entscheidung, zunehmen → die Zunahme. Fixed combinations (Funktionsverbgefüge) replace a single verb: eine Entscheidung treffen (to decide), zur Verfügung stellen (to make available), Kritik üben (to criticise).",
+      "examples": [
+        "eine Entscheidung treffen — to make a decision",
+        "zur Verfügung stellen — to make available",
+        "Wegen steigender Preise kaufen viele weniger. — Because of rising prices many buy less."
+      ],
+      "exercises": [
+        {
+          "id": "nm_1",
+          "kind": "multipleChoice",
+          "prompt": "Which is the noun for “zunehmen” (to increase)?",
+          "options": [
+            "die Zunahme",
+            "der Zunehmer",
+            "die Zunehmung"
+          ],
+          "answer": "die Zunahme",
+          "explanation": "zunehmen → die Zunahme.",
+          "skills": [
+            "nominalization"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "nm_2",
+          "kind": "multipleChoice",
+          "prompt": "Choose the noun version of: “Weil die Preise steigen, kaufen viele weniger.”",
+          "options": [
+            "Wegen steigender Preise kaufen viele weniger.",
+            "Wegen die Preise steigen kaufen viele weniger.",
+            "Weil steigender Preise kaufen viele weniger."
+          ],
+          "answer": "Wegen steigender Preise kaufen viele weniger.",
+          "explanation": "wegen + genitive.",
+          "skills": [
+            "nominalization"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "nm_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Wir müssen bald eine Entscheidung ___.” (make)",
+          "answer": "treffen",
+          "explanation": "eine Entscheidung treffen.",
+          "skills": [
+            "nominalization"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "nm_4",
+          "kind": "multipleChoice",
+          "prompt": "What does “zur Verfügung stellen” mean?",
+          "options": [
+            "to make available",
+            "to ask a question",
+            "to reject"
+          ],
+          "answer": "to make available",
+          "explanation": "zur Verfügung stellen = to provide.",
+          "skills": [
+            "nominalization"
+          ],
+          "area": "vocabulary"
+        },
+        {
+          "id": "nm_5",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Die Universität stellt den Studierenden Computer zur ___.”",
+          "answer": "Verfügung",
+          "explanation": "zur Verfügung stellen.",
+          "skills": [
+            "nominalization"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "nm_6",
+          "kind": "cloze",
+          "prompt": "Complete the sentence.",
+          "context": "Die {1} der Bevölkerung hat in den letzten Jahren stark {2}. Die {3} dieser Entwicklung sind vielfältig.",
+          "gaps": [
+            {
+              "options": [
+                "Zunahme",
+                "Zunehmen",
+                "Zunehmend"
+              ],
+              "answer": "Zunahme"
+            },
+            {
+              "options": [
+                "zugenommen",
+                "zunimmt",
+                "zunehmen"
+              ],
+              "answer": "zugenommen"
+            },
+            {
+              "options": [
+                "Ursachen",
+                "Ursache",
+                "Ursächlich"
+              ],
+              "answer": "Ursachen"
+            }
+          ],
+          "answer": "Zunahme, zugenommen, Ursachen",
+          "explanation": "A noun (Zunahme), the perfect participle, and the plural noun Ursachen.",
+          "skills": [
+            "nominalization"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "nm_7",
+          "kind": "translation",
+          "prompt": "Translate into German: “The city makes a decision.”",
+          "answer": "Die Stadt trifft eine Entscheidung",
+          "explanation": "treffen: trifft (er/sie/es).",
+          "skills": [
+            "nominalization"
+          ],
+          "area": "writing"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Entscheidung",
+          "en": "decision",
+          "article": "die",
+          "example": "Das ist eine wichtige Entscheidung.",
+          "exampleEn": "That is an important decision."
+        },
+        {
+          "de": "Verfügung",
+          "en": "availability, disposal",
+          "article": "die",
+          "example": "Wir stellen Material zur Verfügung.",
+          "exampleEn": "We make material available."
+        },
+        {
+          "de": "Ursache",
+          "en": "cause",
+          "article": "die",
+          "example": "Die Ursache ist unklar.",
+          "exampleEn": "The cause is unclear."
+        },
+        {
+          "de": "Zunahme",
+          "en": "increase",
+          "article": "die",
+          "example": "Es gibt eine Zunahme der Touristen.",
+          "exampleEn": "There is an increase in tourists."
+        },
+        {
+          "de": "Bevölkerung",
+          "en": "population",
+          "article": "die",
+          "example": "Die Bevölkerung wächst.",
+          "exampleEn": "The population is growing."
+        },
+        {
+          "de": "Kritik",
+          "en": "criticism",
+          "article": "die",
+          "example": "Die Kritik war berechtigt.",
+          "exampleEn": "The criticism was justified."
+        },
+        {
+          "de": "vielfältig",
+          "en": "varied, diverse",
+          "example": "Das Angebot ist vielfältig.",
+          "exampleEn": "The offer is varied."
+        },
+        {
+          "de": "Maßnahme",
+          "en": "measure",
+          "article": "die",
+          "example": "Die Stadt plant neue Maßnahmen.",
+          "exampleEn": "The city is planning new measures."
+        }
+      ],
+      "topics": [
+        "Study",
+        "Work"
+      ],
+      "requires": [
+        "b2_connectors_advanced",
+        "b1_passive"
+      ]
+    },
+    {
+      "id": "b2_reported_speech",
+      "level": "b2",
+      "unit": "Academic style",
+      "title": "Reported speech: er sagt, er habe …",
+      "durationMinutes": 18,
+      "objective": "Report what others said with the subjunctive I (Konjunktiv I), as in news and academic texts.",
+      "introduction": "Reported (indirect) speech in writing uses Konjunktiv I: Der Minister sagte, er habe keine Zeit. Sie sagt, sie sei krank. Er behauptet, er werde kommen. If the Konjunktiv I form is identical to the normal present (sie haben), use Konjunktiv II (sie hätten) instead.",
+      "examples": [
+        "Er sagt, er habe keine Zeit. — He says he has no time.",
+        "Sie sagt, sie sei krank. — She says she is ill.",
+        "Man werde weitere Hotels bauen. — They said they would build more hotels."
+      ],
+      "exercises": [
+        {
+          "id": "rs_1",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Der Minister sagte, er ___ keine Zeit.”",
+          "options": [
+            "habe",
+            "hatte",
+            "hat"
+          ],
+          "answer": "habe",
+          "explanation": "Konjunktiv I of haben: er habe.",
+          "skills": [
+            "reported_speech"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rs_2",
+          "kind": "multipleChoice",
+          "prompt": "Complete: “Sie sagt, sie ___ krank.”",
+          "options": [
+            "sei",
+            "ist",
+            "war"
+          ],
+          "answer": "sei",
+          "explanation": "Konjunktiv I of sein: sie sei.",
+          "skills": [
+            "reported_speech"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rs_3",
+          "kind": "fillBlank",
+          "prompt": "Complete: “Er behauptet, er ___ gestern zu Hause gewesen.” (was, reported)",
+          "answer": "sei",
+          "explanation": "Konjunktiv I perfect: er sei gewesen.",
+          "skills": [
+            "reported_speech"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rs_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “She said that she would come tomorrow.”",
+          "options": [
+            "Sie",
+            "sagte,",
+            "sie",
+            "werde",
+            "morgen",
+            "kommen"
+          ],
+          "answer": "Sie sagte, sie werde morgen kommen",
+          "explanation": "Future in reported speech: werde + infinitive.",
+          "skills": [
+            "reported_speech",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rs_5",
+          "kind": "multipleChoice",
+          "prompt": "When do you switch to Konjunktiv II in reported speech?",
+          "options": [
+            "When the Konjunktiv I form looks the same as the indicative",
+            "Always",
+            "Never"
+          ],
+          "answer": "When the Konjunktiv I form looks the same as the indicative",
+          "explanation": "sie haben → sie hätten, so the reader can tell it is reported.",
+          "skills": [
+            "reported_speech",
+            "konjunktiv2"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "rs_6",
+          "kind": "translation",
+          "prompt": "Translate into German: “He says he has no time.”",
+          "answer": "Er sagt, er habe keine Zeit",
+          "explanation": "Konjunktiv I: er habe.",
+          "skills": [
+            "reported_speech"
+          ],
+          "area": "writing",
+          "alternatives": [
+            "Er sagt, er hätte keine Zeit",
+            "Er sagt er habe keine Zeit",
+            "Er sagt er hätte keine Zeit"
+          ]
+        },
+        {
+          "id": "rs_7",
+          "kind": "multipleChoice",
+          "prompt": "Was sagte der Bürgermeister über die Zahl der Touristen?",
+          "options": [
+            "Sie sei so hoch wie nie zuvor gewesen.",
+            "Sie sei gesunken.",
+            "Sie sei gleich geblieben."
+          ],
+          "answer": "Sie sei so hoch wie nie zuvor gewesen.",
+          "explanation": "“… mehr Touristen begrüßt als je zuvor.”",
+          "skills": [
+            "reported_speech",
+            "reading_news"
+          ],
+          "area": "reading",
+          "context": "Der Bürgermeister erklärte, die Stadt habe im letzten Jahr mehr Touristen begrüßt als je zuvor. Man sei sehr zufrieden. Im nächsten Jahr werde man weitere Hotels bauen."
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "behaupten",
+          "en": "to claim",
+          "example": "Er behauptet, er sei unschuldig.",
+          "exampleEn": "He claims he is innocent."
+        },
+        {
+          "de": "erklären",
+          "en": "to explain, declare",
+          "example": "Sie erklärt das Problem.",
+          "exampleEn": "She explains the problem."
+        },
+        {
+          "de": "Bürgermeister",
+          "en": "mayor",
+          "article": "der",
+          "example": "Der Bürgermeister hält eine Rede.",
+          "exampleEn": "The mayor gives a speech."
+        },
+        {
+          "de": "Tourist",
+          "en": "tourist (male)",
+          "article": "der",
+          "example": "Der Tourist fragt nach dem Weg.",
+          "exampleEn": "The tourist asks the way."
+        },
+        {
+          "de": "zufrieden",
+          "en": "satisfied",
+          "example": "Wir sind zufrieden.",
+          "exampleEn": "We are satisfied."
+        },
+        {
+          "de": "Zeitung",
+          "en": "newspaper",
+          "article": "die",
+          "example": "Ich lese die Zeitung.",
+          "exampleEn": "I read the newspaper."
+        }
+      ],
+      "topics": [
+        "Study",
+        "Culture"
+      ],
+      "requires": [
+        "b1_konjunktiv2",
+        "b2_connectors_advanced"
+      ]
+    },
+    {
+      "id": "b2_goethe_reading_listening",
+      "level": "b2",
+      "unit": "Goethe B2",
+      "title": "Goethe B2 · Reading and listening",
+      "durationMinutes": 24,
+      "objective": "Handle longer opinion texts, a radio interview and an announcement, as in the Goethe B2 Lesen and Hören modules.",
+      "introduction": "Goethe B2 texts argue a position: find the author's claim, the reasons, and the opposing view. In Hören you follow an interview or announcement and answer questions that paraphrase the audio, so the exact words rarely match. Focus on meaning, and notice contrast words such as jedoch and dennoch that signal the speaker's real point.",
+      "examples": [
+        "Studien zeigen, dass … — Studies show that …",
+        "Kritiker warnen jedoch … — Critics warn, however …",
+        "Hinzu kommt, dass … — In addition, …"
+      ],
+      "exercises": [
+        {
+          "id": "gb2rl_1",
+          "kind": "multipleChoice",
+          "prompt": "Was zeigen Studien zur Vier-Tage-Woche?",
+          "options": [
+            "Die Zufriedenheit steigt.",
+            "Die Krankheitstage steigen.",
+            "Der Lohn sinkt."
+          ],
+          "answer": "Die Zufriedenheit steigt.",
+          "explanation": "“… dass die Zufriedenheit steigt und die Krankheitstage sinken.”",
+          "skills": [
+            "reading_articles"
+          ],
+          "area": "reading",
+          "context": "Immer mehr Unternehmen testen die Vier-Tage-Woche. Die Beschäftigten arbeiten dabei weniger Stunden, bekommen aber denselben Lohn. Studien zeigen, dass die Zufriedenheit steigt und die Krankheitstage sinken. Kritiker warnen jedoch, dass in manchen Branchen, etwa im Gesundheitswesen, die Arbeit nicht einfach verkürzt werden könne. Sie fordern daher flexible Lösungen statt einer allgemeinen Regel.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb2rl_2",
+          "kind": "multipleChoice",
+          "prompt": "Richtig oder Falsch? Nach Ansicht der Kritiker lässt sich die Arbeitszeit im Gesundheitswesen nicht einfach verkürzen.",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Richtig",
+          "explanation": "“… die Arbeit nicht einfach verkürzt werden könne.”",
+          "skills": [
+            "reading_articles"
+          ],
+          "area": "reading",
+          "context": "Immer mehr Unternehmen testen die Vier-Tage-Woche. Die Beschäftigten arbeiten dabei weniger Stunden, bekommen aber denselben Lohn. Studien zeigen, dass die Zufriedenheit steigt und die Krankheitstage sinken. Kritiker warnen jedoch, dass in manchen Branchen, etwa im Gesundheitswesen, die Arbeit nicht einfach verkürzt werden könne. Sie fordern daher flexible Lösungen statt einer allgemeinen Regel.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb2rl_3",
+          "kind": "multipleChoice",
+          "prompt": "Was fordern die Kritiker?",
+          "options": [
+            "flexible Lösungen",
+            "eine allgemeine Regel",
+            "höhere Löhne"
+          ],
+          "answer": "flexible Lösungen",
+          "explanation": "“Sie fordern daher flexible Lösungen statt einer allgemeinen Regel.”",
+          "skills": [
+            "reading_articles"
+          ],
+          "area": "reading",
+          "context": "Immer mehr Unternehmen testen die Vier-Tage-Woche. Die Beschäftigten arbeiten dabei weniger Stunden, bekommen aber denselben Lohn. Studien zeigen, dass die Zufriedenheit steigt und die Krankheitstage sinken. Kritiker warnen jedoch, dass in manchen Branchen, etwa im Gesundheitswesen, die Arbeit nicht einfach verkürzt werden könne. Sie fordern daher flexible Lösungen statt einer allgemeinen Regel.",
+          "examPart": "Lesen Teil 1"
+        },
+        {
+          "id": "gb2rl_4",
+          "kind": "cloze",
+          "prompt": "Complete the summary.",
+          "context": "Viele Firmen testen die Vier-Tage-Woche, {1} sich die Zufriedenheit der Beschäftigten verbessert. {2} gibt es auch Kritik.",
+          "gaps": [
+            {
+              "options": [
+                "weil",
+                "obwohl",
+                "sodass"
+              ],
+              "answer": "weil"
+            },
+            {
+              "options": [
+                "Dennoch",
+                "Deshalb",
+                "Folglich"
+              ],
+              "answer": "Dennoch"
+            }
+          ],
+          "answer": "weil, Dennoch",
+          "explanation": "weil gives the reason; Dennoch introduces the contrast.",
+          "skills": [
+            "advanced_connectors",
+            "reading_articles"
+          ],
+          "area": "reading",
+          "examPart": "Lesen Teil 2"
+        },
+        {
+          "id": "gb2rl_5",
+          "kind": "listening",
+          "prompt": "Was gehört laut Dr. Weber zu den Ursachen von Einsamkeit?",
+          "audioText": "In unserer heutigen Sendung sprechen wir mit der Soziologin Dr. Weber über das Thema Einsamkeit. Immer mehr Menschen in Großstädten fühlen sich einsam. Woran liegt das? – Das hat verschiedene Ursachen. Zum einen leben viele allein, zum anderen arbeiten viele im Homeoffice und haben weniger Kontakt zu anderen. Hinzu kommt, dass soziale Medien echte Begegnungen oft nicht ersetzen können.",
+          "options": [
+            "Viele Menschen leben allein.",
+            "Es gibt zu viele Treffpunkte.",
+            "Die Menschen arbeiten zu wenig."
+          ],
+          "answer": "Viele Menschen leben allein.",
+          "explanation": "“Zum einen leben viele allein.”",
+          "skills": [
+            "listening_interviews"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 3"
+        },
+        {
+          "id": "gb2rl_6",
+          "kind": "listening",
+          "prompt": "Was sagt Dr. Weber über soziale Medien?",
+          "audioText": "In unserer heutigen Sendung sprechen wir mit der Soziologin Dr. Weber über das Thema Einsamkeit. Immer mehr Menschen in Großstädten fühlen sich einsam. Woran liegt das? – Das hat verschiedene Ursachen. Zum einen leben viele allein, zum anderen arbeiten viele im Homeoffice und haben weniger Kontakt zu anderen. Hinzu kommt, dass soziale Medien echte Begegnungen oft nicht ersetzen können.",
+          "options": [
+            "Sie ersetzen echte Begegnungen oft nicht.",
+            "Sie machen immer glücklich.",
+            "Sie sind wichtiger als Freunde."
+          ],
+          "answer": "Sie ersetzen echte Begegnungen oft nicht.",
+          "explanation": "“… echte Begegnungen oft nicht ersetzen können.”",
+          "skills": [
+            "listening_interviews"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 3"
+        },
+        {
+          "id": "gb2rl_7",
+          "kind": "listening",
+          "prompt": "Was sollen die Fahrgäste tun?",
+          "audioText": "Liebe Fahrgäste, wegen Bauarbeiten fährt die Linie fünf von Montag bis Freitag nicht zwischen Rathaus und Hauptbahnhof. Bitte nutzen Sie den Ersatzbus, der alle zehn Minuten an der Haltestelle vor dem Rathaus abfährt.",
+          "options": [
+            "den Ersatzbus nehmen",
+            "zu Fuß gehen",
+            "ein Taxi bestellen"
+          ],
+          "answer": "den Ersatzbus nehmen",
+          "explanation": "“Bitte nutzen Sie den Ersatzbus.”",
+          "skills": [
+            "listening_announcements"
+          ],
+          "area": "listening",
+          "examPart": "Hören Teil 1"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Beschäftigte",
+          "en": "employees (plural)",
+          "article": "die",
+          "example": "Die Beschäftigten sind zufrieden.",
+          "exampleEn": "The employees are satisfied."
+        },
+        {
+          "de": "Zufriedenheit",
+          "en": "satisfaction",
+          "article": "die",
+          "example": "Die Zufriedenheit ist hoch.",
+          "exampleEn": "Satisfaction is high."
+        },
+        {
+          "de": "Branche",
+          "en": "sector, industry",
+          "article": "die",
+          "example": "Er arbeitet in der Medienbranche.",
+          "exampleEn": "He works in the media industry."
+        },
+        {
+          "de": "Einsamkeit",
+          "en": "loneliness",
+          "article": "die",
+          "example": "Einsamkeit ist ein Problem.",
+          "exampleEn": "Loneliness is a problem."
+        },
+        {
+          "de": "Begegnung",
+          "en": "encounter",
+          "article": "die",
+          "example": "Eine Begegnung mit Menschen ist wichtig.",
+          "exampleEn": "Meeting people is important."
+        },
+        {
+          "de": "Fahrgast",
+          "en": "passenger",
+          "article": "der",
+          "example": "Die Fahrgäste warten am Bahnhof.",
+          "exampleEn": "The passengers are waiting at the station."
+        },
+        {
+          "de": "Bauarbeiten",
+          "en": "roadworks, construction (plural)",
+          "article": "die",
+          "example": "Wegen Bauarbeiten ist die Straße gesperrt.",
+          "exampleEn": "The road is closed because of roadworks."
+        }
+      ],
+      "topics": [
+        "Work",
+        "Culture",
+        "Everyday life"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "b1_goethe_reading_listening",
+        "b2_connectors_advanced"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "b2_goethe_writing_speaking",
+      "level": "b2",
+      "unit": "Goethe B2",
+      "title": "Goethe B2 · Forum post and discussion",
+      "durationMinutes": 24,
+      "objective": "Write a structured forum post with arguments and a counter-argument, and practise presenting and discussing.",
+      "introduction": "Goethe B2 Schreiben asks for a forum post or letter that states your opinion, supports it with arguments, and deals with a counter-argument. Structure: opinion → first argument → second argument → counter-argument → conclusion. In Sprechen you present a topic (Zunächst möchte ich …), weigh sides (Einerseits … andererseits …), and react politely (Entschuldigung, darf ich kurz etwas ergänzen?).",
+      "examples": [
+        "Erstens … zweitens … außerdem — First … second … moreover",
+        "Kritiker sagen, dass … Das ist jedoch nicht immer der Fall. — Critics say that … That is not always the case, however.",
+        "Zusammenfassend lässt sich sagen, dass … — To sum up, …"
+      ],
+      "exercises": [
+        {
+          "id": "gb2sw_1",
+          "kind": "writing",
+          "prompt": "Im Internetforum wird diskutiert: „Sollten Städte Autos aus der Innenstadt verbannen?“ Schreiben Sie einen Beitrag (mindestens 90 Wörter): 1) Nennen Sie Ihre Meinung. 2) Nennen Sie zwei Argumente. 3) Gehen Sie auf ein Gegenargument ein.",
+          "answer": "Meiner Meinung nach sollten Städte Autos aus der Innenstadt verbannen. Erstens würde die Luft sauberer werden, weil weniger Abgase entstehen. Zweitens wäre es in den Straßen viel ruhiger, sodass die Bewohner besser schlafen könnten. Außerdem hätten Fußgänger und Radfahrer mehr Platz, und die Innenstadt würde für Familien attraktiver. Kritiker sagen, dass die Geschäfte weniger Kunden hätten. Das ist jedoch nicht immer der Fall, denn Studien aus anderen Städten zeigen, dass Fußgänger öfter und länger einkaufen. Deshalb halte ich ein Autoverbot für eine sinnvolle Lösung, wenn gleichzeitig der öffentliche Verkehr verbessert wird.",
+          "explanation": "Good: opinion, two arguments, a counter-argument that you answer, and connectors that make the line of thought clear.",
+          "skills": [
+            "opinion_writing",
+            "essay_writing",
+            "advanced_connectors"
+          ],
+          "area": "writing",
+          "examPart": "Schreiben Teil 1",
+          "brief": {
+            "minWords": 90,
+            "register": "essay",
+            "points": [
+              {
+                "label": "State your opinion",
+                "keywords": [
+                  "meiner meinung",
+                  "ich finde",
+                  "ich bin der ansicht",
+                  "ich denke"
+                ]
+              },
+              {
+                "label": "Give two arguments",
+                "keywords": [
+                  "erstens",
+                  "zweitens",
+                  "außerdem",
+                  "argument",
+                  "weil"
+                ]
+              },
+              {
+                "label": "Respond to a counter-argument",
+                "keywords": [
+                  "jedoch",
+                  "allerdings",
+                  "gegenargument",
+                  "kritiker",
+                  "andererseits"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "gb2sw_2",
+          "kind": "speaking",
+          "prompt": "Say in German: “First of all, I would like to present my topic.”",
+          "answer": "Zunächst möchte ich mein Thema vorstellen",
+          "explanation": "Zunächst opens the presentation; the verb stays in position 2.",
+          "skills": [
+            "speaking_practice",
+            "presentation_speaking"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Zuerst möchte ich mein Thema vorstellen"
+          ],
+          "examPart": "Sprechen Teil 1"
+        },
+        {
+          "id": "gb2sw_3",
+          "kind": "speaking",
+          "prompt": "Say in German: “On the one hand there are advantages, on the other hand there are risks.”",
+          "answer": "Einerseits gibt es Vorteile, andererseits gibt es Risiken",
+          "explanation": "Einerseits … andererseits … weighs two sides.",
+          "skills": [
+            "speaking_practice",
+            "presentation_speaking"
+          ],
+          "area": "speaking",
+          "examPart": "Sprechen Teil 1"
+        },
+        {
+          "id": "gb2sw_4",
+          "kind": "speaking",
+          "prompt": "Say in German: “I see that differently, because the costs are too high.”",
+          "answer": "Ich sehe das anders, weil die Kosten zu hoch sind",
+          "explanation": "weil sends the verb to the end.",
+          "skills": [
+            "speaking_practice",
+            "opinion_speaking"
+          ],
+          "area": "speaking",
+          "examPart": "Sprechen Teil 2"
+        },
+        {
+          "id": "gb2sw_5",
+          "kind": "speaking",
+          "prompt": "Say in German: “To sum up, I would say that the plan is sensible.”",
+          "answer": "Zusammenfassend würde ich sagen, dass der Plan sinnvoll ist",
+          "explanation": "Zusammenfassend + würde ich sagen, dass …",
+          "skills": [
+            "speaking_practice",
+            "presentation_speaking"
+          ],
+          "area": "speaking",
+          "examPart": "Sprechen Teil 2"
+        },
+        {
+          "id": "gb2sw_6",
+          "kind": "multipleChoice",
+          "prompt": "How do you politely join a discussion?",
+          "options": [
+            "Entschuldigung, darf ich kurz etwas ergänzen?",
+            "Halt den Mund!",
+            "Das stimmt überhaupt nicht, Punkt."
+          ],
+          "answer": "Entschuldigung, darf ich kurz etwas ergänzen?",
+          "explanation": "Polite interruption: Entschuldigung, darf ich …?",
+          "skills": [
+            "opinion_speaking",
+            "formal_register"
+          ],
+          "area": "speaking",
+          "examPart": "Sprechen Teil 2"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Argument",
+          "en": "argument",
+          "article": "das",
+          "example": "Das ist ein starkes Argument.",
+          "exampleEn": "That is a strong argument."
+        },
+        {
+          "de": "Gegenargument",
+          "en": "counter-argument",
+          "article": "das",
+          "example": "Ein Gegenargument ist der Preis.",
+          "exampleEn": "One counter-argument is the price."
+        },
+        {
+          "de": "Abgase",
+          "en": "exhaust fumes (plural)",
+          "article": "die",
+          "example": "Abgase sind schlecht für die Luft.",
+          "exampleEn": "Exhaust fumes are bad for the air."
+        },
+        {
+          "de": "Fußgänger",
+          "en": "pedestrian",
+          "article": "der",
+          "example": "Fußgänger haben Vorrang.",
+          "exampleEn": "Pedestrians have priority."
+        },
+        {
+          "de": "Innenstadt",
+          "en": "city centre",
+          "article": "die",
+          "example": "Die Innenstadt ist autofrei.",
+          "exampleEn": "The city centre is car-free."
+        },
+        {
+          "de": "sinnvoll",
+          "en": "sensible, meaningful",
+          "example": "Das ist eine sinnvolle Lösung.",
+          "exampleEn": "That is a sensible solution."
+        },
+        {
+          "de": "ergänzen",
+          "en": "to add, complete",
+          "example": "Darf ich etwas ergänzen?",
+          "exampleEn": "May I add something?"
+        }
+      ],
+      "topics": [
+        "Work",
+        "Culture",
+        "Study"
+      ],
+      "goals": [
+        "goethe"
+      ],
+      "requires": [
+        "b2_goethe_reading_listening",
+        "b2_nominalization"
+      ],
+      "exam": "goethe"
+    },
+    {
+      "id": "b2_testdaf_reading",
+      "level": "b2",
+      "unit": "TestDaF",
+      "title": "TestDaF · Reading: Ja, Nein, Text sagt dazu nichts",
+      "durationMinutes": 24,
+      "objective": "Decide whether statements are supported, contradicted or not covered by an academic text.",
+      "introduction": "TestDaF Leseverstehen contains academic texts. One task type asks whether a statement is Ja (the text says so), Nein (the text says the opposite) or Text sagt dazu nichts (the text does not address it). Read the statement, find the exact passage, and check every detail: names, numbers and hedges such as „möglicherweise“ matter. Never use outside knowledge for the third option.",
+      "examples": [
+        "Ja — the text confirms it",
+        "Nein — the text contradicts it",
+        "Text sagt dazu nichts — the text does not mention it"
+      ],
+      "exercises": [
+        {
+          "id": "tdr_1",
+          "kind": "multipleChoice",
+          "prompt": "„Vorlesungen werden an Universitäten oft aufgezeichnet.“",
+          "options": [
+            "Ja",
+            "Nein",
+            "Text sagt dazu nichts"
+          ],
+          "answer": "Ja",
+          "explanation": "“Vorlesungen werden häufig aufgezeichnet.”",
+          "skills": [
+            "reading_academic"
+          ],
+          "area": "reading",
+          "context": "Die Digitalisierung hat die Arbeitsweise an Universitäten stark verändert. Vorlesungen werden häufig aufgezeichnet, sodass Studierende sie jederzeit nachsehen können. Viele Dozenten nutzen digitale Plattformen, um Material bereitzustellen. Eine Studie der Universität Leipzig zeigt, dass Studierende, die Aufzeichnungen nutzen, im Durchschnitt bessere Noten erzielen. Allerdings warnen die Autoren vor einer Überschätzung dieses Effekts: Es sei möglich, dass vor allem besonders motivierte Studierende Aufzeichnungen verwenden. Zudem sei die Teilnahme an Präsenzveranstaltungen in den Studiengängen unterschiedlich geregelt.",
+          "examPart": "Leseverstehen Teil 3"
+        },
+        {
+          "id": "tdr_2",
+          "kind": "multipleChoice",
+          "prompt": "„Studierende mit Aufzeichnungen erzielen schlechtere Noten.“",
+          "options": [
+            "Ja",
+            "Nein",
+            "Text sagt dazu nichts"
+          ],
+          "answer": "Nein",
+          "explanation": "The study found better marks, not worse.",
+          "skills": [
+            "reading_academic"
+          ],
+          "area": "reading",
+          "context": "Die Digitalisierung hat die Arbeitsweise an Universitäten stark verändert. Vorlesungen werden häufig aufgezeichnet, sodass Studierende sie jederzeit nachsehen können. Viele Dozenten nutzen digitale Plattformen, um Material bereitzustellen. Eine Studie der Universität Leipzig zeigt, dass Studierende, die Aufzeichnungen nutzen, im Durchschnitt bessere Noten erzielen. Allerdings warnen die Autoren vor einer Überschätzung dieses Effekts: Es sei möglich, dass vor allem besonders motivierte Studierende Aufzeichnungen verwenden. Zudem sei die Teilnahme an Präsenzveranstaltungen in den Studiengängen unterschiedlich geregelt.",
+          "examPart": "Leseverstehen Teil 3"
+        },
+        {
+          "id": "tdr_3",
+          "kind": "multipleChoice",
+          "prompt": "„Die Autoren der Studie sind Professoren in Leipzig.“",
+          "options": [
+            "Ja",
+            "Nein",
+            "Text sagt dazu nichts"
+          ],
+          "answer": "Text sagt dazu nichts",
+          "explanation": "The text names the university but not the authors' positions.",
+          "skills": [
+            "reading_academic"
+          ],
+          "area": "reading",
+          "context": "Die Digitalisierung hat die Arbeitsweise an Universitäten stark verändert. Vorlesungen werden häufig aufgezeichnet, sodass Studierende sie jederzeit nachsehen können. Viele Dozenten nutzen digitale Plattformen, um Material bereitzustellen. Eine Studie der Universität Leipzig zeigt, dass Studierende, die Aufzeichnungen nutzen, im Durchschnitt bessere Noten erzielen. Allerdings warnen die Autoren vor einer Überschätzung dieses Effekts: Es sei möglich, dass vor allem besonders motivierte Studierende Aufzeichnungen verwenden. Zudem sei die Teilnahme an Präsenzveranstaltungen in den Studiengängen unterschiedlich geregelt.",
+          "examPart": "Leseverstehen Teil 3"
+        },
+        {
+          "id": "tdr_4",
+          "kind": "multipleChoice",
+          "prompt": "„Die Autoren halten es für möglich, dass motivierte Studierende den Effekt erklären.“",
+          "options": [
+            "Ja",
+            "Nein",
+            "Text sagt dazu nichts"
+          ],
+          "answer": "Ja",
+          "explanation": "“Es sei möglich, dass vor allem besonders motivierte Studierende …”",
+          "skills": [
+            "reading_academic",
+            "reported_speech"
+          ],
+          "area": "reading",
+          "context": "Die Digitalisierung hat die Arbeitsweise an Universitäten stark verändert. Vorlesungen werden häufig aufgezeichnet, sodass Studierende sie jederzeit nachsehen können. Viele Dozenten nutzen digitale Plattformen, um Material bereitzustellen. Eine Studie der Universität Leipzig zeigt, dass Studierende, die Aufzeichnungen nutzen, im Durchschnitt bessere Noten erzielen. Allerdings warnen die Autoren vor einer Überschätzung dieses Effekts: Es sei möglich, dass vor allem besonders motivierte Studierende Aufzeichnungen verwenden. Zudem sei die Teilnahme an Präsenzveranstaltungen in den Studiengängen unterschiedlich geregelt.",
+          "examPart": "Leseverstehen Teil 3"
+        },
+        {
+          "id": "tdr_5",
+          "kind": "multipleChoice",
+          "prompt": "Was ist die Hauptaussage des Textes?",
+          "options": [
+            "Aufzeichnungen scheinen hilfreich zu sein, doch der Effekt ist nicht eindeutig.",
+            "Aufzeichnungen sollten verboten werden.",
+            "Präsenzveranstaltungen sind überflüssig."
+          ],
+          "answer": "Aufzeichnungen scheinen hilfreich zu sein, doch der Effekt ist nicht eindeutig.",
+          "explanation": "Positive finding plus a warning about overestimating it.",
+          "skills": [
+            "reading_academic"
+          ],
+          "area": "reading",
+          "context": "Die Digitalisierung hat die Arbeitsweise an Universitäten stark verändert. Vorlesungen werden häufig aufgezeichnet, sodass Studierende sie jederzeit nachsehen können. Viele Dozenten nutzen digitale Plattformen, um Material bereitzustellen. Eine Studie der Universität Leipzig zeigt, dass Studierende, die Aufzeichnungen nutzen, im Durchschnitt bessere Noten erzielen. Allerdings warnen die Autoren vor einer Überschätzung dieses Effekts: Es sei möglich, dass vor allem besonders motivierte Studierende Aufzeichnungen verwenden. Zudem sei die Teilnahme an Präsenzveranstaltungen in den Studiengängen unterschiedlich geregelt.",
+          "examPart": "Leseverstehen Teil 2"
+        },
+        {
+          "id": "tdr_6",
+          "kind": "multipleChoice",
+          "prompt": "Welcher Titel passt zum Text?",
+          "options": [
+            "Digitale Vorlesungen: Hilfe mit Fragezeichen",
+            "Die Geschichte der Universität Leipzig",
+            "Warum Noten unwichtig sind"
+          ],
+          "answer": "Digitale Vorlesungen: Hilfe mit Fragezeichen",
+          "explanation": "A helpful tool, but with limits.",
+          "skills": [
+            "reading_academic"
+          ],
+          "area": "reading",
+          "context": "Die Digitalisierung hat die Arbeitsweise an Universitäten stark verändert. Vorlesungen werden häufig aufgezeichnet, sodass Studierende sie jederzeit nachsehen können. Viele Dozenten nutzen digitale Plattformen, um Material bereitzustellen. Eine Studie der Universität Leipzig zeigt, dass Studierende, die Aufzeichnungen nutzen, im Durchschnitt bessere Noten erzielen. Allerdings warnen die Autoren vor einer Überschätzung dieses Effekts: Es sei möglich, dass vor allem besonders motivierte Studierende Aufzeichnungen verwenden. Zudem sei die Teilnahme an Präsenzveranstaltungen in den Studiengängen unterschiedlich geregelt.",
+          "examPart": "Leseverstehen Teil 1"
+        },
+        {
+          "id": "tdr_7",
+          "kind": "cloze",
+          "prompt": "Complete the sentence about the text.",
+          "context": "Die Autoren {1} vor einer {2} des Effekts.",
+          "gaps": [
+            {
+              "options": [
+                "warnen",
+                "warnt",
+                "warnte"
+              ],
+              "answer": "warnen"
+            },
+            {
+              "options": [
+                "Überschätzung",
+                "Überschätzen",
+                "Überschätzt"
+              ],
+              "answer": "Überschätzung"
+            }
+          ],
+          "answer": "warnen, Überschätzung",
+          "explanation": "warnen vor + dative; the noun Überschätzung.",
+          "skills": [
+            "reading_academic",
+            "nominalization"
+          ],
+          "area": "reading",
+          "examPart": "Leseverstehen Teil 2"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Digitalisierung",
+          "en": "digitalisation",
+          "article": "die",
+          "example": "Die Digitalisierung verändert die Arbeit.",
+          "exampleEn": "Digitalisation is changing work."
+        },
+        {
+          "de": "Dozent",
+          "en": "lecturer (male)",
+          "article": "der",
+          "example": "Der Dozent erklärt das Thema.",
+          "exampleEn": "The lecturer explains the topic."
+        },
+        {
+          "de": "Aufzeichnung",
+          "en": "recording",
+          "article": "die",
+          "example": "Die Aufzeichnung ist online.",
+          "exampleEn": "The recording is online."
+        },
+        {
+          "de": "Plattform",
+          "en": "platform",
+          "article": "die",
+          "example": "Die Plattform ist kostenlos.",
+          "exampleEn": "The platform is free."
+        },
+        {
+          "de": "Durchschnitt",
+          "en": "average",
+          "article": "der",
+          "example": "Im Durchschnitt sind es zehn Stunden.",
+          "exampleEn": "On average it is ten hours."
+        },
+        {
+          "de": "Überschätzung",
+          "en": "overestimation",
+          "article": "die",
+          "example": "Eine Überschätzung ist gefährlich.",
+          "exampleEn": "An overestimation is dangerous."
+        },
+        {
+          "de": "erzielen",
+          "en": "to achieve, obtain",
+          "example": "Sie erzielt gute Ergebnisse.",
+          "exampleEn": "She achieves good results."
+        },
+        {
+          "de": "Präsenzveranstaltung",
+          "en": "in-person class",
+          "article": "die",
+          "example": "Die Präsenzveranstaltung ist verpflichtend.",
+          "exampleEn": "The in-person class is compulsory."
+        }
+      ],
+      "topics": [
+        "Study"
+      ],
+      "goals": [
+        "testdaf"
+      ],
+      "requires": [
+        "b2_testdaf_graph",
+        "b2_reported_speech"
+      ],
+      "exam": "testdaf"
+    },
+    {
+      "id": "b2_testdaf_listening",
+      "level": "b2",
+      "unit": "TestDaF",
+      "title": "TestDaF · Listening: campus dialogue and lecture",
+      "durationMinutes": 24,
+      "objective": "Follow a campus dialogue and a short lecture and answer questions that paraphrase what you hear.",
+      "introduction": "TestDaF Hörverstehen begins with an everyday campus situation (Teil 1), then an interview or discussion (Teil 2), and ends with a lecture excerpt (Teil 3). You hear each text once, so read the questions in advance, note numbers and dates as you hear them, and expect paraphrases: the answer will use different words from the audio.",
+      "examples": [
+        "die Anmeldefrist — registration deadline",
+        "die Unterlagen einreichen — to submit the documents",
+        "Untersuchungen zeigen, dass … — Studies show that …"
+      ],
+      "exercises": [
+        {
+          "id": "tdl_1",
+          "kind": "listening",
+          "prompt": "Bis wann ist die Anmeldefrist?",
+          "audioText": "Hallo, ich möchte mich für das Wintersemester einschreiben. Welche Unterlagen brauche ich? – Sie brauchen Ihr Abiturzeugnis, eine Übersetzung davon, Ihren Sprachnachweis und ein Passfoto. Die Anmeldefrist endet am fünfzehnten Juli. – Kann ich die Unterlagen auch online hochladen? – Ja, aber die Originale müssen Sie bei der Einschreibung vorzeigen.",
+          "options": [
+            "15. Juli",
+            "15. Juni",
+            "1. Juli"
+          ],
+          "answer": "15. Juli",
+          "explanation": "“endet am fünfzehnten Juli.”",
+          "skills": [
+            "listening_dialogues",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hörverstehen Teil 1"
+        },
+        {
+          "id": "tdl_2",
+          "kind": "listening",
+          "prompt": "Was muss man bei der Einschreibung vorzeigen?",
+          "audioText": "Hallo, ich möchte mich für das Wintersemester einschreiben. Welche Unterlagen brauche ich? – Sie brauchen Ihr Abiturzeugnis, eine Übersetzung davon, Ihren Sprachnachweis und ein Passfoto. Die Anmeldefrist endet am fünfzehnten Juli. – Kann ich die Unterlagen auch online hochladen? – Ja, aber die Originale müssen Sie bei der Einschreibung vorzeigen.",
+          "options": [
+            "die Originale",
+            "nur Kopien",
+            "ein Passfoto"
+          ],
+          "answer": "die Originale",
+          "explanation": "“… die Originale müssen Sie … vorzeigen.”",
+          "skills": [
+            "listening_dialogues"
+          ],
+          "area": "listening",
+          "examPart": "Hörverstehen Teil 1"
+        },
+        {
+          "id": "tdl_3",
+          "kind": "listening",
+          "prompt": "Was passiert laut Vorlesung im Schlaf?",
+          "audioText": "Heute möchte ich über Schlaf und Lernen sprechen. Untersuchungen zeigen, dass das Gehirn im Schlaf neue Informationen ordnet und im Langzeitgedächtnis speichert. Studierende, die vor einer Prüfung ausreichend schlafen, erinnern sich daher besser an den Stoff als Studierende, die die ganze Nacht lernen. Ein Mittagsschlaf von etwa zwanzig Minuten kann zusätzlich die Konzentration verbessern.",
+          "options": [
+            "Das Gehirn ordnet neue Informationen und speichert sie.",
+            "Das Gehirn ruht vollständig.",
+            "Das Gehirn vergisst unwichtige Fakten sofort."
+          ],
+          "answer": "Das Gehirn ordnet neue Informationen und speichert sie.",
+          "explanation": "“… ordnet neue Informationen und speichert sie.”",
+          "skills": [
+            "listening_lectures"
+          ],
+          "area": "listening",
+          "examPart": "Hörverstehen Teil 3"
+        },
+        {
+          "id": "tdl_4",
+          "kind": "listening",
+          "prompt": "Wer erinnert sich laut Vorlesung besser an den Stoff?",
+          "audioText": "Heute möchte ich über Schlaf und Lernen sprechen. Untersuchungen zeigen, dass das Gehirn im Schlaf neue Informationen ordnet und im Langzeitgedächtnis speichert. Studierende, die vor einer Prüfung ausreichend schlafen, erinnern sich daher besser an den Stoff als Studierende, die die ganze Nacht lernen. Ein Mittagsschlaf von etwa zwanzig Minuten kann zusätzlich die Konzentration verbessern.",
+          "options": [
+            "wer vor der Prüfung ausreichend schläft",
+            "wer die ganze Nacht lernt",
+            "wer keinen Mittagsschlaf macht"
+          ],
+          "answer": "wer vor der Prüfung ausreichend schläft",
+          "explanation": "“… die vor einer Prüfung ausreichend schlafen, erinnern sich … besser.”",
+          "skills": [
+            "listening_lectures",
+            "advanced_connectors"
+          ],
+          "area": "listening",
+          "examPart": "Hörverstehen Teil 3"
+        },
+        {
+          "id": "tdl_5",
+          "kind": "listening",
+          "prompt": "Wie lang sollte der Mittagsschlaf sein?",
+          "audioText": "Heute möchte ich über Schlaf und Lernen sprechen. Untersuchungen zeigen, dass das Gehirn im Schlaf neue Informationen ordnet und im Langzeitgedächtnis speichert. Studierende, die vor einer Prüfung ausreichend schlafen, erinnern sich daher besser an den Stoff als Studierende, die die ganze Nacht lernen. Ein Mittagsschlaf von etwa zwanzig Minuten kann zusätzlich die Konzentration verbessern.",
+          "options": [
+            "etwa zwanzig Minuten",
+            "etwa zwei Stunden",
+            "etwa fünf Minuten"
+          ],
+          "answer": "etwa zwanzig Minuten",
+          "explanation": "“… von etwa zwanzig Minuten.”",
+          "skills": [
+            "listening_lectures",
+            "listening_numbers"
+          ],
+          "area": "listening",
+          "examPart": "Hörverstehen Teil 3"
+        },
+        {
+          "id": "tdl_6",
+          "kind": "listening",
+          "prompt": "Richtig oder Falsch? Der Redner empfiehlt, vor einer Prüfung die ganze Nacht zu lernen.",
+          "audioText": "Heute möchte ich über Schlaf und Lernen sprechen. Untersuchungen zeigen, dass das Gehirn im Schlaf neue Informationen ordnet und im Langzeitgedächtnis speichert. Studierende, die vor einer Prüfung ausreichend schlafen, erinnern sich daher besser an den Stoff als Studierende, die die ganze Nacht lernen. Ein Mittagsschlaf von etwa zwanzig Minuten kann zusätzlich die Konzentration verbessern.",
+          "options": [
+            "Richtig",
+            "Falsch"
+          ],
+          "answer": "Falsch",
+          "explanation": "He says well-rested students remember better than those who study all night.",
+          "skills": [
+            "listening_lectures"
+          ],
+          "area": "listening",
+          "examPart": "Hörverstehen Teil 3"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Einschreibung",
+          "en": "enrolment",
+          "article": "die",
+          "example": "Die Einschreibung ist online möglich.",
+          "exampleEn": "Enrolment is possible online."
+        },
+        {
+          "de": "Unterlagen",
+          "en": "documents (plural)",
+          "article": "die",
+          "example": "Bitte bringen Sie alle Unterlagen mit.",
+          "exampleEn": "Please bring all documents."
+        },
+        {
+          "de": "Anmeldefrist",
+          "en": "registration deadline",
+          "article": "die",
+          "example": "Die Anmeldefrist endet bald.",
+          "exampleEn": "The registration deadline ends soon."
+        },
+        {
+          "de": "Gehirn",
+          "en": "brain",
+          "article": "das",
+          "example": "Das Gehirn braucht Schlaf.",
+          "exampleEn": "The brain needs sleep."
+        },
+        {
+          "de": "Gedächtnis",
+          "en": "memory",
+          "article": "das",
+          "example": "Mein Gedächtnis ist gut.",
+          "exampleEn": "My memory is good."
+        },
+        {
+          "de": "Stoff",
+          "en": "material, subject matter",
+          "article": "der",
+          "example": "Der Stoff ist schwierig.",
+          "exampleEn": "The material is difficult."
+        },
+        {
+          "de": "Konzentration",
+          "en": "concentration",
+          "article": "die",
+          "example": "Ohne Schlaf sinkt die Konzentration.",
+          "exampleEn": "Without sleep, concentration drops."
+        },
+        {
+          "de": "speichern",
+          "en": "to store, save",
+          "example": "Das Gehirn speichert Informationen.",
+          "exampleEn": "The brain stores information."
+        }
+      ],
+      "topics": [
+        "Study"
+      ],
+      "goals": [
+        "testdaf"
+      ],
+      "requires": [
+        "b2_testdaf_reading"
+      ],
+      "exam": "testdaf"
+    },
+    {
+      "id": "b2_testdaf_essay",
+      "level": "b2",
+      "unit": "TestDaF",
+      "title": "TestDaF · Written argument: Studiengebühren",
+      "durationMinutes": 26,
+      "objective": "Write a structured argumentative text that states a position, weighs both sides and draws a conclusion.",
+      "introduction": "In TestDaF Schriftlicher Ausdruck (Teil 2) you argue about a topic. Use a clear structure: (1) introduce the topic and your position, (2) arguments for, (3) arguments against, (4) conclusion. Link ideas with connectors: Einerseits … andererseits, zwar … aber, deshalb, jedoch, zusammenfassend. Use the nominal style from B2 where it sounds natural.",
+      "examples": [
+        "Zu dem Thema gibt es unterschiedliche Meinungen. — There are different views on the topic.",
+        "Befürworter argumentieren, dass … — Supporters argue that …",
+        "Zusammenfassend lässt sich sagen, dass … — To sum up, …"
+      ],
+      "exercises": [
+        {
+          "id": "tde_1",
+          "kind": "multipleChoice",
+          "prompt": "Which sentence starts an argumentative text well?",
+          "options": [
+            "Zu dem Thema gibt es unterschiedliche Meinungen.",
+            "Ich finde Studiengebühren total doof.",
+            "Hallo, heute schreibe ich über Gebühren."
+          ],
+          "answer": "Zu dem Thema gibt es unterschiedliche Meinungen.",
+          "explanation": "Neutral, formal, and it prepares the discussion.",
+          "skills": [
+            "essay_writing",
+            "formal_register"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "tde_2",
+          "kind": "multipleChoice",
+          "prompt": "You have just given an advantage. Now you want to give a disadvantage. Which word fits best?",
+          "options": [
+            "Andererseits",
+            "Außerdem",
+            "Deshalb"
+          ],
+          "answer": "Andererseits",
+          "explanation": "Andererseits introduces the other side.",
+          "skills": [
+            "essay_writing",
+            "advanced_connectors"
+          ],
+          "area": "writing"
+        },
+        {
+          "id": "tde_3",
+          "kind": "cloze",
+          "prompt": "Complete the argument.",
+          "context": "{1} Meinung nach sind Studiengebühren sozial ungerecht, {2} Kinder aus ärmeren Familien sich ein Studium dann kaum leisten könnten. {3} argumentieren Befürworter, dass die Qualität der Lehre steigen würde.",
+          "gaps": [
+            {
+              "options": [
+                "Meiner",
+                "Mein",
+                "Meine"
+              ],
+              "answer": "Meiner"
+            },
+            {
+              "options": [
+                "weil",
+                "obwohl",
+                "damit"
+              ],
+              "answer": "weil"
+            },
+            {
+              "options": [
+                "Andererseits",
+                "Zusammenfassend",
+                "Zunächst"
+              ],
+              "answer": "Andererseits"
+            }
+          ],
+          "answer": "Meiner, weil, Andererseits",
+          "explanation": "Meiner Meinung nach; weil + verb at the end; Andererseits introduces the other side.",
+          "skills": [
+            "essay_writing",
+            "advanced_connectors"
+          ],
+          "area": "writing",
+          "examPart": "Schriftlicher Ausdruck"
+        },
+        {
+          "id": "tde_4",
+          "kind": "wordOrder",
+          "prompt": "Build the sentence: “On the one hand there are advantages, on the other hand there are risks.”",
+          "options": [
+            "Einerseits",
+            "gibt",
+            "es",
+            "Vorteile,",
+            "andererseits",
+            "gibt",
+            "es",
+            "Risiken"
+          ],
+          "answer": "Einerseits gibt es Vorteile, andererseits gibt es Risiken",
+          "explanation": "Both halves are main clauses with the verb in position 2.",
+          "skills": [
+            "essay_writing",
+            "word_order"
+          ],
+          "area": "grammar"
+        },
+        {
+          "id": "tde_5",
+          "kind": "writing",
+          "prompt": "Schreiben Sie einen Aufsatz (mindestens 100 Wörter) zum Thema „Sollten Studiengebühren eingeführt werden?“: 1) Beschreiben Sie das Thema und nennen Sie Ihre Position. 2) Nennen Sie Argumente dafür. 3) Nennen Sie Argumente dagegen. 4) Ziehen Sie ein Fazit.",
+          "answer": "Das Thema Studiengebühren wird in Deutschland seit Jahren diskutiert. Meiner Meinung nach sollten Studiengebühren nicht eingeführt werden. Befürworter argumentieren, dass die Universitäten mit zusätzlichem Geld bessere Seminare und eine bessere Ausstattung anbieten könnten. Außerdem würden die Studierenden ihr Studium ernster nehmen, wenn sie dafür bezahlen müssten. Gegner halten dagegen, dass Studiengebühren ungerecht sind, weil Kinder aus ärmeren Familien sich ein Studium kaum leisten könnten. Zudem wäre es ein Nachteil für das ganze Land, wenn weniger junge Menschen einen Abschluss machten. Hinzu kommt, dass viele Studierende neben dem Studium arbeiten müssten, um die Gebühren zu bezahlen. Zusammenfassend lässt sich sagen, dass die Nachteile überwiegen, deshalb sollte das Studium weiterhin für alle zugänglich bleiben.",
+          "explanation": "Good: topic and position, arguments for and against, connected with clear linking words, and a conclusion.",
+          "skills": [
+            "essay_writing",
+            "opinion_writing",
+            "advanced_connectors"
+          ],
+          "area": "writing",
+          "examPart": "Schriftlicher Ausdruck Teil 2",
+          "brief": {
+            "minWords": 100,
+            "register": "essay",
+            "points": [
+              {
+                "label": "State the topic and your position",
+                "keywords": [
+                  "meiner meinung",
+                  "thema",
+                  "meiner ansicht",
+                  "ich bin der ansicht"
+                ]
+              },
+              {
+                "label": "Give arguments for",
+                "keywords": [
+                  "befürworter",
+                  "vorteil",
+                  "dafür",
+                  "spricht für"
+                ]
+              },
+              {
+                "label": "Give arguments against",
+                "keywords": [
+                  "gegner",
+                  "nachteil",
+                  "dagegen",
+                  "ungerecht"
+                ]
+              },
+              {
+                "label": "Draw a conclusion",
+                "keywords": [
+                  "fazit",
+                  "zusammenfassend",
+                  "insgesamt",
+                  "abschließend"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Studiengebühr",
+          "en": "tuition fee",
+          "article": "die",
+          "example": "Die Studiengebühr ist hoch.",
+          "exampleEn": "The tuition fee is high."
+        },
+        {
+          "de": "Befürworter",
+          "en": "supporter, advocate",
+          "article": "der",
+          "example": "Die Befürworter sind in der Minderheit.",
+          "exampleEn": "The supporters are in the minority."
+        },
+        {
+          "de": "Gegner",
+          "en": "opponent",
+          "article": "der",
+          "example": "Die Gegner protestieren.",
+          "exampleEn": "The opponents protest."
+        },
+        {
+          "de": "Abschluss",
+          "en": "degree, qualification",
+          "article": "der",
+          "example": "Er macht seinen Abschluss.",
+          "exampleEn": "He is completing his degree."
+        },
+        {
+          "de": "Ausstattung",
+          "en": "equipment, facilities",
+          "article": "die",
+          "example": "Die Ausstattung ist modern.",
+          "exampleEn": "The facilities are modern."
+        },
+        {
+          "de": "überwiegen",
+          "en": "to outweigh",
+          "example": "Die Vorteile überwiegen.",
+          "exampleEn": "The advantages outweigh the disadvantages."
+        },
+        {
+          "de": "zugänglich",
+          "en": "accessible",
+          "example": "Das Studium soll für alle zugänglich sein.",
+          "exampleEn": "Studying should be accessible to everyone."
+        },
+        {
+          "de": "Fazit",
+          "en": "conclusion",
+          "article": "das",
+          "example": "Das Fazit ist klar.",
+          "exampleEn": "The conclusion is clear."
+        }
+      ],
+      "topics": [
+        "Study",
+        "Work"
+      ],
+      "goals": [
+        "testdaf"
+      ],
+      "requires": [
+        "b2_testdaf_graph",
+        "b2_connectors_advanced"
+      ],
+      "exam": "testdaf"
+    },
+    {
+      "id": "b2_testdaf_speaking",
+      "level": "b2",
+      "unit": "TestDaF",
+      "title": "TestDaF · Speaking: advice, graphs and opinions",
+      "durationMinutes": 22,
+      "objective": "Use the language of the oral exam: asking for advice, describing a graph, giving an opinion with reasons and recommending.",
+      "introduction": "TestDaF Mündlicher Ausdruck simulates university situations: asking for advice (Beratung), describing and discussing a graph, giving an opinion, and recommending an option. Speak in full sentences, state a position early, give reasons (Dafür gibt es zwei Gründe), and conclude (Deshalb würde ich … empfehlen).",
+      "examples": [
+        "Ich möchte Sie um Rat bitten. — I would like to ask your advice.",
+        "Die Grafik zeigt, dass … — The graph shows that …",
+        "Dafür gibt es zwei Gründe. — There are two reasons for this."
+      ],
+      "exercises": [
+        {
+          "id": "tds_1",
+          "kind": "speaking",
+          "prompt": "Say in German: “I would like to ask for your advice.”",
+          "answer": "Ich möchte Sie um Rat bitten",
+          "explanation": "bitten um + accusative.",
+          "skills": [
+            "speaking_practice",
+            "advisory_speaking"
+          ],
+          "area": "speaking",
+          "alternatives": [
+            "Ich hätte gern einen Rat von Ihnen"
+          ],
+          "examPart": "Mündlicher Ausdruck Aufgabe 1"
+        },
+        {
+          "id": "tds_2",
+          "kind": "speaking",
+          "prompt": "Say in German: “The graph shows that the number of students has risen.”",
+          "answer": "Die Grafik zeigt dass die Zahl der Studierenden gestiegen ist",
+          "explanation": "dass-clause with the verb at the end.",
+          "skills": [
+            "speaking_practice",
+            "graph_description"
+          ],
+          "area": "speaking",
+          "examPart": "Mündlicher Ausdruck Aufgabe 3"
+        },
+        {
+          "id": "tds_3",
+          "kind": "speaking",
+          "prompt": "Say in German: “In my opinion, the advantages outweigh the disadvantages.”",
+          "answer": "Meiner Meinung nach überwiegen die Vorteile",
+          "explanation": "überwiegen: the plural subject (die Vorteile).",
+          "skills": [
+            "speaking_practice",
+            "opinion_speaking"
+          ],
+          "area": "speaking",
+          "examPart": "Mündlicher Ausdruck Aufgabe 4"
+        },
+        {
+          "id": "tds_4",
+          "kind": "speaking",
+          "prompt": "Say in German: “There are two reasons for this.”",
+          "answer": "Dafür gibt es zwei Gründe",
+          "explanation": "Dafür gibt es + noun.",
+          "skills": [
+            "speaking_practice",
+            "opinion_speaking"
+          ],
+          "area": "speaking",
+          "examPart": "Mündlicher Ausdruck Aufgabe 4"
+        },
+        {
+          "id": "tds_5",
+          "kind": "speaking",
+          "prompt": "Say in German: “That is why I would recommend the second option.”",
+          "answer": "Deshalb würde ich die zweite Möglichkeit empfehlen",
+          "explanation": "Deshalb + würde ich … empfehlen.",
+          "skills": [
+            "speaking_practice",
+            "advisory_speaking"
+          ],
+          "area": "speaking",
+          "examPart": "Mündlicher Ausdruck Aufgabe 5"
+        },
+        {
+          "id": "tds_6",
+          "kind": "multipleChoice",
+          "prompt": "You must compare two options. Which sentence is best?",
+          "options": [
+            "Die erste Möglichkeit ist zwar teurer, dafür aber schneller als die zweite.",
+            "Beide sind gut.",
+            "Ich weiß nicht, vielleicht."
+          ],
+          "answer": "Die erste Möglichkeit ist zwar teurer, dafür aber schneller als die zweite.",
+          "explanation": "zwar … dafür aber compares with a trade-off.",
+          "skills": [
+            "advisory_speaking",
+            "comparison"
+          ],
+          "area": "speaking",
+          "examPart": "Mündlicher Ausdruck Aufgabe 5"
+        }
+      ],
+      "vocabulary": [
+        {
+          "de": "Rat",
+          "en": "advice",
+          "article": "der",
+          "example": "Ich brauche Ihren Rat.",
+          "exampleEn": "I need your advice."
+        },
+        {
+          "de": "Möglichkeit",
+          "en": "option, possibility",
+          "article": "die",
+          "example": "Es gibt zwei Möglichkeiten.",
+          "exampleEn": "There are two options."
+        },
+        {
+          "de": "empfehlen",
+          "en": "to recommend",
+          "example": "Ich empfehle diesen Kurs.",
+          "exampleEn": "I recommend this course."
+        },
+        {
+          "de": "Grund",
+          "en": "reason",
+          "article": "der",
+          "example": "Das ist ein guter Grund.",
+          "exampleEn": "That is a good reason."
+        },
+        {
+          "de": "Zahl",
+          "en": "number, figure",
+          "article": "die",
+          "example": "Die Zahl steigt.",
+          "exampleEn": "The number is rising."
+        },
+        {
+          "de": "Stellungnahme",
+          "en": "statement, position",
+          "article": "die",
+          "example": "Bitte geben Sie eine Stellungnahme ab.",
+          "exampleEn": "Please give a statement."
+        }
+      ],
+      "topics": [
+        "Study"
+      ],
+      "goals": [
+        "testdaf"
+      ],
+      "requires": [
+        "b2_testdaf_listening",
+        "b2_testdaf_essay"
       ],
       "exam": "testdaf"
     }
@@ -4074,6 +8560,303 @@
             "Das ein Nachteil ist, aber es kein Problem großes ist."
           ],
           "answer": "Das ist ein Nachteil, aber es ist kein großes Problem."
+        }
+      ]
+    },
+    {
+      "id": "d_clothes",
+      "title": "Buying a jacket",
+      "level": "a2",
+      "topics": [
+        "Everyday life",
+        "Travel"
+      ],
+      "turns": [
+        {
+          "text": "Guten Tag! Kann ich Ihnen helfen?",
+          "english": "Hello! Can I help you?"
+        },
+        {
+          "intent": "Say you are looking for a warm jacket.",
+          "options": [
+            "Ja, ich suche eine warme Jacke.",
+            "Ja, ich bin eine warme Jacke.",
+            "Ja, ich suche warm Jacke eine."
+          ],
+          "answer": "Ja, ich suche eine warme Jacke."
+        },
+        {
+          "text": "Welche Größe haben Sie?",
+          "english": "What size are you?"
+        },
+        {
+          "intent": "Say you wear size M and ask for the price.",
+          "options": [
+            "Ich trage Größe M. Was kostet sie?",
+            "Ich bin Größe M. Was kosten ich?",
+            "Ich Größe M trage. Kostet was?"
+          ],
+          "answer": "Ich trage Größe M. Was kostet sie?"
+        },
+        {
+          "text": "Die Jacke kostet neunzig Euro.",
+          "english": "The jacket costs ninety euros."
+        },
+        {
+          "intent": "Say it is too expensive and ask for a cheaper one.",
+          "options": [
+            "Das ist mir zu teuer. Haben Sie eine billigere?",
+            "Das ist mir zu billig. Haben Sie teurer?",
+            "Das teuer zu ist. Eine billiger haben Sie?"
+          ],
+          "answer": "Das ist mir zu teuer. Haben Sie eine billigere?"
+        }
+      ]
+    },
+    {
+      "id": "d_flat_viewing",
+      "title": "Viewing a flat",
+      "level": "a2",
+      "topics": [
+        "Everyday life"
+      ],
+      "turns": [
+        {
+          "text": "Guten Tag, ich bin Frau Keller. Möchten Sie die Wohnung ansehen?",
+          "english": "Hello, I'm Ms Keller. Would you like to view the flat?"
+        },
+        {
+          "intent": "Say yes and ask how big the flat is.",
+          "options": [
+            "Ja, gern. Wie groß ist die Wohnung?",
+            "Ja, gern. Wie groß bist die Wohnung?",
+            "Ja, gern. Groß wie die Wohnung ist?"
+          ],
+          "answer": "Ja, gern. Wie groß ist die Wohnung?"
+        },
+        {
+          "text": "Sie hat fünfundfünfzig Quadratmeter und einen Balkon.",
+          "english": "It has 55 square metres and a balcony."
+        },
+        {
+          "intent": "Ask how high the rent is.",
+          "options": [
+            "Wie hoch ist die Miete?",
+            "Wie ist hoch die Miete?",
+            "Hoch wie Miete ist?"
+          ],
+          "answer": "Wie hoch ist die Miete?"
+        },
+        {
+          "text": "Sechshundertfünfzig Euro warm.",
+          "english": "650 euros including heating."
+        },
+        {
+          "intent": "Say you like the flat and would like to take it.",
+          "options": [
+            "Die Wohnung gefällt mir. Ich möchte sie nehmen.",
+            "Die Wohnung gefällt ich. Ich nehmen möchte.",
+            "Mir Wohnung gefällt. Möchte nehmen ich."
+          ],
+          "answer": "Die Wohnung gefällt mir. Ich möchte sie nehmen."
+        }
+      ]
+    },
+    {
+      "id": "d_job_interview",
+      "title": "A job interview",
+      "level": "b1",
+      "topics": [
+        "Work"
+      ],
+      "turns": [
+        {
+          "text": "Guten Tag! Erzählen Sie mir bitte etwas über sich.",
+          "english": "Hello! Please tell me something about yourself."
+        },
+        {
+          "intent": "Say you have worked in sales for two years and enjoy working in a team.",
+          "options": [
+            "Ich habe zwei Jahre im Verkauf gearbeitet und arbeite gern im Team.",
+            "Ich arbeite zwei Jahre im Verkauf gehabt und gern Team.",
+            "Ich habe gearbeitet zwei Jahre Verkauf und Team gern."
+          ],
+          "answer": "Ich habe zwei Jahre im Verkauf gearbeitet und arbeite gern im Team."
+        },
+        {
+          "text": "Warum möchten Sie bei uns arbeiten?",
+          "english": "Why would you like to work with us?"
+        },
+        {
+          "intent": "Say you find the company interesting because it is growing.",
+          "options": [
+            "Ich finde Ihre Firma interessant, weil sie wächst.",
+            "Ich finde Ihre Firma interessant, weil sie wächst sie.",
+            "Ich finde interessant Ihre Firma, weil wächst sie."
+          ],
+          "answer": "Ich finde Ihre Firma interessant, weil sie wächst."
+        },
+        {
+          "text": "Wann könnten Sie anfangen?",
+          "english": "When could you start?"
+        },
+        {
+          "intent": "Say you could start on the first of next month.",
+          "options": [
+            "Ich könnte am ersten des nächsten Monats anfangen.",
+            "Ich kann anfangen am erstes nächsten Monat.",
+            "Ich könnte anfange am erste Monat nächste."
+          ],
+          "answer": "Ich könnte am ersten des nächsten Monats anfangen."
+        }
+      ]
+    },
+    {
+      "id": "d_complaint",
+      "title": "Making a complaint",
+      "level": "b1",
+      "topics": [
+        "Everyday life",
+        "Work"
+      ],
+      "turns": [
+        {
+          "text": "Kundenservice, guten Tag. Was kann ich für Sie tun?",
+          "english": "Customer service, hello. What can I do for you?"
+        },
+        {
+          "intent": "Say the parcel you ordered two weeks ago has not arrived.",
+          "options": [
+            "Das Paket, das ich vor zwei Wochen bestellt habe, ist noch nicht angekommen.",
+            "Das Paket, das ich bestellt habe vor zwei Wochen, nicht angekommen ist.",
+            "Das Paket ich habe bestellt ist noch nicht ankommen."
+          ],
+          "answer": "Das Paket, das ich vor zwei Wochen bestellt habe, ist noch nicht angekommen."
+        },
+        {
+          "text": "Das tut mir leid. Wie lautet Ihre Bestellnummer?",
+          "english": "I'm sorry. What is your order number?"
+        },
+        {
+          "intent": "Say you will look for the number and ask them to wait a moment.",
+          "options": [
+            "Einen Moment bitte, ich suche die Nummer.",
+            "Einen Moment bitte, ich Nummer suche die.",
+            "Moment einen bitte, die Nummer ich suche."
+          ],
+          "answer": "Einen Moment bitte, ich suche die Nummer."
+        },
+        {
+          "text": "Wir schicken Ihnen ein neues Paket.",
+          "english": "We will send you a new parcel."
+        },
+        {
+          "intent": "Say you would like a quick answer by email.",
+          "options": [
+            "Ich hätte gern eine schnelle Antwort per E-Mail.",
+            "Ich habe gern eine schnell Antwort per E-Mail.",
+            "Ich hätte gern schnelle Antwort E-Mail per."
+          ],
+          "answer": "Ich hätte gern eine schnelle Antwort per E-Mail."
+        }
+      ]
+    },
+    {
+      "id": "d_seminar",
+      "title": "In a seminar discussion",
+      "level": "b2",
+      "topics": [
+        "Study",
+        "Culture"
+      ],
+      "turns": [
+        {
+          "text": "Wie bewerten Sie die Idee, Vorlesungen nur noch online anzubieten?",
+          "english": "How do you assess the idea of offering lectures only online?"
+        },
+        {
+          "intent": "Say you see advantages but also risks.",
+          "options": [
+            "Einerseits sehe ich Vorteile, andererseits gibt es auch Risiken.",
+            "Einerseits ich sehe Vorteile, andererseits es gibt Risiken auch.",
+            "Einerseits sehe Vorteile ich, andererseits Risiken gibt es."
+          ],
+          "answer": "Einerseits sehe ich Vorteile, andererseits gibt es auch Risiken."
+        },
+        {
+          "text": "Können Sie ein Beispiel nennen?",
+          "english": "Can you give an example?"
+        },
+        {
+          "intent": "Say that students would have more flexibility but less contact.",
+          "options": [
+            "Die Studierenden hätten mehr Flexibilität, aber weniger Kontakt.",
+            "Die Studierenden haben mehr Flexibilität, aber weniger Kontakt hätten.",
+            "Studierenden hätte mehr Flexibilität, aber Kontakt weniger."
+          ],
+          "answer": "Die Studierenden hätten mehr Flexibilität, aber weniger Kontakt."
+        },
+        {
+          "text": "Das ist ein wichtiger Punkt. Was würden Sie vorschlagen?",
+          "english": "That is an important point. What would you suggest?"
+        },
+        {
+          "intent": "Suggest a mix of online and in-person classes.",
+          "options": [
+            "Ich würde eine Mischung aus Online- und Präsenzveranstaltungen vorschlagen.",
+            "Ich vorschlagen würde Mischung aus Online und Präsenzveranstaltungen.",
+            "Ich würde vorschlagen eine Mischung Online- aus Präsenzveranstaltungen und."
+          ],
+          "answer": "Ich würde eine Mischung aus Online- und Präsenzveranstaltungen vorschlagen."
+        }
+      ]
+    },
+    {
+      "id": "d_study_advice",
+      "title": "Asking a study adviser",
+      "level": "b2",
+      "topics": [
+        "Study"
+      ],
+      "turns": [
+        {
+          "text": "Guten Tag, wie kann ich Ihnen helfen?",
+          "english": "Hello, how can I help you?"
+        },
+        {
+          "intent": "Say you would like advice on choosing a master's programme.",
+          "options": [
+            "Ich möchte Sie um Rat bitten, welchen Masterstudiengang ich wählen soll.",
+            "Ich möchte Rat Sie bitten, welchen Masterstudiengang wählen ich soll.",
+            "Ich bitte Rat Masterstudiengang welchen soll ich wählen."
+          ],
+          "answer": "Ich möchte Sie um Rat bitten, welchen Masterstudiengang ich wählen soll."
+        },
+        {
+          "text": "Was interessiert Sie besonders?",
+          "english": "What interests you in particular?"
+        },
+        {
+          "intent": "Say you are interested in data analysis and would like practical experience.",
+          "options": [
+            "Ich interessiere mich für Datenanalyse und hätte gern praktische Erfahrung.",
+            "Ich interessiere Datenanalyse für mich und gern hätte praktische Erfahrung.",
+            "Ich mich interessiere für Datenanalyse und Erfahrung praktische hätte gern."
+          ],
+          "answer": "Ich interessiere mich für Datenanalyse und hätte gern praktische Erfahrung."
+        },
+        {
+          "text": "Dann würde ich Ihnen den Studiengang mit Pflichtpraktikum empfehlen.",
+          "english": "Then I would recommend the programme with a compulsory internship."
+        },
+        {
+          "intent": "Thank them and ask what the application deadline is.",
+          "options": [
+            "Vielen Dank. Bis wann ist die Bewerbungsfrist?",
+            "Vielen Dank. Wann bis ist Bewerbungsfrist die?",
+            "Danke vielen. Bewerbungsfrist bis wann?"
+          ],
+          "answer": "Vielen Dank. Bis wann ist die Bewerbungsfrist?"
         }
       ]
     }

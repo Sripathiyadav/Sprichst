@@ -7,28 +7,46 @@ import '../../domain/repositories/learning_repository.dart';
 
 class HttpAIRepository implements AIRepository {
   HttpAIRepository({
-    required this.baseUrl,
+    required String baseUrl,
     http.Client? client,
-  }) : _client = client ?? http.Client();
+  })  : _baseUrl = (() => baseUrl),
+        _client = client ?? http.Client();
 
-  final String baseUrl;
+  /// Reads the address on every request, so a change in settings takes effect
+  /// straight away.
+  HttpAIRepository.dynamic({
+    required String Function() baseUrl,
+    http.Client? client,
+  })  : _baseUrl = baseUrl,
+        _client = client ?? http.Client();
+
+  final String Function() _baseUrl;
   final http.Client _client;
+
+  /// How long a request may take before it counts as unreachable. Generating a
+  /// reply is slow on a small local model; everything else is quick.
+  static const _slow = Duration(seconds: 90);
+  static const _quick = Duration(seconds: 15);
+
+  String get baseUrl => _baseUrl();
 
   @override
   Future<CoachReply> correctGerman(
     String text,
     TutorContext context,
   ) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/v1/correct'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'text': text,
-        'context': _encode(context),
-      }),
-    );
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/v1/correct'),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'text': text,
+            'context': _encode(context),
+          }),
+        )
+        .timeout(_slow);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -52,16 +70,18 @@ class HttpAIRepository implements AIRepository {
     String message,
     TutorContext context,
   ) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/v1/chat'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'message': message,
-        'context': _encode(context),
-      }),
-    );
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/v1/chat'),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'message': message,
+            'context': _encode(context),
+          }),
+        )
+        .timeout(_slow);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -97,7 +117,7 @@ class HttpAIRepository implements AIRepository {
         ),
       );
 
-    final streamed = await request.send();
+    final streamed = await request.send().timeout(_slow);
     final response = await http.Response.fromStream(streamed);
 
     if (response.statusCode != 200) {
@@ -113,26 +133,47 @@ class HttpAIRepository implements AIRepository {
   }
 
   @override
-  Future<List<int>> synthesizeSpeech(
+  Future<SpeechAudio> synthesizeSpeech(
     String text,
-    TutorContext context,
-  ) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/v1/speak'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'message': text,
-        'context': _encode(context),
-      }),
-    );
+    TutorContext context, {
+    String? voice,
+    int? speechRate,
+  }) async {
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/v1/speak'),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'message': text,
+            if (voice != null) 'voice': voice,
+            if (speechRate != null) 'rate': speechRate,
+            'context': _encode(context),
+          }),
+        )
+        .timeout(_slow);
 
     if (response.statusCode != 200) {
       throw Exception(_errorMessage(response));
     }
 
-    return response.bodyBytes;
+    return SpeechAudio(
+      response.bodyBytes,
+      voiceUsed: response.headers['x-voice-used'],
+      usedFallback: response.headers['x-voice-fallback'] == 'true',
+    );
+  }
+
+  @override
+  Future<VoiceList> listVoices() async {
+    final response =
+        await _client.get(Uri.parse('$baseUrl/v1/voices')).timeout(_quick);
+    if (response.statusCode != 200) {
+      throw Exception(_errorMessage(response));
+    }
+    return VoiceList.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>);
   }
 
   String _errorMessage(http.Response response) {
