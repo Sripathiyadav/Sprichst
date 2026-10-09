@@ -12,6 +12,7 @@ import '../domain/games/game_models.dart';
 import '../domain/games/word_pool.dart';
 import '../domain/games/dialogue_game.dart';
 import '../domain/learning/achievements.dart';
+import '../domain/learning/conversation_guard.dart';
 import '../domain/learning/adaptive_planner.dart';
 import '../domain/learning/exam_readiness.dart';
 import '../domain/learning/flashcard_deck.dart';
@@ -88,6 +89,7 @@ class AppController extends ChangeNotifier {
   final LearningPath _path = const LearningPath();
   final AdaptivePlanner _planner = const AdaptivePlanner();
   final TutorContextBuilder _contextBuilder = const TutorContextBuilder();
+  final ConversationGuard _guard = const ConversationGuard();
 
   final FlashcardDeck _deck = const FlashcardDeck();
 
@@ -203,6 +205,7 @@ class AppController extends ChangeNotifier {
     isLoading = true;
     error = null;
     profile = null;
+    _conversation.clear();
     notifyListeners();
 
     try {
@@ -247,6 +250,7 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> resetLearningProgress() async {
+    _conversation.clear();
     final current = profile;
     if (current == null) return;
     await _commit(_withNextLesson(current.resetLearningProgress()));
@@ -395,8 +399,40 @@ class AppController extends ChangeNotifier {
   Future<CoachReply> correctGerman(String text) =>
       _aiRepository.correctGerman(_nonEmpty(text), tutorContext);
 
-  Future<TutorReply> chat(String message) =>
-      _aiRepository.chat(_nonEmpty(message), tutorContext);
+  /// The recent turns of the coach conversation, shared by text and voice
+  /// mode, so the tutor builds on what was said instead of starting over.
+  final List<ConversationTurn> _conversation = [];
+
+  List<ConversationTurn> get conversation => List.unmodifiable(_conversation);
+
+  /// Forgets the conversation so far; the next message starts a new one.
+  void startNewConversation() => _conversation.clear();
+
+  Future<TutorReply> chat(String message) async {
+    final text = _nonEmpty(message);
+    final context = tutorContext;
+    final earlier = List<ConversationTurn>.of(_conversation);
+    final raw = await _aiRepository.chat(
+      text,
+      context.withConversation(earlier),
+    );
+    // What the learner just said counts too: if it answers the question the
+    // model is about to ask (their name, say), asking it would be silly.
+    final reply = _guard.freshen(
+        raw, [...earlier, ConversationTurn.learner(text)],
+        level: context.level);
+    _remember(ConversationTurn.learner(text));
+    _remember(ConversationTurn.tutor(
+        [reply.reply, reply.followUp].where((p) => p.isNotEmpty).join(' ')));
+    return reply;
+  }
+
+  void _remember(ConversationTurn turn) {
+    _conversation.add(turn);
+    while (_conversation.length > ConversationGuard.maxTurns) {
+      _conversation.removeAt(0);
+    }
+  }
 
   /// Text for the tutor, cleaned and within the server's limit.
   String _nonEmpty(String text) {

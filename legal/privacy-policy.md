@@ -30,7 +30,7 @@ Account sign-in. When you press "Continue with Google", Google tells us your acc
 
 Your learning profile. This is what the app needs to teach you: your name or nickname, your level and goal, lessons completed, answers and accuracy per skill, mistakes to review, flashcard schedules, game scores, badges, daily quests, your streak, and your settings (appearance, voice, reminders, AI preferences). It is stored in Cloud Firestore under your account and cached on your device. Legal basis: performing our contract with you (Art. 6(1)(b)).
 
-Messages to the AI tutor. When you write or speak to the coach, we send your message and a short summary of your learning state (your level, current lesson, weak skills, a few words you know and recent mistakes) so the answer fits you. This summary never contains your name or email. Legal basis: performing our contract with you (Art. 6(1)(b)); you choose whether to use the tutor.
+Messages to the AI tutor. When you write or speak to the coach, we send your message, the last few messages of the current conversation (up to eight, kept only in memory and forgotten when you leave the coach screen) and a short summary of your learning state (your level, current lesson, weak skills, a few words you know and recent mistakes) so the answer fits you. This summary never contains your name or email. Legal basis: performing our contract with you (Art. 6(1)(b)); you choose whether to use the tutor.
 
 Your voice. If you use voice features, the microphone is used only while you record or while voice mode is on. The audio is turned into text, on your device or on the AI server, and then discarded. Recordings are not kept or used to train anything. Legal basis: performing our contract with you; the device asks for your permission first.
 
@@ -58,7 +58,7 @@ Google (Firebase Authentication and Cloud Firestore). Google Ireland Limited pro
 
 The AI server host. Our AI server runs at [[AI_SERVER_HOST_AND_COUNTRY]]. It receives the messages and summary described above only when you use it. It is operated by [[CONTROLLER_NAME]].
 
-AI model provider. When the AI server is set to use Groq's hosted models, your message and learning summary are passed to Groq, Inc. (United States) to generate the reply. Groq acts as our processor and must not use the data for its own purposes. [[CONFIRM_GROQ_DATA_RETENTION_AND_TRANSFER_TERMS]] If you choose "This phone only" in Account → AI & voice, nothing is sent to the server or to Groq. In the default "Automatic" setting, the server is used only for anything not yet downloaded to your phone. In a web browser the models cannot run, so the web version always uses the AI server.
+AI model provider. When the AI server is set to use Groq's hosted models, your message, recent conversation and learning summary are passed to Groq, Inc. (United States) to generate the reply. Groq acts as our processor and must not use the data for its own purposes. [[CONFIRM_GROQ_DATA_RETENTION_AND_TRANSFER_TERMS]] If you choose "This phone only" in Account → AI & voice, nothing is sent to the server or to Groq. In the default "Automatic" setting, the server is used only for anything not yet downloaded to your phone. In a web browser the models cannot run, so the web version always uses the AI server.
 
 Hugging Face and GitHub. Receive your IP address when you download on-device models (see section 2).
 

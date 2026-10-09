@@ -85,13 +85,13 @@ TutorTurn tutorTurnFrom(TutorReply reply) {
 
   return TutorTurn(
     display: [
-      reply.reply,
+      if (clean(reply.reply) != null) reply.reply,
       if (correction != null) 'Correction: $correction',
       if (explanation != null) explanation,
       if (followUp != null) followUp,
     ].join('\n\n'),
     speech: [
-      reply.reply,
+      if (clean(reply.reply) != null) reply.reply,
       if (correction != null) correction,
       if (followUp != null) followUp,
     ].join(' ').trim(),

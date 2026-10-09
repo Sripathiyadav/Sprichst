@@ -37,6 +37,14 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   var _startingRecording = false;
 
   @override
+  void initState() {
+    super.initState();
+    // An empty screen is a new conversation; the tutor must not remember an
+    // earlier one the learner can no longer see.
+    ref.read(appControllerProvider).startNewConversation();
+  }
+
+  @override
   void dispose() {
     _text.dispose();
     _audioRecorder.dispose();
@@ -359,7 +367,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       final reply = await app.chat(text);
 
       final displayParts = <String>[
-        reply.reply,
+        if (reply.reply.trim().isNotEmpty) reply.reply,
         if (reply.correction != null && reply.correction!.trim().isNotEmpty)
           'Correction: ${reply.correction}',
         if (reply.explanation != null && reply.explanation!.trim().isNotEmpty)
@@ -370,7 +378,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       final tutorMessage = displayParts.join('\n\n');
 
       final speechParts = <String>[
-        reply.reply,
+        if (reply.reply.trim().isNotEmpty) reply.reply,
         if (reply.correction != null && reply.correction!.trim().isNotEmpty)
           reply.correction!,
         if (reply.followUp.trim().isNotEmpty) reply.followUp,

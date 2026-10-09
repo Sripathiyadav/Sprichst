@@ -67,6 +67,7 @@ def _text(max_length: int, min_length: int = 0):
 Short = _text(60)  # a skill id, a word
 Medium = _text(120)  # a unit or lesson title, a mistake summary
 Message = _text(1500, min_length=1)  # what the learner typed or said
+Turn = _text(500, min_length=1)  # one earlier line of the conversation
 
 # A CEFR level label such as "A1", "B2" or "A0 / Pre-A1". It is placed into the
 # model's instructions, so it is restricted to the characters such labels use.
