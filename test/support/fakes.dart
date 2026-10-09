@@ -65,6 +65,9 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+
+  @override
+  Future<String?> idToken() async => null;
 }
 
 class InMemoryLearningRepository implements LearningRepository {

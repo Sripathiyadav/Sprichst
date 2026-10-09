@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'on_device_ai_page.dart';
 import 'ai_server_section.dart';
+import '../../shared/input_rules.dart';
 import 'voice_picker.dart';
 
 import '../onboarding/onboarding_view.dart' show GoalPicker;
@@ -18,6 +19,7 @@ import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../auth/auth_view_model.dart';
+import '../legal/legal_view.dart';
 import 'appearance_page.dart';
 
 class AccountView extends ConsumerWidget {
@@ -109,6 +111,12 @@ class AccountView extends ConsumerWidget {
                 subtitle:
                     'See what stays on your account, device, and AI gateway.',
                 onTap: () => _push(context, const _PrivacyAndDataPage()),
+              ),
+              SettingsTile(
+                icon: Icons.gavel_outlined,
+                title: 'Legal',
+                subtitle: 'Privacy policy, terms, AI transparency, notices.',
+                onTap: () => _push(context, const LegalHubPage()),
               ),
               SettingsTile(
                 icon: Icons.support_agent_outlined,
@@ -428,7 +436,7 @@ class _ProfilePageState extends ConsumerState<_ProfilePage> {
   }
 
   Future<void> _save() async {
-    final name = _name.text.trim();
+    final name = sanitizeName(_name.text);
     if (name.isEmpty) return;
     setState(() => _saving = true);
     try {

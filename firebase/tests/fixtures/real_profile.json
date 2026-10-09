@@ -1,0 +1,277 @@
+{
+  "name": "Sam",
+  "nativeLanguage": "English",
+  "currentLevel": "a1",
+  "targetLevel": "c1",
+  "goal": "goethe",
+  "currentLessonId": "a1_haben",
+  "lessonProgress": {
+    "a1_articles": {
+      "status": "completed",
+      "attempts": 1,
+      "bestCorrect": 2,
+      "total": 3
+    },
+    "a1_sein": {
+      "status": "completed",
+      "attempts": 1,
+      "bestCorrect": 4,
+      "total": 5
+    }
+  },
+  "skillStats": {
+    "definite_articles": {
+      "attempts": 3,
+      "correct": 2
+    },
+    "sein": {
+      "attempts": 5,
+      "correct": 4
+    },
+    "verb_conjugation": {
+      "attempts": 4,
+      "correct": 3
+    },
+    "word_order": {
+      "attempts": 1,
+      "correct": 1
+    }
+  },
+  "exerciseStats": {
+    "article_1": {
+      "attempts": 1,
+      "correct": 0,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "article_2": {
+      "attempts": 1,
+      "correct": 1,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "article_3": {
+      "attempts": 1,
+      "correct": 1,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "sein_1": {
+      "attempts": 1,
+      "correct": 0,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "sein_2": {
+      "attempts": 1,
+      "correct": 1,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "sein_3": {
+      "attempts": 1,
+      "correct": 1,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "sein_4": {
+      "attempts": 1,
+      "correct": 1,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "sein_5": {
+      "attempts": 1,
+      "correct": 1,
+      "lastAnsweredAt": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    }
+  },
+  "kindStats": {
+    "multipleChoice": {
+      "attempts": 4,
+      "correct": 2
+    },
+    "fillBlank": {
+      "attempts": 2,
+      "correct": 2
+    },
+    "translation": {
+      "attempts": 1,
+      "correct": 1
+    },
+    "wordOrder": {
+      "attempts": 1,
+      "correct": 1
+    }
+  },
+  "areaStats": {
+    "grammar": {
+      "attempts": 7,
+      "correct": 5
+    },
+    "writing": {
+      "attempts": 1,
+      "correct": 1
+    },
+    "vocabulary": {
+      "attempts": 5,
+      "correct": 3
+    }
+  },
+  "flashcards": {
+    "day": "2026-10-08",
+    "newToday": 5,
+    "states": {
+      "a1_articles/tisch": {
+        "dueAt": {
+          "__timestamp": "2026-10-09T09:00:00.000Z"
+        },
+        "intervalDays": 1,
+        "ease": 2.5,
+        "reps": 1,
+        "lapses": 0
+      },
+      "a1_articles/lampe": {
+        "dueAt": {
+          "__timestamp": "2026-10-08T09:10:00.000Z"
+        },
+        "intervalDays": 0,
+        "ease": 2.3,
+        "reps": 0,
+        "lapses": 0
+      },
+      "a1_articles/kind": {
+        "dueAt": {
+          "__timestamp": "2026-10-09T09:00:00.000Z"
+        },
+        "intervalDays": 1,
+        "ease": 2.5,
+        "reps": 1,
+        "lapses": 0
+      },
+      "a1_articles/hund": {
+        "dueAt": {
+          "__timestamp": "2026-10-08T09:10:00.000Z"
+        },
+        "intervalDays": 0,
+        "ease": 2.3,
+        "reps": 0,
+        "lapses": 0
+      },
+      "a1_articles/bruder": {
+        "dueAt": {
+          "__timestamp": "2026-10-09T09:00:00.000Z"
+        },
+        "intervalDays": 1,
+        "ease": 2.5,
+        "reps": 1,
+        "lapses": 0
+      }
+    }
+  },
+  "gamification": {
+    "badges": {
+      "first_lesson": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      },
+      "first_game": {
+        "__timestamp": "2026-10-08T09:00:00.000Z"
+      }
+    },
+    "questDay": "2026-10-08",
+    "questProgress": {
+      "lesson": 1
+    },
+    "questsDone": [
+      "lesson"
+    ],
+    "gameBest": {
+      "wortle": 85
+    },
+    "gamesPlayed": 1
+  },
+  "recentMistakes": [
+    "Definite articles: Choose the correct article: ___ Tisch",
+    "Sein: Choose the right form: “Ich ___ müde.”"
+  ],
+  "reviewItems": [
+    {
+      "id": "exercise-article_1",
+      "label": "Choose the correct article: ___ Tisch",
+      "kind": "Mistake review",
+      "dueAt": {
+        "__timestamp": "2026-10-08T09:10:00.000Z"
+      },
+      "intervalDays": 0
+    },
+    {
+      "id": "lesson-a1_articles",
+      "label": "Definite articles",
+      "kind": "Lesson recall",
+      "dueAt": {
+        "__timestamp": "2026-10-08T09:10:00.000Z"
+      },
+      "intervalDays": 0
+    },
+    {
+      "id": "exercise-sein_1",
+      "label": "Choose the right form: “Ich ___ müde.”",
+      "kind": "Mistake review",
+      "dueAt": {
+        "__timestamp": "2026-10-08T09:10:00.000Z"
+      },
+      "intervalDays": 0
+    },
+    {
+      "id": "lesson-a1_sein",
+      "label": "The verb sein",
+      "kind": "Lesson recall",
+      "dueAt": {
+        "__timestamp": "2026-10-08T09:10:00.000Z"
+      },
+      "intervalDays": 0
+    }
+  ],
+  "scores": {
+    "vocabulary": 0.3942325,
+    "grammar": 0.49131838000000005,
+    "reading": 0.2,
+    "listening": 0.1,
+    "writing": 0.19,
+    "speaking": 0.1
+  },
+  "xp": 91,
+  "streak": 1,
+  "lastStudyDate": {
+    "__timestamp": "2026-10-08T09:00:00.000Z"
+  },
+  "dailyGoalMinutes": 15,
+  "preferredTopics": [
+    "Everyday life"
+  ],
+  "focusSkills": [
+    "Vocabulary",
+    "Speaking"
+  ],
+  "appearancePreference": "system",
+  "surfaceStyle": "glass",
+  "glassIntensity": 60,
+  "aiProviderPreference": "automatic",
+  "aiModel": "Qwen",
+  "voice": "de_DE-thorsten-medium",
+  "speechRate": 170,
+  "voicePauseMs": 1200,
+  "advancedAiControls": false,
+  "lessonRemindersEnabled": false,
+  "reviewRemindersEnabled": false,
+  "streakRemindersEnabled": false
+}

@@ -63,6 +63,9 @@ class _PreviewAuth implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+
+  @override
+  Future<String?> idToken() async => null;
 }
 
 /// Lessons come from the real bundled course; the profile lives in memory and

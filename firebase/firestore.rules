@@ -1,23 +1,155 @@
 rules_version = '2';
+
+// Sprichst stores one thing per learner: their learning profile, at
+//   users/{uid}/learning/profile
+//
+// This is the equivalent of "row level security" for Firestore: every rule is
+// scoped to the signed-in learner's own uid, the stored document must have the
+// exact shape the app writes (known fields only, correct types, sane sizes),
+// and everything else is denied. Tested in firebase/tests/firestore.rules.test.js
+// (run with `npm test` in firebase/).
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // ------------------------------------------------------------- helpers
+    function signedIn() {
+      return request.auth != null;
     }
 
-    match /courses/{courseId}/{document=**} {
-      allow read: if request.auth != null;
-      allow write: if false;
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
     }
 
-    match /grammar/{grammarId} {
-      allow read: if request.auth != null;
-      allow write: if false;
+    function text(value, max) {
+      return value is string && value.size() <= max;
     }
 
-    match /vocabulary/{wordId} {
-      allow read: if request.auth != null;
-      allow write: if false;
+    function optionalText(value, max) {
+      return value == null || text(value, max);
+    }
+
+    function whole(value, low, high) {
+      return value is int && value >= low && value <= high;
+    }
+
+    function levelName(value) {
+      return value in ['preA1', 'a1', 'a2', 'b1', 'b2', 'c1'];
+    }
+
+    // The fields the app writes, and no others.
+    function profileKeys() {
+      return [
+        'name', 'nativeLanguage', 'currentLevel', 'targetLevel', 'goal',
+        'currentLessonId', 'lessonProgress', 'skillStats', 'exerciseStats',
+        'kindStats', 'areaStats', 'flashcards', 'gamification',
+        'recentMistakes', 'reviewItems', 'scores', 'xp', 'streak',
+        'lastStudyDate', 'dailyGoalMinutes', 'preferredTopics', 'focusSkills',
+        'appearancePreference', 'surfaceStyle', 'glassIntensity',
+        'aiProviderPreference', 'aiModel', 'voice', 'speechRate',
+        'voicePauseMs', 'advancedAiControls', 'lessonRemindersEnabled',
+        'reviewRemindersEnabled', 'streakRemindersEnabled'
+      ];
+    }
+
+    function requiredProfileKeys() {
+      return [
+        'name', 'nativeLanguage', 'currentLevel', 'targetLevel', 'goal',
+        'lessonProgress', 'skillStats', 'exerciseStats', 'scores', 'xp',
+        'streak', 'dailyGoalMinutes', 'appearancePreference', 'surfaceStyle',
+        'glassIntensity', 'aiProviderPreference', 'voice', 'speechRate'
+      ];
+    }
+
+    function validIdentity(d) {
+      return text(d.name, 60)
+          && text(d.nativeLanguage, 40)
+          && levelName(d.currentLevel)
+          && levelName(d.targetLevel)
+          && d.goal in ['everyday', 'travel', 'work', 'goethe', 'testdaf']
+          && optionalText(d.get('currentLessonId', null), 80);
+    }
+
+    function validProgress(d) {
+      return d.lessonProgress is map && d.lessonProgress.size() <= 300
+          && d.skillStats is map && d.skillStats.size() <= 500
+          && d.exerciseStats is map && d.exerciseStats.size() <= 3000
+          && d.get('kindStats', {}) is map && d.get('kindStats', {}).size() <= 20
+          && d.get('areaStats', {}) is map && d.get('areaStats', {}).size() <= 20
+          && d.scores is map && d.scores.size() <= 20
+          && d.get('recentMistakes', []) is list
+          && d.get('recentMistakes', []).size() <= 50
+          && d.get('reviewItems', []) is list
+          && d.get('reviewItems', []).size() <= 2000
+          && d.xp is number && d.xp >= 0 && d.xp <= 100000000
+          && whole(d.streak, 0, 100000);
+    }
+
+    function validCards(d) {
+      return d.get('flashcards', {}) is map
+          && d.get('flashcards', {}).keys().hasOnly(['day', 'newToday', 'states'])
+          && d.get('flashcards', {}).get('states', {}) is map
+          && d.get('flashcards', {}).get('states', {}).size() <= 5000;
+    }
+
+    function validGamification(d) {
+      return d.get('gamification', {}) is map
+          && d.get('gamification', {}).keys().hasOnly(
+              ['badges', 'questDay', 'questProgress', 'questsDone', 'gameBest', 'gamesPlayed'])
+          && d.get('gamification', {}).get('badges', {}).size() <= 100
+          && d.get('gamification', {}).get('gameBest', {}).size() <= 20;
+    }
+
+    function validPreferences(d) {
+      return whole(d.dailyGoalMinutes, 1, 600)
+          && d.appearancePreference in ['system', 'light', 'dark']
+          && d.surfaceStyle in ['standard', 'glass']
+          && whole(d.glassIntensity, 0, 100)
+          && d.aiProviderPreference in ['automatic', 'groq', 'local']
+          && text(d.get('aiModel', ''), 80)
+          && text(d.voice, 80)
+          && whole(d.speechRate, 60, 400)
+          && whole(d.get('voicePauseMs', 1200), 200, 10000)
+          && d.get('preferredTopics', []) is list
+          && d.get('preferredTopics', []).size() <= 30
+          && d.get('focusSkills', []) is list
+          && d.get('focusSkills', []).size() <= 30
+          && d.get('advancedAiControls', false) is bool
+          && d.get('lessonRemindersEnabled', false) is bool
+          && d.get('reviewRemindersEnabled', false) is bool
+          && d.get('streakRemindersEnabled', false) is bool;
+    }
+
+    function validProfile(d) {
+      return d.keys().hasOnly(profileKeys())
+          && d.keys().hasAll(requiredProfileKeys())
+          && validIdentity(d)
+          && validProgress(d)
+          && validCards(d)
+          && validGamification(d)
+          && validPreferences(d);
+    }
+
+    // --------------------------------------------------------------- data
+    // Nothing is stored directly on users/{uid}; the document is only deleted
+    // when a learner erases their account.
+    match /users/{userId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if false;
+    }
+
+    // The learning profile. Only its owner can read it, replace it, or delete
+    // it, and only if the new version has the exact shape the app writes.
+    match /users/{userId}/learning/{documentId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+          && documentId == 'profile'
+          && validProfile(request.resource.data);
+    }
+
+    // Everything else is closed. (The course content ships inside the app, so
+    // no shared collections are needed.)
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

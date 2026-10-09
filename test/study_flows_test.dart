@@ -31,6 +31,9 @@ Future<InMemoryLearningRepository> _app(
   return repository;
 }
 
+/// The "Review N cards" button, not the "Review queue" heading above it.
+final _reviewButton = find.textContaining(RegExp(r'^Review \d+ cards'));
+
 final _scroller = find
     .descendant(
         of: find.byType(ListView).first, matching: find.byType(Scrollable))
@@ -106,8 +109,8 @@ void main() {
     testWidgets('flashcards open from the hub', (tester) async {
       await _app(tester);
       await _open(tester, 'Practice');
-      await _reveal(tester, find.textContaining('Review '));
-      await tester.tap(find.textContaining('Review ').first);
+      await _reveal(tester, _reviewButton);
+      await tester.tap(_reviewButton.first);
       await tester.pumpAndSettle();
       expect(find.text('Show answer'), findsOneWidget);
     });
@@ -160,8 +163,8 @@ void main() {
         final handle = tester.ensureSemantics();
         await _app(tester, brightness: brightness);
         await _open(tester, 'Practice');
-        await _reveal(tester, find.textContaining('Review '));
-        await tester.tap(find.textContaining('Review ').first);
+        await _reveal(tester, _reviewButton);
+        await tester.tap(_reviewButton.first);
         await tester.pumpAndSettle();
         for (var step = 0; step < 2; step++) {
           await expectLater(tester, meetsGuideline(androidTapTargetGuideline));

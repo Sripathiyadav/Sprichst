@@ -1,12 +1,20 @@
 rules_version = '2';
+
+// Sprichst does not store files for learners: recordings are transcribed and
+// discarded on the device, and the course content ships inside the app.
+// Everything is therefore closed. If a feature ever needs uploads, add a rule
+// scoped to the owner's uid with an explicit size limit and content type, e.g.
+//
+//   match /users/{userId}/avatar.jpg {
+//     allow read: if request.auth != null && request.auth.uid == userId;
+//     allow write: if request.auth != null && request.auth.uid == userId
+//         && request.resource.size < 2 * 1024 * 1024
+//         && request.resource.contentType.matches('image/.*');
+//   }
 service firebase.storage {
   match /b/{bucket}/o {
-    match /users/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    match /course-audio/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if false;
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

@@ -11,6 +11,7 @@ Piper voices, with the macOS voice as a fallback) remain local.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import subprocess
 import tempfile
@@ -20,10 +21,26 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Request as HttpRequest, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
+
+from .security import (
+    AUDIO_SUFFIXES,
+    LEVEL_PATTERN,
+    MAX_AUDIO_BYTES,
+    VOICE_PATTERN,
+    AuthError,
+    Caller,
+    FirebaseTokenVerifier,
+    Medium,
+    Message,
+    RateLimiter,
+    Short,
+    bearer_token,
+    looks_like_audio,
+)
 
 from .voices import (
     PiperEngine,
@@ -79,6 +96,41 @@ GROQ_MODEL = os.getenv(
 
 MAX_TEXT_LENGTH = 1500
 
+log = logging.getLogger("sprichst")
+
+
+# ---------------------------------------------------------------------------
+# Access control and abuse limits
+# ---------------------------------------------------------------------------
+
+# Turn on in production: every /v1 request must carry a valid Firebase ID token
+# for FIREBASE_PROJECT_ID. Off by default so local development needs no login.
+AUTH_REQUIRED = os.getenv("AUTH_REQUIRED", "0").lower() in {"1", "true", "yes"}
+FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", "")
+
+RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
+
+# Largest accepted request bodies (bytes): JSON calls, and audio uploads (which
+# also carry multipart framing).
+MAX_JSON_BODY = 64 * 1024
+MAX_UPLOAD_BODY = MAX_AUDIO_BYTES + 64 * 1024
+
+# Extra browser origins that may call the gateway (comma separated), for
+# example the deployed web app. Localhost is always allowed for development.
+CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
+rate_limiter = RateLimiter(limit=RATE_LIMIT_PER_MINUTE)
+token_verifier = (
+    FirebaseTokenVerifier(FIREBASE_PROJECT_ID) if AUTH_REQUIRED else None
+)
+
+if AUTH_REQUIRED and not FIREBASE_PROJECT_ID:
+    raise RuntimeError("AUTH_REQUIRED is on but FIREBASE_PROJECT_ID is not set.")
+
 
 # ---------------------------------------------------------------------------
 # Local speech configuration
@@ -116,12 +168,78 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
     allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,  # tokens travel in a header, never in cookies
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
     expose_headers=["X-Voice-Used", "X-Voice-Fallback"],
+    max_age=600,
 )
+
+
+@app.middleware("http")
+async def protect(request: HttpRequest, call_next):
+    """Caps request size and adds safe response headers."""
+
+    declared = request.headers.get("content-length")
+    if request.method == "POST":
+        limit = (
+            MAX_UPLOAD_BODY
+            if request.url.path == "/v1/transcribe"
+            else MAX_JSON_BODY
+        )
+        if declared is None:
+            return JSONResponse(
+                {"detail": "A Content-Length header is required."},
+                status_code=411,
+            )
+        if not declared.isdigit() or int(declared) > limit:
+            return JSONResponse(
+                {"detail": "The request is too large."},
+                status_code=413,
+            )
+
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; frame-ancestors 'none'"
+    )
+    return response
+
+
+def caller(request: HttpRequest) -> Caller:
+    """Identifies the caller, enforces authentication and the rate limit."""
+
+    who = Caller(key=f"ip:{request.client.host if request.client else 'unknown'}")
+
+    if token_verifier is not None:
+        token = bearer_token(request.headers.get("authorization"))
+        try:
+            who = token_verifier.verify(token or "")
+        except AuthError as error:
+            raise HTTPException(
+                status_code=401,
+                detail=str(error),
+                headers={"WWW-Authenticate": "Bearer"},
+            ) from error
+        except Exception as error:  # certificate fetch failed, etc.
+            log.exception("Token verification failed")
+            raise HTTPException(
+                status_code=503,
+                detail="Sign-in could not be checked right now.",
+            ) from error
+
+    wait = rate_limiter.check(who.key)
+    if wait is not None:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please slow down.",
+            headers={"Retry-After": str(wait)},
+        )
+    return who
 
 
 # ---------------------------------------------------------------------------
@@ -129,42 +247,34 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 
 class LearningContext(BaseModel):
+    # The level is written into the model's instructions, so it may only
+    # contain the characters a CEFR label uses (see security.LEVEL_PATTERN).
     level: str = Field(
         default="A0 / Pre-A1",
-        max_length=20,
+        pattern=LEVEL_PATTERN,
     )
 
-    current_unit: str | None = Field(
-        default=None,
-        max_length=100,
-    )
+    current_unit: Medium | None = None
+    current_lesson: Medium | None = None
 
-    current_lesson: str | None = Field(
-        default=None,
-        max_length=100,
-    )
-
-    weak_skills: list[str] = Field(
+    weak_skills: list[Short] = Field(
         default_factory=list,
         max_length=8,
     )
 
-    known_vocabulary: list[str] = Field(
+    known_vocabulary: list[Short] = Field(
         default_factory=list,
         max_length=30,
     )
 
-    recent_mistakes: list[str] = Field(
+    recent_mistakes: list[Medium] = Field(
         default_factory=list,
         max_length=10,
     )
 
 
 class CorrectRequest(BaseModel):
-    text: str = Field(
-        min_length=1,
-        max_length=MAX_TEXT_LENGTH,
-    )
+    text: Message
 
     context: LearningContext = Field(
         default_factory=LearningContext,
@@ -172,15 +282,12 @@ class CorrectRequest(BaseModel):
 
 
 class SpeakRequest(BaseModel):
-    message: str = Field(
-        min_length=1,
-        max_length=MAX_TEXT_LENGTH,
-    )
+    message: Message
 
     # A voice id from /v1/voices. Older app versions send a system voice name
     # such as "Anna"; unknown or uninstalled voices fall back to the best one
     # that works (see X-Voice-Fallback in the response).
-    voice: str | None = Field(default=None, max_length=80)
+    voice: str | None = Field(default=None, pattern=VOICE_PATTERN)
 
     # Speaking speed in words per minute (the app's speed slider).
     rate: int | None = Field(default=None, ge=100, le=400)
@@ -191,10 +298,7 @@ class SpeakRequest(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    message: str = Field(
-        min_length=1,
-        max_length=MAX_TEXT_LENGTH,
-    )
+    message: Message
 
     context: LearningContext = Field(
         default_factory=LearningContext,
@@ -424,17 +528,9 @@ def _ai_json(
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    """Lightweight service check."""
+    """Lightweight service check. Says nothing about providers or models."""
 
-    return {
-        "status": "ok",
-        "provider": AI_PROVIDER,
-        "model": (
-            GROQ_MODEL
-            if AI_PROVIDER == "groq"
-            else OLLAMA_MODEL
-        ),
-    }
+    return {"status": "ok"}
 
 
 # ---------------------------------------------------------------------------
@@ -444,6 +540,7 @@ def health() -> dict[str, str]:
 @app.post("/v1/transcribe")
 async def transcribe(
     audio: UploadFile = File(...),
+    who: Caller = Depends(caller),
 ) -> dict[str, str]:
     """Transcribe uploaded audio locally with whisper.cpp."""
 
@@ -463,19 +560,15 @@ async def transcribe(
         audio.filename or ""
     ).suffix.lower()
 
-    if suffix not in {
-        ".mp3",
-        ".wav",
-        ".m4a",
-        ".ogg",
-        ".flac",
-    }:
+    if suffix not in AUDIO_SUFFIXES:
         raise HTTPException(
             status_code=400,
             detail="Unsupported audio format.",
         )
 
-    audio_bytes = await audio.read()
+    # Read at most one byte more than the limit, so a huge upload is refused
+    # without being held in memory.
+    audio_bytes = await audio.read(MAX_AUDIO_BYTES + 1)
 
     if not audio_bytes:
         raise HTTPException(
@@ -483,10 +576,17 @@ async def transcribe(
             detail="The uploaded audio file is empty.",
         )
 
-    if len(audio_bytes) > 10 * 1024 * 1024:
+    if len(audio_bytes) > MAX_AUDIO_BYTES:
         raise HTTPException(
             status_code=413,
             detail="Audio file is too large. Maximum size is 10 MB.",
+        )
+
+    # The file name is chosen by the caller; the content has to be audio too.
+    if not looks_like_audio(audio_bytes):
+        raise HTTPException(
+            status_code=400,
+            detail="The file is not a supported audio recording.",
         )
 
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -554,6 +654,7 @@ async def transcribe(
 @app.post("/v1/correct")
 def correct(
     request: CorrectRequest,
+    who: Caller = Depends(caller),
 ) -> dict[str, Any]:
 
     return _ai_json(
@@ -666,6 +767,7 @@ Explanation:
 @app.post("/v1/chat")
 def chat(
     request: ChatRequest,
+    who: Caller = Depends(caller),
 ) -> dict[str, Any]:
 
     return _ai_json(
@@ -882,7 +984,7 @@ piper_engine = PiperEngine(voice_catalogue)
 
 
 @app.get("/v1/voices")
-def list_voices() -> dict[str, Any]:
+def list_voices(who: Caller = Depends(caller)) -> dict[str, Any]:
     """The voices the learner can choose from, and which are installed."""
 
     return voice_catalogue.listing()
@@ -891,6 +993,7 @@ def list_voices() -> dict[str, Any]:
 @app.post("/v1/speak")
 def speak(
     request: SpeakRequest,
+    who: Caller = Depends(caller),
 ) -> Response:
 
     text = request.message.strip()
@@ -911,9 +1014,11 @@ def speak(
     except HTTPException:
         raise
     except Exception as error:  # a broken model must not take the app down
+        # The cause goes to the log; callers only learn that it failed.
+        log.exception("Speech synthesis failed with voice %s", voice.id)
         raise HTTPException(
             status_code=500,
-            detail=f"Speech synthesis failed with {voice.label}: {error}",
+            detail="Speech synthesis failed. Try another voice.",
         ) from error
 
     return Response(
@@ -949,17 +1054,14 @@ def _speak_with_system_voice(
         aiff_path = temp_path / "speech.aiff"
         wav_path = temp_path / "speech.wav"
 
-        say_result = _run(
+        _run(
             system_say_command(voice.model, wpm, aiff_path, text),
             "macOS speech synthesis",
         )
         if not aiff_path.exists() or aiff_path.stat().st_size == 0:
             raise HTTPException(
                 status_code=500,
-                detail=(
-                    "Speech synthesis did not produce audio"
-                    f"{': ' + say_result if say_result else '.'}"
-                ),
+                detail="Speech synthesis did not produce audio.",
             )
 
         _run(
@@ -977,12 +1079,18 @@ def _speak_with_system_voice(
         return wav_path.read_bytes()
 
 
-def _run(command: list[str], what: str) -> str:
-    """Run a helper process; returns its stderr, raises HTTP errors on failure."""
+def _run(command: list[str], what: str, input_text: str | None = None) -> str:
+    """Run a helper process (never through a shell). Raises HTTP errors on
+    failure; the helper's own output goes to the log, not to the caller."""
 
     try:
         result = subprocess.run(
-            command, capture_output=True, text=True, timeout=30, check=False,
+            command,
+            input=input_text,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
         )
     except subprocess.TimeoutExpired as error:
         raise HTTPException(status_code=504, detail=f"{what} timed out.") from error
@@ -990,8 +1098,6 @@ def _run(command: list[str], what: str) -> str:
         raise HTTPException(status_code=500, detail=f"Could not start {what.lower()}.") from error
 
     if result.returncode != 0:
-        raise HTTPException(
-            status_code=500,
-            detail=f"{what} failed: {result.stderr.strip()}",
-        )
+        log.error("%s failed: %s", what, result.stderr.strip())
+        raise HTTPException(status_code=500, detail=f"{what} failed.")
     return result.stderr.strip()

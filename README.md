@@ -102,6 +102,20 @@ Firebase/Google sign-in is intentionally not silently enabled in this ZIP becaus
 
 Course content belongs in `curriculum/course.json`; user progress belongs under `users/{uid}/...`; an LLM never controls review dates or has unrestricted database access.
 
+## Legal, privacy and security
+
+The [legal/](legal/README.md) folder holds the Privacy Policy, Terms, Disclaimer, AI Transparency notice, Cookies and Storage notice, Your Rights, Copyright and Takedown (with the DMCA agent details), Impressum, Accessibility statement, Security summary and generated Third-Party Notices, plus internal compliance records. They are templates, not legal advice: fill the `[[PLACEHOLDER]]` fields (`python3 scripts/check_legal_placeholders.py`) and have a lawyer review them before launch. The user-facing documents are bundled and shown in the app under Account → Legal.
+
+What the build guarantees (each is enforced by tests):
+
+- **No third-party requests from the web app.** Fonts (Roboto), the renderer and the Firebase SDK are bundled; no Google Fonts, CDN, analytics or session replay. See `legal/internal/privacy-audit.md`.
+- **No secrets in the frontend.** AI-provider keys live only in `ai-server/.env`.
+- **Row-level security.** Firestore rules let a signed-in user touch only their own documents and validate every field. `cd firebase && npm install && npm test`.
+- **Validated inputs** in the app and in the AI server, with rate limiting and optional Firebase sign-in checks.
+- **No raw SQL.** There is no SQL database; tests fail if one is introduced.
+
+See [SECURITY.md](SECURITY.md) to report a vulnerability.
+
 ## Account and privacy controls
 
 Account preferences are stored with the learner profile. The AI and voice controls are safe account preferences: the gateway continues to own provider credentials, model access, and live routing. The privacy screen describes the current data paths without implying that a preference changes gateway behavior before that support is implemented.

@@ -66,6 +66,15 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<String?> idToken() async {
+    try {
+      return await _firebaseAuth.currentUser?.getIdToken();
+    } catch (_) {
+      return null; // offline or expired: the server will ask to sign in again
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     if (!kIsWeb) {
       await _googleSignIn.signOut();

@@ -99,7 +99,7 @@ For a real phone on the same Wi-Fi:
 
 Alternatively, bake the address in at build time with `flutter run --dart-define=AI_SERVER_URL=http://<your-computer's-LAN-IP>:8000`.
 
-iOS and debug Android builds are allowed to use plain HTTP on the local network for this (`NSAllowsLocalNetworking` in `Info.plist`; a debug-only `network_security_config.xml`). Release builds must use HTTPS. Only do this on a network you trust: the gateway has no authentication. Do not expose Ollama directly. For anything beyond your own desk, put the gateway behind HTTPS, verify Firebase ID tokens server-side, and use a private tunnel or a server you control.
+iOS and debug Android builds are allowed to use plain HTTP on the local network for this (`NSAllowsLocalNetworking` in `Info.plist`; a debug-only `network_security_config.xml`). Release builds must use HTTPS. Only do this on a network you trust: unless you set `AUTH_REQUIRED=1` (see the hardening checklist at the end), the gateway accepts any caller. Do not expose Ollama directly. For anything beyond your own desk, put the gateway behind HTTPS, verify Firebase ID tokens server-side, and use a private tunnel or a server you control.
 
 Android blocks plain HTTP by default. `android/app/src/main/res/xml/network_security_config.xml` allows it only for the device's own loopback address, which `just_audio` needs to play the tutor's speech.
 
@@ -136,3 +136,12 @@ Keep content in Git as the source of truth. When you need cloud distribution, pu
 6. A1 content, then adaptive practice.
 
 Keep the personal-assistant, Google Calendar, Tasks, and Keep work out of this milestone. The learning engine should be solid first.
+
+
+## Hardening checklist for a public deployment
+
+1. **Firebase rules:** `cd firebase && npm install && npm test`, then `firebase deploy --only firestore:rules,storage`. Pick the Firestore location (an EU region for EU users) before first use; it cannot be changed later.
+2. **Hosting headers:** `firebase/firebase.json` sets the Content-Security-Policy. Replace `__AI_GATEWAY_ORIGIN__` with your AI gateway's origin (for example `https://ai.example.com`) before deploying; browsers will block calls to any other origin.
+3. **Web build:** run `python3 scripts/vendor_web_deps.py` (once, and after upgrading `firebase_core`), then `flutter build web --release`. The result loads nothing from Google, a CDN or a font service until a learner presses "Continue with Google".
+4. **AI gateway:** `pip install -r ai-server/requirements.txt`, then set `AUTH_REQUIRED=1`, `FIREBASE_PROJECT_ID`, `RATE_LIMIT_PER_MINUTE` and `CORS_ORIGINS` (see `ai-server/.env.example`) and serve it over HTTPS. Provider keys such as `GROQ_API_KEY` belong only in the server's `.env`.
+5. **Legal:** fill the placeholders in `legal/` (`python3 scripts/check_legal_placeholders.py --strict` must pass), register your DMCA agent, and work through `legal/internal/release-checklist.md`.

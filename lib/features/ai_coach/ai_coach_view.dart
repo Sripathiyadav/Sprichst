@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
@@ -7,6 +8,7 @@ import '../../app/theme/breakpoints.dart';
 import '../../data/on_device/model_catalogue.dart';
 import '../../data/on_device/on_device_ai_repository.dart';
 import '../../domain/models/learning_models.dart';
+import '../../shared/input_rules.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../account/on_device_ai_page.dart';
 import 'services/audio_player_service.dart';
@@ -83,6 +85,9 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                       controller: _text,
                       minLines: 1,
                       maxLines: 3,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(InputLimits.message),
+                      ],
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _send(),
                       decoration: const InputDecoration(

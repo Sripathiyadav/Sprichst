@@ -4,12 +4,15 @@ import 'package:http/http.dart' as http;
 
 import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/learning_repository.dart';
+import '../../shared/input_rules.dart';
 
 class HttpAIRepository implements AIRepository {
   HttpAIRepository({
     required String baseUrl,
     http.Client? client,
+    Future<String?> Function()? authToken,
   })  : _baseUrl = (() => baseUrl),
+        _authToken = authToken,
         _client = client ?? http.Client();
 
   /// Reads the address on every request, so a change in settings takes effect
@@ -17,10 +20,32 @@ class HttpAIRepository implements AIRepository {
   HttpAIRepository.dynamic({
     required String Function() baseUrl,
     http.Client? client,
+    Future<String?> Function()? authToken,
   })  : _baseUrl = baseUrl,
+        _authToken = authToken,
         _client = client ?? http.Client();
 
   final String Function() _baseUrl;
+
+  /// Supplies the learner's Firebase ID token. A server that requires sign-in
+  /// (AUTH_REQUIRED=1) rejects calls without it; one that does not ignores it.
+  final Future<String?> Function()? _authToken;
+
+  Future<Map<String, String>> _headers({bool json = true}) async {
+    // Failing to get a token (signed out, or no Firebase in this build) must
+    // not stop a server that does not ask for one from answering.
+    String? token;
+    try {
+      token = await _authToken?.call();
+    } catch (_) {
+      token = null;
+    }
+    return {
+      if (json) 'Content-Type': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
+  }
+
   final http.Client _client;
 
   /// How long a request may take before it counts as unreachable. Generating a
@@ -38,9 +63,7 @@ class HttpAIRepository implements AIRepository {
     final response = await _client
         .post(
           Uri.parse('$baseUrl/v1/correct'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: await _headers(),
           body: jsonEncode({
             'text': text,
             'context': _encode(context),
@@ -73,9 +96,7 @@ class HttpAIRepository implements AIRepository {
     final response = await _client
         .post(
           Uri.parse('$baseUrl/v1/chat'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: await _headers(),
           body: jsonEncode({
             'message': message,
             'context': _encode(context),
@@ -108,6 +129,7 @@ class HttpAIRepository implements AIRepository {
       'POST',
       Uri.parse('$baseUrl/v1/transcribe'),
     )
+      ..headers.addAll(await _headers(json: false))
       ..fields['context'] = jsonEncode(_encode(context))
       ..files.add(
         http.MultipartFile.fromBytes(
@@ -142,9 +164,7 @@ class HttpAIRepository implements AIRepository {
     final response = await _client
         .post(
           Uri.parse('$baseUrl/v1/speak'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: await _headers(),
           body: jsonEncode({
             'message': text,
             if (voice != null) 'voice': voice,
@@ -167,8 +187,10 @@ class HttpAIRepository implements AIRepository {
 
   @override
   Future<VoiceList> listVoices() async {
-    final response =
-        await _client.get(Uri.parse('$baseUrl/v1/voices')).timeout(_quick);
+    final response = await _client
+        .get(Uri.parse('$baseUrl/v1/voices'),
+            headers: await _headers(json: false))
+        .timeout(_quick);
     if (response.statusCode != 200) {
       throw Exception(_errorMessage(response));
     }
@@ -187,12 +209,21 @@ class HttpAIRepository implements AIRepository {
     }
   }
 
+  /// The learner's context as the server accepts it: every text cleaned and
+  /// within the server's limits (see [InputLimits]).
   Map<String, dynamic> _encode(TutorContext context) => {
         'level': context.level,
-        'current_unit': context.unit,
-        'current_lesson': context.lesson,
-        'weak_skills': context.weakSkills,
-        'known_vocabulary': context.knownVocabulary,
-        'recent_mistakes': context.recentMistakes,
+        'current_unit': context.unit == null
+            ? null
+            : sanitizeText(context.unit!, maxLength: InputLimits.medium),
+        'current_lesson': context.lesson == null
+            ? null
+            : sanitizeText(context.lesson!, maxLength: InputLimits.medium),
+        'weak_skills': sanitizeList(context.weakSkills,
+            max: InputLimits.weakSkills, maxLength: InputLimits.short),
+        'known_vocabulary': sanitizeList(context.knownVocabulary,
+            max: InputLimits.vocabulary, maxLength: InputLimits.short),
+        'recent_mistakes': sanitizeList(context.recentMistakes,
+            max: InputLimits.mistakes, maxLength: InputLimits.medium),
       };
 }

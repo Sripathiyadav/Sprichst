@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme/app_theme.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../legal/legal_view.dart';
 import 'auth_errors.dart';
 import 'auth_view_model.dart';
 
@@ -51,6 +52,31 @@ class AuthView extends ConsumerWidget {
                 icon: const Icon(Icons.login),
                 label: const Text('Continue with Google'),
               ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'By continuing you agree to the Terms and confirm you have read the Privacy Policy. '
+              'No analytics, no tracking, no ads.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall,
+            ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () =>
+                      openLegalDocument(context, 'terms-of-service'),
+                  child: const Text('Terms'),
+                ),
+                TextButton(
+                  onPressed: () => openLegalDocument(context, 'privacy-policy'),
+                  child: const Text('Privacy Policy'),
+                ),
+                TextButton(
+                  onPressed: () => openLegalDocument(context, 'impressum'),
+                  child: const Text('Impressum'),
+                ),
+              ],
             ),
             if (error != null) ...[
               const SizedBox(height: AppSpacing.md),

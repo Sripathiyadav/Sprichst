@@ -1,0 +1,23 @@
+name: google_sign_in_web
+description: >-
+  Privacy stub that replaces the real google_sign_in_web (see README.md).
+version: 1.1.3
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=3.22.0"
+
+flutter:
+  plugin:
+    implements: google_sign_in
+    platforms:
+      web:
+        pluginClass: GoogleSignInPlugin
+        fileName: google_sign_in_web.dart
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter

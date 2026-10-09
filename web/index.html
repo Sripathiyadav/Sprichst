@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta
-  name="google-signin-client_id"
-  content="54358857337-r9n8s1e2brm2nugt1g75kv7hk2ihaphk.apps.googleusercontent.com">
+  <!-- Google sign-in on the web goes through Firebase (popup), so the Google
+       Identity Services script and its client-id meta tag are not needed. They
+       would send every visitor's IP address to Google on page load. -->
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
@@ -21,18 +21,20 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Sprichst: learn German with lessons, flashcards, games and a personal tutor.">
+  <!-- Do not tell other sites which page the learner came from. -->
+  <meta name="referrer" content="no-referrer">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="sprichst">
+  <meta name="apple-mobile-web-app-title" content="Sprichst">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>sprichst</title>
+  <title>Sprichst</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>

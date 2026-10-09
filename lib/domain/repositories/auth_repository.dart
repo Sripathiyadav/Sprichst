@@ -13,6 +13,10 @@ abstract class AuthRepository {
   Future<void> deleteCurrentUser();
 
   Future<void> signOut();
+
+  /// A fresh Firebase ID token for the signed-in learner, or null when signed
+  /// out. Sent to the AI server so it can tell real learners from strangers.
+  Future<String?> idToken();
 }
 
 /// Thrown when someone dismisses a sign-in prompt that an action depends on.

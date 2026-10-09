@@ -25,6 +25,8 @@ import '../domain/models/curriculum.dart';
 import '../domain/models/dialogue_models.dart';
 import '../domain/models/learning_models.dart';
 import '../domain/repositories/learning_repository.dart';
+import '../features/auth/auth_view_model.dart';
+import '../shared/input_rules.dart';
 
 final learningRepositoryProvider = Provider<LearningRepository>((ref) {
   return FirestoreLearningRepository();
@@ -49,7 +51,9 @@ final Provider<AIRepository> aiRepositoryProvider =
   return HybridAIRepository(
     onDevice: OnDeviceAIRepository(models),
     server: HttpAIRepository.dynamic(
-        baseUrl: () => ref.read(aiServerSettingsProvider).url),
+      baseUrl: () => ref.read(aiServerSettingsProvider).url,
+      authToken: () => ref.read(authRepositoryProvider).idToken(),
+    ),
     models: models,
   );
 });
@@ -365,8 +369,10 @@ class AppController extends ChangeNotifier {
   /// the saved voice (used to preview voices in settings).
   Future<SpeechAudio> speak(String text, {String? voice}) {
     final current = _requireProfile();
+    final clean = sanitizeText(text);
+    if (clean.isEmpty) throw ArgumentError('There is nothing to say.');
     return _aiRepository.synthesizeSpeech(
-      text,
+      clean,
       tutorContext,
       voice: voice ?? current.voice,
       speechRate: current.speechRate,
@@ -387,10 +393,17 @@ class AppController extends ChangeNotifier {
       (await _aiRepository.transcribeAudio(audio, tutorContext)).text;
 
   Future<CoachReply> correctGerman(String text) =>
-      _aiRepository.correctGerman(text, tutorContext);
+      _aiRepository.correctGerman(_nonEmpty(text), tutorContext);
 
   Future<TutorReply> chat(String message) =>
-      _aiRepository.chat(message, tutorContext);
+      _aiRepository.chat(_nonEmpty(message), tutorContext);
+
+  /// Text for the tutor, cleaned and within the server's limit.
+  String _nonEmpty(String text) {
+    final clean = sanitizeText(text);
+    if (clean.isEmpty) throw ArgumentError('Write something first.');
+    return clean;
+  }
 
   LearningProfile _requireProfile() {
     final current = profile;

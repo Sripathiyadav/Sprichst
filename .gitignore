@@ -23,3 +23,9 @@ macos/Runner/GoogleService-Info.plist
 .idea/
 .vscode/
 .DS_Store
+
+# Node tooling for the security-rules tests
+node_modules/
+firebase/node_modules/
+*-debug.log
+firestore-debug.log
