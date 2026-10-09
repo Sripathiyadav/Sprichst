@@ -94,7 +94,7 @@ class ExerciseEvaluator {
       exercise: exercise,
       response: response,
       isCorrect: allCorrect,
-      score: correct / total,
+      score: total == 0 ? 1.0 : correct / total,
       feedback: allCorrect
           ? exercise.explanation
           : '$correct of $total gaps correct. Answers: ${misses.join(', ')}. '
