@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 import 'on_device_ai_page.dart';
 import 'ai_server_section.dart';
+import 'groq_key_section.dart';
 import '../../shared/input_rules.dart';
 import 'voice_picker.dart';
 
@@ -139,7 +141,11 @@ class AccountView extends ConsumerWidget {
                 icon: Icons.logout,
                 title: 'Sign out',
                 subtitle: 'Keep your saved learning data and sign in later.',
-                onTap: () => ref.read(authViewModelProvider.notifier).signOut(),
+                onTap: () async {
+                  // Send waiting progress while the account is still signed in.
+                  await ref.read(appControllerProvider).flushPendingChanges();
+                  await ref.read(authViewModelProvider.notifier).signOut();
+                },
               ),
             ],
           ),
@@ -688,7 +694,7 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
     return SettingsPage(
       title: 'AI & voice',
       subtitle:
-          'The coach runs on this phone once its models are downloaded, so it works without internet. An AI server is optional.',
+          'The coach runs on this phone once its models are downloaded, so it works without internet. You can also connect your own free Groq account for faster, more accurate answers.',
       children: [
         SettingsSection(
           title: 'On-device AI',
@@ -702,11 +708,14 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
             ),
           ],
         ),
-        const AiServerSection(),
+        const GroqKeySection(),
+        // Only for developers: a debug build, or someone who set an address.
+        if (kDebugMode || ref.watch(aiServerSettingsProvider).isCustom)
+          const AiServerSection(),
         SettingsSection(
           title: 'Where the tutor runs',
           description:
-              'Automatic is recommended: private and offline, with the AI server filling in for anything not downloaded.',
+              'Automatic is recommended: private and offline, with your own Groq key filling in for anything not downloaded. Nothing is ever sent to Groq unless you added a key.',
           children: [
             for (final provider in AIProviderPreference.values)
               RadioListTile<AIProviderPreference>(
@@ -925,9 +934,9 @@ class _PrivacyAndDataPage extends ConsumerWidget {
               ),
               SettingsTile(
                 icon: Icons.psychology_outlined,
-                title: 'AI server (optional)',
+                title: 'Groq (only with your own key)',
                 subtitle:
-                    'If you choose "AI server first", or something is not downloaded yet, your message or recording, the last few messages and a compact learning context go to the Sprichst AI server, which may use a cloud provider such as Groq.',
+                    'If you add a Groq key and choose "Groq (my own key)" (or something is not downloaded yet in Automatic), your message or recording, the last few messages and a compact learning context go straight from this device to Groq under your own account. There is no Sprichst server in between, and your key never leaves this device.',
               ),
             ],
           ),
@@ -999,7 +1008,7 @@ class _AboutPage extends StatelessWidget {
                   title: 'Firebase Authentication & Firestore'),
               SettingsTile(
                   icon: Icons.smart_toy_outlined,
-                  title: 'Groq, Qwen & Ollama gateway'),
+                  title: 'Groq (your own key), Qwen, Gemma & Whisper'),
               SettingsTile(
                   icon: Icons.mic_none_outlined,
                   title: 'Whisper.cpp & local text-to-speech'),

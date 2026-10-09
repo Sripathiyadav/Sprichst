@@ -95,7 +95,7 @@ For a real phone on the same Wi-Fi:
 
 1. Start the gateway with `ai-server/run.sh`. It listens on your network (a plain `uvicorn ... --reload` only listens on this computer, which a phone cannot reach) and prints the address to use.
 2. If macOS asks whether Python may accept incoming connections, choose Allow. If you missed it: System Settings → Network → Firewall → Options, and allow the Python that runs the server.
-3. In the app, open Account → AI & voice → AI server, enter that address (for example `192.168.1.20`) and tap Save and test. The result says what is wrong if it fails. The address is remembered on that phone.
+3. In the app, open Account → AI & voice → Developer AI server, enter that address (for example `192.168.1.20`) and tap Save and test. The result says what is wrong if it fails. The address is remembered on that phone.
 
 Alternatively, bake the address in at build time with `flutter run --dart-define=AI_SERVER_URL=http://<your-computer's-LAN-IP>:8000`.
 
@@ -141,7 +141,7 @@ Keep the personal-assistant, Google Calendar, Tasks, and Keep work out of this m
 ## Hardening checklist for a public deployment
 
 1. **Firebase rules:** `cd firebase && npm install && npm test`, then `firebase deploy --only firestore:rules,storage`. Pick the Firestore location (an EU region for EU users) before first use; it cannot be changed later.
-2. **Hosting headers:** `firebase/firebase.json` sets the Content-Security-Policy. Replace `__AI_GATEWAY_ORIGIN__` with your AI gateway's origin (for example `https://ai.example.com`) before deploying; browsers will block calls to any other origin.
+2. **Hosting headers:** `firebase/firebase.json` sets the Content-Security-Policy. It already allows `https://api.groq.com` (each learner's own key) and Google's hosts; browsers block every other origin. Only add your own origin if you run the developer gateway.
 3. **Web build:** run `python3 scripts/vendor_web_deps.py` (once, and after upgrading `firebase_core`), then `flutter build web --release`. The result loads nothing from Google, a CDN or a font service until a learner presses "Continue with Google".
 4. **AI gateway:** `pip install -r ai-server/requirements.txt`, then set `AUTH_REQUIRED=1`, `FIREBASE_PROJECT_ID`, `RATE_LIMIT_PER_MINUTE` and `CORS_ORIGINS` (see `ai-server/.env.example`) and serve it over HTTPS. Provider keys such as `GROQ_API_KEY` belong only in the server's `.env`.
 5. **Legal:** fill the placeholders in `legal/` (`python3 scripts/check_legal_placeholders.py --strict` must pass), register your DMCA agent, and work through `legal/internal/release-checklist.md`.

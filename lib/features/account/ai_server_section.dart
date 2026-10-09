@@ -72,11 +72,11 @@ class _AiServerSectionState extends ConsumerState<AiServerSection> {
     final settings = ref.watch(aiServerSettingsProvider);
     final report = _report;
     return SettingsSection(
-      title: 'AI server',
+      title: 'Developer AI server (advanced)',
       description:
-          'The optional server that powers the tutor, voices and speech recognition. '
-          'On a simulator the default works. On a real phone, enter your computer\'s '
-          'address (for example 192.168.1.20) and start the server with ai-server/run.sh.',
+          'Not needed: the app talks to Groq directly with your own key, or answers on this phone. '
+          'This is only for developers running ai-server/ on their own computer; enter its '
+          'address (for example 192.168.1.20) and start it with ai-server/run.sh.',
       children: [
         Padding(
           padding: const EdgeInsets.all(AppSpacing.md),

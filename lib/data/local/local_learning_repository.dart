@@ -44,6 +44,9 @@ class LocalLearningRepository implements LearningRepository {
     await preferences.remove(_profileKey);
   }
 
+  @override
+  Future<void> flush() async {}
+
   /// Parsed once per repository; the bundled course never changes at runtime.
   @override
   Future<List<Lesson>> loadLessons() async =>

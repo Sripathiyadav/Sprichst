@@ -1,3 +1,4 @@
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sprichst/app/startup_problem.dart';
@@ -38,7 +39,10 @@ class _Cloud {
   var rejects = false;
   var saves = 0;
 
-  SyncedProfileStore store(ProfileCache cache) => SyncedProfileStore(
+  SyncedProfileStore store(ProfileCache cache,
+          {Duration delay = Duration.zero}) =>
+      SyncedProfileStore(
+        delay: delay,
         cache: cache,
         loadRemote: () async {
           if (!online) throw _Offline();
@@ -119,6 +123,92 @@ void main() {
       await expectLater(
           cloud.store(cache).save(_profile(7)), throwsA(isA<_Rejected>()));
       expect(cache.pending, isFalse);
+    });
+  });
+
+  group('gathering writes to save the free quota', () {
+    const delay = Duration(seconds: 8);
+
+    test('a burst of changes becomes one cloud write with the latest data', () {
+      fakeAsync((async) {
+        final sync = cloud.store(cache, delay: delay);
+        for (final xp in [1, 2, 3]) {
+          sync.save(_profile(xp));
+          async.elapse(const Duration(seconds: 2));
+        }
+        async.flushMicrotasks();
+        expect(cloud.saves, 0, reason: 'still waiting for more changes');
+        expect(cache.profile!.xp, 3, reason: 'but safe on the device at once');
+        expect(cache.pending, isTrue);
+
+        async.elapse(delay);
+        async.flushMicrotasks();
+        expect(cloud.saves, 1);
+        expect(cloud.stored!.xp, 3);
+        expect(cache.pending, isFalse);
+      });
+    });
+
+    test('flush sends it straight away', () {
+      fakeAsync((async) {
+        final sync = cloud.store(cache, delay: delay);
+        sync.save(_profile(4));
+        async.flushMicrotasks();
+        sync.flush();
+        async.flushMicrotasks();
+        expect(cloud.stored!.xp, 4);
+        expect(cache.pending, isFalse);
+
+        async.elapse(delay * 2);
+        async.flushMicrotasks();
+        expect(cloud.saves, 1, reason: 'the timer must not write it again');
+      });
+    });
+
+    test('flush with nothing waiting does nothing', () {
+      fakeAsync((async) {
+        cloud.store(cache, delay: delay).flush();
+        async.flushMicrotasks();
+        expect(cloud.saves, 0);
+      });
+    });
+
+    test('an app killed before the write leaves it flagged for the next start',
+        () async {
+      final first = cloud.store(cache, delay: delay);
+      await first.save(_profile(6)); // the timer never fires: the app is gone
+      expect(cache.pending, isTrue);
+      expect(cloud.stored, isNull);
+
+      final next = await cloud.store(cache, delay: delay).load();
+      expect(next!.xp, 6);
+      expect(cloud.stored!.xp, 6);
+      expect(cache.pending, isFalse);
+    });
+
+    test('a write the cloud rejects in the background stays pending', () {
+      fakeAsync((async) {
+        cloud.rejects = true;
+        final sync = cloud.store(cache, delay: delay);
+        sync.save(_profile(8));
+        async.elapse(delay);
+        async.flushMicrotasks();
+        expect(cache.pending, isTrue);
+        expect(cloud.stored, isNull);
+      });
+    });
+
+    test('clearing cancels a write that was waiting', () {
+      fakeAsync((async) {
+        final sync = cloud.store(cache, delay: delay);
+        sync.save(_profile(9));
+        async.flushMicrotasks();
+        sync.clear();
+        async.elapse(delay * 2);
+        async.flushMicrotasks();
+        expect(cloud.saves, 0);
+        expect(cache.profile, isNull);
+      });
     });
   });
 

@@ -8,6 +8,7 @@ import '../../app/theme/breakpoints.dart';
 import '../../data/on_device/model_catalogue.dart';
 import '../../data/on_device/on_device_ai_repository.dart';
 import '../../domain/models/learning_models.dart';
+import '../../domain/repositories/ai_exceptions.dart';
 import '../../shared/input_rules.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../account/on_device_ai_page.dart';
@@ -81,6 +82,11 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                             onSpeak: message.fromUser
                                 ? null
                                 : () => _speakMessage(message),
+                            onResendOnPhone: message.resendOnPhone == null ||
+                                    _sending
+                                ? null
+                                : () =>
+                                    _send(resendOnPhone: message.resendOnPhone),
                           );
                         },
                       ),
@@ -260,7 +266,11 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 
   /// Plain-language reason a voice turn failed; the raw error goes to the log.
   String _voiceErrorMessage(Object error) {
-    if (error is ModelNotInstalledException) return error.toString();
+    if (error is ModelNotInstalledException ||
+        error is ProviderUnavailableException ||
+        error is VoiceUnavailableException) {
+      return error.toString();
+    }
     final text = error.toString();
     if (text.contains('No speech was detected')) {
       return 'I did not catch that. Hold the phone closer and try again.';
@@ -271,7 +281,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     if (text.contains('SocketException') ||
         text.contains('ClientException') ||
         text.contains('Connection')) {
-      return 'Could not reach the AI server. Check that it is running and that the address is right in Account → AI & voice → AI server.';
+      return 'Could not reach the AI service. Check your internet connection, or switch to "This phone only" in Account → AI & voice.';
     }
     return 'The voice conversation did not work this time. Please try again.';
   }
@@ -342,29 +352,37 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     }
   }
 
+  /// Sends the typed message. [resendOnPhone] is the text of a message the
+  /// cloud could not answer, sent again on this phone because the learner
+  /// asked for that; its bubble is already on screen.
   Future<void> _send({
     bool speakResponse = false,
+    String? resendOnPhone,
   }) async {
-    final text = _text.text.trim();
+    final text = resendOnPhone ?? _text.text.trim();
 
     if (text.isEmpty || _sending || _recording || _transcribing) {
       return;
     }
 
     setState(() {
-      _messages.add(
-        _Message(
-          text: text,
-          fromUser: true,
-        ),
-      );
+      if (resendOnPhone == null) {
+        _messages.add(
+          _Message(
+            text: text,
+            fromUser: true,
+          ),
+        );
+        _text.clear(); // the message is on screen now; leave the box empty
+      }
       _sending = true;
-      _text.clear(); // the message is on screen now; leave the box empty
     });
 
     try {
       final app = ref.read(appControllerProvider);
-      final reply = await app.chat(text);
+      final reply = resendOnPhone == null
+          ? await app.chat(text)
+          : await app.onThePhone(() => app.chat(text));
 
       final displayParts = <String>[
         if (reply.reply.trim().isNotEmpty) reply.reply,
@@ -407,18 +425,28 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       }
     } catch (error) {
       if (mounted) {
+        // These carry their own plain-language explanation of what to do.
+        final explained = error is ModelNotInstalledException ||
+            error is ProviderUnavailableException ||
+            error is VoiceUnavailableException;
+        // Offer the phone, never do it unasked: the learner decides where
+        // their words go.
+        final phoneReady = error is ProviderUnavailableException &&
+            error.canOfferPhone &&
+            ref.read(modelManagerProvider).activeTutor != null;
         setState(() {
           _messages.add(
             _Message(
-              text: error is ModelNotInstalledException
+              text: explained
                   ? error.toString()
-                  : 'I could not reach the coach. Check Account → AI & voice → AI server, then try again.',
+                  : 'I could not reach the coach. Check your connection, then try again.',
               fromUser: false,
+              resendOnPhone: phoneReady ? text : null,
             ),
           );
         });
 
-        if (error is! ModelNotInstalledException) {
+        if (!explained) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('AI Coach error: $error'),
@@ -552,21 +580,28 @@ class _Message {
     required this.text,
     required this.fromUser,
     this.speechText,
+    this.resendOnPhone,
   });
 
   final String text;
   final bool fromUser;
   final String? speechText;
+
+  /// The learner's message, when the cloud could not answer it and this phone
+  /// can: shown with an "Answer on this phone" button.
+  final String? resendOnPhone;
 }
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
     required this.message,
     required this.onSpeak,
+    this.onResendOnPhone,
   });
 
   final _Message message;
   final VoidCallback? onSpeak;
+  final VoidCallback? onResendOnPhone;
 
   @override
   Widget build(BuildContext context) {
@@ -601,6 +636,14 @@ class _MessageBubble extends StatelessWidget {
                     height: 1.45,
                   ),
                 ),
+                if (message.resendOnPhone != null) ...[
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: onResendOnPhone,
+                    icon: const Icon(Icons.phone_android_outlined),
+                    label: const Text('Answer on this phone'),
+                  ),
+                ],
                 if (onSpeak != null) ...[
                   const SizedBox(height: 8),
                   IconButton(

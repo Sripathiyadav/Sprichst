@@ -1,6 +1,6 @@
 # Sprichst
 
-Sprichst is a Flutter German-learning MVP built around a curriculum and learning engine—not a generic chatbot. Learners sign in with Google; their profile lives in Firestore with an on-device copy so they can keep studying offline, and the AI tutor runs on the phone with an optional FastAPI gateway.
+Sprichst is a Flutter German-learning MVP built around a curriculum and learning engine—not a generic chatbot. Learners sign in with Google; their profile lives in Firestore with an on-device copy so they can keep studying offline, and the AI tutor runs on the phone or, optionally, on the learner's own free Groq account. There is no Sprichst AI server.
 
 ## What is already working
 
@@ -20,9 +20,9 @@ Sprichst is a Flutter German-learning MVP built around a curriculum and learning
 - Learning engine: eight exercise types with deterministic evaluation, per-skill accuracy, weak-skill tracking, mistake reviews, and targeted practice
 - 48 lessons from Pre-A1 to B2 in `curriculum/course.json`, with 308 vocabulary words, 13 dialogues, Goethe A1–B2 task lessons and a four-part TestDaF track (reading, listening, written argument, speaking)
 - Deterministic spaced repetition for reviews and flashcards (Again → 10 minutes; successful recalls grow the gap)
-- Offline-tolerant sync: the profile is saved to Firestore and mirrored per account on the device. Offline changes are kept and pushed on the next load (the policy is documented in `lib/data/profile_sync.dart`: the cloud is the source of truth, pending local changes win, last writer wins)
+- Offline-tolerant sync: the profile is saved to Firestore and mirrored per account on the device. Changes are gathered for a few seconds into one write (to stay inside Firestore's free quota) and pushed when the app goes to the background; offline changes are kept and pushed on the next load (the policy is documented in `lib/data/profile_sync.dart`: the cloud is the source of truth, pending local changes win, last writer wins)
 - Separate reset-learning-progress and reauthenticated delete-account flows
-- FastAPI AI gateway: `GET /health`, `GET /health/ready` (provider reachable?), `POST /v1/correct`, `POST /v1/chat`, `POST /v1/transcribe`, `POST /v1/speak`, `GET /v1/voices`. Model answers are validated before they reach the app, concurrent jobs are capped, and an optional fallback provider is supported
+- Developer-only FastAPI gateway (`ai-server/`, not in the released app): `GET /health`, `GET /health/ready` (provider reachable?), `POST /v1/correct`, `POST /v1/chat`, `POST /v1/transcribe`, `POST /v1/speak`, `GET /v1/voices`. Model answers are validated before they reach the app, concurrent jobs are capped, and an optional fallback provider is supported
 - Versioned curriculum JSON, validated by both a script and the app's parser
 - Firebase Firestore and Storage security rules ready to deploy
 
@@ -46,9 +46,13 @@ flutter run -d chrome
 
 The real app signs in with Google, so it needs your Firebase project's `lib/firebase_options.dart` (git-ignored; create it with `flutterfire configure`, see [docs/SETUP.md](docs/SETUP.md)). If Firebase cannot start, the app says so instead of showing a blank screen. To try every screen with no Firebase and no AI server, use the preview below.
 
-## Run the AI gateway (optional)
+## AI: the phone, or your own Groq key (no server)
 
-The coach runs on the phone without it (see [docs/on-device-ai.md](docs/on-device-ai.md)); the gateway adds a larger cloud or desktop model for learners who choose "AI server first", and fills in for anything not downloaded yet.
+Sprichst has no AI server of its own and needs none. The tutor either runs on the phone (see [docs/on-device-ai.md](docs/on-device-ai.md)) or, if the learner adds their own free [Groq](https://console.groq.com) key in Account → AI & voice, calls Groq directly from the app. When the Groq daily allowance runs out the learner is asked whether to continue on the phone; nothing switches silently. The key lives in the device's secure storage and is never synced. The full reasoning and quotas are in [docs/zero-cost-architecture.md](docs/zero-cost-architecture.md).
+
+## Developer gateway (optional, not part of the released app)
+
+`ai-server/` is a FastAPI gateway kept for development and experiments (for example trying Ollama models on a Mac). Debug builds, and anyone who types an address in Account → AI & voice, can use it; released builds ignore it.
 
 ```bash
 ollama pull qwen2.5:0.5b-instruct
@@ -60,7 +64,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-Check `http://127.0.0.1:8000/health`. To use the gateway from a real phone, start it with `./run.sh` instead and enter the address it prints in Account → AI & voice → AI server.
+Check `http://127.0.0.1:8000/health`. To use the gateway from a real phone, start it with `./run.sh` instead and enter the address it prints in Account → AI & voice → Developer AI server.
 
 ### Voices (open-source, optional)
 
@@ -118,6 +122,6 @@ See [SECURITY.md](SECURITY.md) to report a vulnerability.
 
 ## Account and privacy controls
 
-Account preferences are stored with the learner profile. The AI and voice controls are safe account preferences: the gateway continues to own provider credentials, model access, and live routing. The privacy screen describes the current data paths without implying that a preference changes gateway behavior before that support is implemented.
+Account preferences are stored with the learner profile. The AI and voice controls are preferences only: they choose where the tutor answers (this phone, or the learner's own Groq account). The Groq key is never part of the profile; it stays in the device's secure storage. The privacy screen describes the real data paths.
 
 Reset learning progress removes completed lessons, reviews, XP, and streaks while retaining the account and preferences. Delete account asks the user to reauthenticate, removes the current Firestore learning documents, then deletes the Firebase Authentication account.

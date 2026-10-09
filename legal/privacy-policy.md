@@ -6,7 +6,7 @@ This policy explains what personal data Sprichst ("the app", "we") handles when 
 
 - We do not use analytics, advertising, tracking, or session-replay tools. Nobody records your screen or follows you around the web.
 - Your learning progress is stored in your account so it follows you between devices. Nothing else about you is collected on purpose.
-- The AI tutor can run on your own phone. If you use the AI server (always the case in a web browser), your messages go to it and, from there, to an AI provider.
+- The AI tutor runs on your own phone. If you choose, you can instead connect your own free Groq account with your own key: your messages then go straight from your device to Groq. Sprichst runs no AI server and never sees those messages. (In a web browser the models cannot run, so the web version needs your Groq key to use the tutor.)
 - Your voice is never stored by us. Recordings are turned into text and thrown away.
 - You can export or erase everything from inside the app.
 
@@ -30,11 +30,13 @@ Account sign-in. When you press "Continue with Google", Google tells us your acc
 
 Your learning profile. This is what the app needs to teach you: your name or nickname, your level and goal, lessons completed, answers and accuracy per skill, mistakes to review, flashcard schedules, game scores, badges, daily quests, your streak, and your settings (appearance, voice, reminders, AI preferences). It is stored in Cloud Firestore under your account and cached on your device. Legal basis: performing our contract with you (Art. 6(1)(b)).
 
-Messages to the AI tutor. When you write or speak to the coach, we send your message, the last few messages of the current conversation (up to eight, kept only in memory and forgotten when you leave the coach screen) and a short summary of your learning state (your level, current lesson, weak skills, a few words you know and recent mistakes) so the answer fits you. This summary never contains your name or email. Legal basis: performing our contract with you (Art. 6(1)(b)); you choose whether to use the tutor.
+Messages to the AI tutor. When you write or speak to the coach, the app gives the tutor your message, the last few messages of the current conversation (up to eight, kept only in memory and forgotten when you leave the coach screen) and a short summary of your learning state (your level, current lesson, weak skills, a few words you know and recent mistakes) so the answer fits you. On your phone this stays on your phone; with your own Groq key your device sends it to Groq (we do not receive it). This summary never contains your name or email. Legal basis: performing our contract with you (Art. 6(1)(b)); you choose whether to use the tutor.
 
-Your voice. If you use voice features, the microphone is used only while you record or while voice mode is on. The audio is turned into text, on your device or on the AI server, and then discarded. Recordings are not kept or used to train anything. Legal basis: performing our contract with you; the device asks for your permission first.
+Your voice. If you use voice features, the microphone is used only while you record or while voice mode is on. The audio is turned into text on your device or, if you use your own Groq key, by Groq's speech recognition, and then discarded by us (we never receive it). Recordings are not kept or used to train anything. Legal basis: performing our contract with you; the device asks for your permission first.
 
-Technical data on the AI server. When the app talks to the AI server, the server's operator sees your IP address and the time and type of each request, which is normal for any internet service. Request logs are kept for [[LOG_RETENTION_DAYS]] days for security and to stop abuse. If sign-in checking is switched on, the server also sees a verified account identifier. Legal basis: our legitimate interest in keeping the service secure and preventing abuse (Art. 6(1)(f)).
+Technical data when you use Groq. We receive nothing: with your own key the request goes from your device to Groq, which sees your IP address and your request under your own agreement with Groq. We keep no server logs of it because there is no Sprichst server in the path.
+
+Your Groq key. If you add one, it is stored only in your device's secure storage (Keychain or Android Keystore; in a web browser, in the browser's protected storage). It is never sent to us, synced to your account, written to a log, or included in your learning profile. Remove it any time in Account → AI & voice, and revoke it at console.groq.com.
 
 Downloads you ask for. If you download on-device AI models, your device connects to Hugging Face or GitHub, which can see your IP address and the file requested. This happens only when you tap download.
 
@@ -50,15 +52,13 @@ Google's servers are contacted only when you act: pressing "Continue with Google
 
 ## 4. Cookies and similar storage
 
-We use no advertising or analytics cookies. We store only what the app needs to work: your sign-in session and a copy of your progress and settings on your device, and the AI server address you set. This is "strictly necessary" storage, so no consent banner is needed. The details are in the Cookies and Storage notice.
+We use no advertising or analytics cookies. We store only what the app needs to work: your sign-in session and a copy of your progress and settings on your device, and, if you add one, your Groq key in secure storage. This is "strictly necessary" storage, so no consent banner is needed. The details are in the Cookies and Storage notice.
 
 ## 5. Who receives your data
 
 Google (Firebase Authentication and Cloud Firestore). Google Ireland Limited provides these services in the EEA and UK, and Google LLC in the United States, acting as our processor for your account and learning profile. The data is stored in the location [[FIRESTORE_REGION]]. Google's own privacy information applies to the Google account you sign in with.
 
-The AI server host. Our AI server runs at [[AI_SERVER_HOST_AND_COUNTRY]]. It receives the messages and summary described above only when you use it. It is operated by [[CONTROLLER_NAME]].
-
-AI model provider. When the AI server is set to use Groq's hosted models, your message, recent conversation and learning summary are passed to Groq, Inc. (United States) to generate the reply. Groq acts as our processor and must not use the data for its own purposes. [[CONFIRM_GROQ_DATA_RETENTION_AND_TRANSFER_TERMS]] If you choose "This phone only" in Account → AI & voice, nothing is sent to the server or to Groq. In the default "Automatic" setting, the server is used only for anything not yet downloaded to your phone. In a web browser the models cannot run, so the web version always uses the AI server.
+Groq (only if you add your own key). Groq, Inc. (United States) provides the model and speech recognition. You have your own account and agreement with Groq; Groq is not our processor and we do not receive, and cannot see, what you send. Your message, the last few messages of the conversation and the short learning summary go to Groq only when you choose "Groq (my own key)", or in "Automatic" when a model is not yet downloaded and you have added a key. Read Groq's own privacy policy and data terms for what it keeps. If you choose "This phone only", nothing is sent to Groq. Sprichst asks before it moves a message to a different place: when your Groq allowance runs out you are told and decide whether to answer on your phone.
 
 Hugging Face and GitHub. Receive your IP address when you download on-device models (see section 2).
 
@@ -68,15 +68,13 @@ We do not use other analytics, advertising or tracking recipients.
 
 ## 6. Transfers outside your country
 
-Google and Groq process data in the United States and other countries. Where the GDPR or UK GDPR applies, we rely on an adequacy decision (such as the EU-US Data Privacy Framework for certified recipients) or on the European Commission's Standard Contractual Clauses, together with the UK addendum where needed, and on additional safeguards. You can ask us for a copy of the safeguards at [[PRIVACY_EMAIL]].
+Google processes data in the United States and other countries, and so does Groq if you use your own Groq key (that transfer is made by you, under your agreement with Groq). Where the GDPR or UK GDPR applies, we rely on an adequacy decision (such as the EU-US Data Privacy Framework for certified recipients) or on the European Commission's Standard Contractual Clauses, together with the UK addendum where needed, and on additional safeguards. You can ask us for a copy of the safeguards at [[PRIVACY_EMAIL]].
 
 ## 7. How long we keep data
 
 Account and learning profile: until you erase them or delete your account. Erasing removes the documents from our database straight away; backups made by Google expire on Google's normal schedule.
 
-Voice recordings: never stored. Message text on the AI server: not stored by us after the reply is sent. The AI provider's own retention is described in section 5.
-
-Server logs: [[LOG_RETENTION_DAYS]] days.
+Voice recordings: never stored by us. Message text: we never receive it when you use your own Groq key or your phone; Groq's retention is set by Groq (section 5).
 
 Copyright and legal-claim records: as long as needed for the claim, then deleted.
 
@@ -98,7 +96,7 @@ Sprichst is for people aged 16 and over, or the age of digital consent in your c
 
 ## 10. Security
 
-We protect your data with measures suited to the risk: encrypted connections, per-account access rules in the database (no one else's account can read yours), strict validation of what is sent to our servers, rate limits, optional sign-in checks on the AI server, no secret keys inside the app, and no raw database queries. See the Security summary. No system is perfectly secure; if a breach affects you, we will tell you and the authorities as the law requires.
+We protect your data with measures suited to the risk: encrypted connections, per-account access rules in the database (no one else's account can read yours), strict validation of what is stored and sent, your Groq key kept in secure storage on your device only, no secret keys of ours inside the app, and no raw database queries. See the Security summary. No system is perfectly secure; if a breach affects you, we will tell you and the authorities as the law requires.
 
 ## 11. Regional information
 

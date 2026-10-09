@@ -13,6 +13,7 @@ class FirestoreLearningRepository implements LearningRepository {
     FirebaseAuth? firebaseAuth,
     LocalLearningRepository? localRepository,
     ProfileCache Function(String uid)? cacheFor,
+    this.syncDelay = const Duration(seconds: 8),
   })  : _cacheFor = cacheFor ?? SharedPrefsProfileCache.new,
         _firestore = firestore ?? FirebaseFirestore.instance,
         _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
@@ -22,6 +23,10 @@ class FirestoreLearningRepository implements LearningRepository {
   final FirebaseAuth _firebaseAuth;
   final LocalLearningRepository _localRepository;
   final ProfileCache Function(String uid) _cacheFor;
+
+  /// How long profile changes are gathered before one write to Firestore.
+  final Duration syncDelay;
+  final _stores = <String, SyncedProfileStore>{};
   DocumentReference<Map<String, dynamic>> get _profileDocument {
     final user = _firebaseAuth.currentUser;
 
@@ -43,12 +48,23 @@ class FirestoreLearningRepository implements LearningRepository {
     if (user == null) {
       throw StateError('User must be signed in to access learning data.');
     }
-    return SyncedProfileStore(
-      cache: _cacheFor(user.uid),
-      loadRemote: _loadRemote,
-      saveRemote: _saveRemote,
-      isUnreachable: _isUnreachable,
+    return _stores.putIfAbsent(
+      user.uid,
+      () => SyncedProfileStore(
+        cache: _cacheFor(user.uid),
+        loadRemote: _loadRemote,
+        saveRemote: _saveRemote,
+        isUnreachable: _isUnreachable,
+        delay: syncDelay,
+      ),
     );
+  }
+
+  @override
+  Future<void> flush() async {
+    for (final store in _stores.values) {
+      await store.flush();
+    }
   }
 
   /// Offline, or the service did not answer in time.
@@ -105,7 +121,7 @@ class FirestoreLearningRepository implements LearningRepository {
     }
 
     await _firestore.collection('users').doc(user.uid).delete();
-    await _cacheFor(user.uid).clear();
+    await (_stores.remove(user.uid)?.clear() ?? _cacheFor(user.uid).clear());
   }
 
   @override

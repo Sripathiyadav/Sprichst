@@ -1,6 +1,6 @@
 # Privacy audit (8 October 2026)
 
-Scope: the Flutter app (web, iOS, Android, desktop), the web host configuration, and the AI server.
+Scope: the Flutter app (web, iOS, Android, desktop) and the web host configuration. The AI path has no Sprichst server: the app calls the learner's own Groq account directly (updated 9 October 2026).
 
 ## 1. Google Fonts and other Google-hosted assets
 
@@ -41,6 +41,4 @@ No cookies are set by us. Firebase Authentication keeps its session in IndexedDB
 ## 5. Open items for the operator
 
 - Choose the Firestore location (EU for EU users) and record it in the Privacy Policy.
-- Confirm the AI provider's retention and no-training terms.
-- Set `AUTH_REQUIRED=1` and `FIREBASE_PROJECT_ID` on a public AI server.
-- Configure log retention on the host.
+- Groq is contacted only from the learner's device with the learner's own key, only after they add one and choose to use it (or Automatic with a model missing). `api.groq.com` is the one AI host in the web CSP and in `test/privacy_audit_test.dart`.

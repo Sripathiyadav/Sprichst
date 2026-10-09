@@ -26,10 +26,32 @@ class SprichstApp extends ConsumerStatefulWidget {
   ConsumerState<SprichstApp> createState() => _SprichstAppState();
 }
 
-class _SprichstAppState extends ConsumerState<SprichstApp> {
+class _SprichstAppState extends ConsumerState<SprichstApp>
+    with WidgetsBindingObserver {
   final _navigatorKey = GlobalKey<NavigatorState>();
   var _selectedIndex = 0;
   String? _initializedForUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Progress is written to the cloud a few seconds after the last change (to
+  /// stay within the free quota); leaving the app sends it straight away.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      ref.read(appControllerProvider).flushPendingChanges();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -49,7 +49,7 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | device_info_plus | 13.3.0 | BSD-3-Clause | app |
 | device_info_plus_platform_interface | 8.1.0 | BSD-3-Clause | dependency |
 | dinja | 1.0.0 | MIT | dependency |
-| fake_async | 1.3.3 | Apache-2.0 | dependency |
+| fake_async | 1.3.3 | Apache-2.0 | tests and tools |
 | ffi | 2.2.0 | BSD-3-Clause | dependency |
 | ffi_leak_tracker | 0.1.2 | BSD-3-Clause | dependency |
 | file | 7.0.1 | BSD-3-Clause | dependency |
@@ -63,6 +63,12 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | flutter | 0.0.0 | BSD-3-Clause (Flutter SDK) | app |
 | flutter_lints | 4.0.0 | BSD-3-Clause | tests and tools |
 | flutter_riverpod | 2.6.1 | MIT | app |
+| flutter_secure_storage | 11.2.0 | BSD-3-Clause | app |
+| flutter_secure_storage_darwin | 0.4.3 | BSD-3-Clause | dependency |
+| flutter_secure_storage_linux | 3.0.3 | BSD-3-Clause | dependency |
+| flutter_secure_storage_platform_interface | 2.1.1 | BSD-3-Clause | dependency |
+| flutter_secure_storage_web | 2.1.1 | BSD-3-Clause | dependency |
+| flutter_secure_storage_windows | 4.2.2 | BSD-3-Clause | dependency |
 | flutter_test | 0.0.0 | BSD-3-Clause (Flutter SDK) | tests and tools |
 | flutter_web_plugins | 0.0.0 | BSD-3-Clause (Flutter SDK) | dependency |
 | go_router | 15.1.3 | BSD-3-Clause | app |
@@ -150,7 +156,7 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | xdg_directories | 1.1.0 | BSD-3-Clause | dependency |
 | yaml | 3.1.4 | MIT | dependency |
 
-## AI server (Python)
+## Developer AI gateway (Python, not part of the released app)
 
 | Requirement |
 |---|

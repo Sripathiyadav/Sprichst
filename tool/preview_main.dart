@@ -136,6 +136,9 @@ class _PreviewLearning implements LearningRepository {
 
   @override
   Future<void> deleteLearningData() async => _profile = null;
+
+  @override
+  Future<void> flush() async {}
 }
 
 void main() {

@@ -12,12 +12,6 @@ import 'package:sprichst/domain/models/learning_models.dart';
 
 import 'support/on_device_fakes.dart';
 
-class FailingServer extends MockAIRepository {
-  @override
-  Future<TutorReply> chat(String message, TutorContext context) =>
-      throw Exception('SocketException: offline');
-}
-
 const context = TutorContext(level: 'A1');
 
 Future<ModelManager> manager(FakeRuntime runtime) async {
@@ -226,12 +220,6 @@ void main() {
       final (repo, _) = await hybrid(AIProviderPreference.local, {});
       expect(() => repo.chat('Hallo', context),
           throwsA(isA<ModelNotInstalledException>()));
-    });
-
-    test('server-first falls back to the phone when offline', () async {
-      final (repo, _) = await hybrid(AIProviderPreference.groq, {'gemma-3-1b'},
-          server: FailingServer());
-      expect((await repo.chat('Hallo', context)).reply, 'Vom Handy');
     });
   });
 }
