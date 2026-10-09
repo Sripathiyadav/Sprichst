@@ -5,19 +5,23 @@ import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/learning_repository.dart';
 import '../local/local_learning_repository.dart';
 import '../profile_codec.dart';
+import '../profile_sync.dart';
 
 class FirestoreLearningRepository implements LearningRepository {
   FirestoreLearningRepository({
     FirebaseFirestore? firestore,
     FirebaseAuth? firebaseAuth,
     LocalLearningRepository? localRepository,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+    ProfileCache Function(String uid)? cacheFor,
+  })  : _cacheFor = cacheFor ?? SharedPrefsProfileCache.new,
+        _firestore = firestore ?? FirebaseFirestore.instance,
         _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _localRepository = localRepository ?? LocalLearningRepository();
 
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
   final LocalLearningRepository _localRepository;
+  final ProfileCache Function(String uid) _cacheFor;
   DocumentReference<Map<String, dynamic>> get _profileDocument {
     final user = _firebaseAuth.currentUser;
 
@@ -32,8 +36,27 @@ class FirestoreLearningRepository implements LearningRepository {
         .doc('profile');
   }
 
-  @override
-  Future<LearningProfile?> loadProfile() async {
+  /// The profile with an on-device copy behind it (see [SyncedProfileStore]
+  /// for the offline and conflict policy).
+  SyncedProfileStore get _store {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) {
+      throw StateError('User must be signed in to access learning data.');
+    }
+    return SyncedProfileStore(
+      cache: _cacheFor(user.uid),
+      loadRemote: _loadRemote,
+      saveRemote: _saveRemote,
+      isUnreachable: _isUnreachable,
+    );
+  }
+
+  /// Offline, or the service did not answer in time.
+  static bool _isUnreachable(Object error) =>
+      error is FirebaseException &&
+      (error.code == 'unavailable' || error.code == 'deadline-exceeded');
+
+  Future<LearningProfile?> _loadRemote() async {
     final data = (await _profileDocument.get()).data();
     if (data == null) return null;
 
@@ -43,14 +66,19 @@ class FirestoreLearningRepository implements LearningRepository {
     );
   }
 
-  @override
-  Future<void> saveProfile(LearningProfile profile) async {
+  Future<void> _saveRemote(LearningProfile profile) async {
     // A full overwrite, not a merge: Firestore merges nested maps, so a merge
     // would resurrect lesson progress and skill stats removed by a reset.
     await _profileDocument.set(
       ProfileCodec.encode(profile, encodeDate: Timestamp.fromDate),
     );
   }
+
+  @override
+  Future<LearningProfile?> loadProfile() => _store.load();
+
+  @override
+  Future<void> saveProfile(LearningProfile profile) => _store.save(profile);
 
   @override
   Future<void> deleteLearningData() async {
@@ -77,6 +105,7 @@ class FirestoreLearningRepository implements LearningRepository {
     }
 
     await _firestore.collection('users').doc(user.uid).delete();
+    await _cacheFor(user.uid).clear();
   }
 
   @override
