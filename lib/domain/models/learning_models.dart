@@ -635,6 +635,7 @@ class TutorContext {
     this.weakSkills = const [],
     this.knownVocabulary = const [],
     this.recentMistakes = const [],
+    this.conversation = const [],
   });
 
   final String level;
@@ -643,6 +644,31 @@ class TutorContext {
   final List<String> weakSkills;
   final List<String> knownVocabulary;
   final List<String> recentMistakes;
+
+  /// The last few turns of the current coach conversation, oldest first, so
+  /// the tutor can answer what was said and not ask it again. Only chat uses
+  /// it; the name is still never included.
+  final List<ConversationTurn> conversation;
+
+  TutorContext withConversation(List<ConversationTurn> turns) => TutorContext(
+        level: level,
+        unit: unit,
+        lesson: lesson,
+        weakSkills: weakSkills,
+        knownVocabulary: knownVocabulary,
+        recentMistakes: recentMistakes,
+        conversation: turns,
+      );
+}
+
+/// One line of the coach conversation: what the learner said, or what the
+/// tutor said back (its reply and its question).
+class ConversationTurn {
+  const ConversationTurn.learner(this.text) : fromLearner = true;
+  const ConversationTurn.tutor(this.text) : fromLearner = false;
+
+  final bool fromLearner;
+  final String text;
 }
 
 class CoachReply {

@@ -100,6 +100,7 @@ class HttpAIRepository implements AIRepository {
           body: jsonEncode({
             'message': message,
             'context': _encode(context),
+            'conversation': _encodeConversation(context.conversation),
           }),
         )
         .timeout(_slow);
@@ -207,6 +208,22 @@ class HttpAIRepository implements AIRepository {
     } catch (_) {
       return 'The local AI service returned ${response.statusCode}.';
     }
+  }
+
+  /// The recent turns as the server accepts them: cleaned and clipped, empty
+  /// ones dropped, and only the newest few.
+  List<Map<String, String>> _encodeConversation(List<ConversationTurn> turns) {
+    final encoded = [
+      for (final turn in turns)
+        if (sanitizeText(turn.text, maxLength: InputLimits.turn).isNotEmpty)
+          {
+            'role': turn.fromLearner ? 'learner' : 'tutor',
+            'text': sanitizeText(turn.text, maxLength: InputLimits.turn),
+          },
+    ];
+    return encoded.length > InputLimits.turns
+        ? encoded.sublist(encoded.length - InputLimits.turns)
+        : encoded;
   }
 
   /// The learner's context as the server accepts it: every text cleaned and

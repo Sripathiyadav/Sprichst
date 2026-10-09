@@ -20,7 +20,7 @@ On the AI server (optional; always for the web version): the server runs open mo
 
 ## What the model sees
 
-Your message or recording, plus a short learning summary: your CEFR level, current unit and lesson, a few weak skills, some known words and recent mistakes. It does not see your name, email or account. Use "This phone only" in Account → AI & voice if you want nothing to leave your phone.
+Your message or recording, the last few messages of the current conversation (so the tutor does not ask the same thing twice; they are forgotten when you leave the coach screen or reset progress), plus a short learning summary: your CEFR level, current unit and lesson, a few weak skills, some known words and recent mistakes. It does not see your name, email or account. Use "This phone only" in Account → AI & voice if you want nothing to leave your phone.
 
 ## Limits and risks
 

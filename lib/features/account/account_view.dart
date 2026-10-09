@@ -927,7 +927,7 @@ class _PrivacyAndDataPage extends ConsumerWidget {
                 icon: Icons.psychology_outlined,
                 title: 'AI server (optional)',
                 subtitle:
-                    'If you choose "AI server first", or something is not downloaded yet, your message or recording and a compact learning context go to the Sprichst AI server, which may use a cloud provider such as Groq.',
+                    'If you choose "AI server first", or something is not downloaded yet, your message or recording, the last few messages and a compact learning context go to the Sprichst AI server, which may use a cloud provider such as Groq.',
               ),
             ],
           ),

@@ -58,7 +58,7 @@ class OnDeviceAIRepository implements AIRepository {
       _requireTutor(),
       [
         TutorMessage.system(systemPrompt(context)),
-        TutorMessage.user(chatPrompt(message)),
+        TutorMessage.user(chatPrompt(message, context.conversation)),
       ],
       jsonSchema: chatSchema,
     );
@@ -143,12 +143,23 @@ If not: correct=false, corrected = the sentence with only the mistakes fixed, ex
 followUp = one short, simple German question to keep practising.
 Example: "Ich habe ein Hund." → corrected "Ich habe einen Hund.", explanation "Hund is masculine and the object of haben, so it is accusative: ein → einen."''';
 
-String chatPrompt(String message) => '''
-The learner wrote: "$message"
+/// The recent turns as plain text for the prompt, oldest first.
+String conversationBlock(List<ConversationTurn> turns) {
+  if (turns.isEmpty) return '';
+  final lines = [
+    for (final t in turns) '${t.fromLearner ? 'Learner' : 'Tutor'}: ${t.text}',
+  ];
+  return 'Conversation so far (oldest first):\n${lines.join('\n')}\n\n';
+}
+
+String chatPrompt(String message,
+        [List<ConversationTurn> conversation = const []]) =>
+    '''
+${conversationBlock(conversation)}The learner now wrote: "$message"
 corrected = the learner's sentence with only real mistakes fixed (exactly the same sentence if it has none).
 explanation = if you changed something, one short English sentence saying what and why; otherwise "".
-reply = a short, friendly answer in simple German that continues the conversation.
-followUp = exactly one simple German question.
+reply = one or two short, friendly sentences in simple German that react to what the learner just said, using their details (their name, what they told you). The reply must not contain a question.
+followUp = exactly one simple German question that builds on what the learner just said, or moves to a new everyday topic. Never ask something already asked or already answered above, and never ask their name again once they have given it or you have asked it. Do not just repeat the earlier question in other words.
 Example: "Ich gehen morgen zur Arbeit." → corrected "Ich gehe morgen zur Arbeit.", explanation "With 'ich', gehen becomes gehe."''';
 
 const correctionSchema = <String, dynamic>{

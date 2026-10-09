@@ -18,6 +18,10 @@ abstract final class InputLimits {
   /// A unit or lesson title, a mistake summary (gateway: `Medium`).
   static const medium = 120;
 
+  /// Recent conversation turns sent with a chat message (gateway: `Turn`).
+  static const turns = 8;
+  static const turn = 500;
+
   static const weakSkills = 8;
   static const vocabulary = 30;
   static const mistakes = 10;
