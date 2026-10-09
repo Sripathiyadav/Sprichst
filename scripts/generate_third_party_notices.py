@@ -127,7 +127,7 @@ def render() -> tuple[str, int]:
         licence = detect(name, version, source)
         unknown += licence.startswith("UNKNOWN")
         lines.append(f"| {name} | {version} | {licence} | {kinds.get(kind, kind)} |")
-    lines += ["", "## AI server (Python)", "", "| Requirement |", "|---|"]
+    lines += ["", "## Developer AI gateway (Python, not part of the released app)", "", "| Requirement |", "|---|"]
     lines += [f"| {r} |" for r in python_requirements()]
     lines += ["", "Python packages are installed by the server operator from PyPI under their own licences "
               "(FastAPI MIT, Uvicorn BSD-3-Clause, python-dotenv BSD-3-Clause, python-multipart Apache-2.0, "

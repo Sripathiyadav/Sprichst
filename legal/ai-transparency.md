@@ -16,23 +16,23 @@ Correcting your German, explaining grammar and vocabulary, practising conversati
 
 On your phone (the default, once downloaded): Qwen2.5 and Gemma 3 language models, Whisper speech recognition, and Piper German voices. They run locally. Nothing leaves your device.
 
-On the AI server (optional; always for the web version): the server runs open models and, if configured, sends requests to a hosted model provider (currently Groq) to produce the answer. Speech can be recognised with Whisper on the server and spoken with Piper or system voices. See the Privacy Policy for what is sent and to whom.
+On Groq (optional, with your own key): your device sends the request straight to Groq, which runs Llama models for the answer and Whisper for speech recognition. Sprichst runs no AI server and does not see the request. Groq has no German voice, so spoken replies always come from the voices on your phone. In a web browser the models cannot run, so the web version needs your Groq key.
 
 ## What the model sees
 
-Your message or recording, the last few messages of the current conversation (so the tutor does not ask the same thing twice; they are forgotten when you leave the coach screen or reset progress), plus a short learning summary: your CEFR level, current unit and lesson, a few weak skills, some known words and recent mistakes. It does not see your name, email or account. Use "This phone only" in Account → AI & voice if you want nothing to leave your phone.
+Your message or recording, the last few messages of the current conversation (so the tutor does not ask the same thing twice; they are forgotten when you leave the coach screen or reset progress), plus a short learning summary: your CEFR level, current unit and lesson, a few weak skills, some known words and recent mistakes. It does not see your name, email or account. Use "This phone only" in Account → AI & voice if you want nothing to leave your phone. When your Groq allowance runs out, the app tells you and asks before it answers on your phone instead; it never switches without asking.
 
 ## Limits and risks
 
 - It may produce wrong, biased, or inappropriate output. Answers can look convincing and still be incorrect.
-- Small on-device models are weaker than the server's models.
+- Small on-device models are weaker than Groq's larger models.
 - It may misunderstand an accent, background noise, or a dialect.
 - Do not enter secrets, health data, or other people's private information. You do not need to give any for learning.
 - We filter and size-limit what is sent, but we cannot guarantee that the model's output is safe in every case.
 
 ## Training
 
-We do not train or fine-tune any model on your messages, recordings or learning data. The AI provider is contractually prohibited from using the data it processes for us to train its own models. [[CONFIRM_PROVIDER_NO_TRAINING_SETTING]]
+We do not train or fine-tune any model on your messages, recordings or learning data. With your own Groq key, how Groq treats what you send is governed by your agreement with Groq; check its data and training settings in your Groq account.
 
 ## Human oversight and reporting problems
 

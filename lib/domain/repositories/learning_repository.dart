@@ -5,6 +5,10 @@ abstract class LearningRepository {
   Future<LearningProfile?> loadProfile();
   Future<void> saveProfile(LearningProfile profile);
   Future<void> deleteLearningData();
+
+  /// Sends any change that is still waiting to the cloud. Called when the app
+  /// goes to the background or the learner signs out.
+  Future<void> flush();
   Future<List<Lesson>> loadLessons();
   Future<List<Dialogue>> loadDialogues();
 }

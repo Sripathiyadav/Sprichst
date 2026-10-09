@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../domain/models/learning_models.dart';
+import '../../../domain/repositories/ai_exceptions.dart';
 import 'speech_endpointer.dart';
 
 /// What the microphone side of a voice conversation needs.
@@ -247,7 +248,8 @@ class VoiceSession extends ChangeNotifier {
     } catch (error) {
       if (!_isCurrent(token)) return;
       _failed(
-          'I could not reach the AI server to understand you. Check Account → AI & voice → AI server.',
+          _explain(error) ??
+              'I could not understand you. Check your connection, or switch to "This phone only" in Account → AI & voice.',
           error);
       return;
     }
@@ -267,7 +269,8 @@ class VoiceSession extends ChangeNotifier {
     } catch (error) {
       if (!_isCurrent(token)) return;
       _failed(
-          'The tutor could not answer. Check your connection and Account → AI & voice → AI server.',
+          _explain(error) ??
+              'The tutor could not answer. Check your connection, or switch to "This phone only" in Account → AI & voice.',
           error);
       return;
     }
@@ -375,6 +378,14 @@ class VoiceSession extends ChangeNotifier {
   }
 
   // -------------------------------------------------------------------- helpers
+
+  /// The cloud or model problems that already come with a clear explanation
+  /// of what the learner can do.
+  static String? _explain(Object error) =>
+      error is ProviderUnavailableException ||
+              error is VoiceUnavailableException
+          ? error.toString()
+          : null;
 
   void _failed(String message, Object error) {
     debugPrint('Voice turn failed: $error');

@@ -156,6 +156,7 @@ void main() {
     const allowedHosts = {
       'huggingface.co', // on-device model downloads the learner asks for
       'github.com', // on-device speech model downloads the learner asks for
+      'api.groq.com', // the learner's own Groq account, with their own key
       '127.0.0.1', 'localhost', '10.0.2.2', '192.168.1.20', // development
       'developer.android.com', // comments
     };

@@ -13,7 +13,7 @@ You can use most of these rights directly in the app. For the rest, write to [[P
 | Start over | Account → Danger zone → Reset learning progress |
 | Erase your data and account | Account → Danger zone → Delete account |
 | Stop data leaving your phone | Account → AI & voice → This phone only |
-| Withdraw AI-server use | Same setting, or clear the AI server address |
+| Stop using Groq | Same setting, or Account → AI & voice → Groq → Remove (then revoke the key at console.groq.com) |
 
 ## Rights under the GDPR and UK GDPR
 

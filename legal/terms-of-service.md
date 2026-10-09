@@ -25,7 +25,7 @@ You sign in with a Google account. You are responsible for keeping that account 
 You agree not to:
 
 - break the law or others' rights with the app;
-- attack, overload, probe, scrape or reverse-engineer our services or AI server beyond what the law allows, or get around rate limits or sign-in checks;
+- attack, overload, probe, scrape or reverse-engineer our services beyond what the law allows, or get around rate limits or sign-in checks;
 - send content that is illegal, or that harasses or exploits others, or that tries to make the AI produce harmful content;
 - upload malware or send automated requests that are not part of normal use of the app;
 - use the app's AI output to train another AI model without our written permission;
@@ -44,6 +44,8 @@ If you believe something in the app infringes your copyright, follow the process
 ## 7. AI features
 
 The AI tutor generates answers with a language model. It can be wrong, outdated, or unsuitable. Use it as a study aid, not as an authority, and read the AI Transparency notice. You are responsible for how you use its output.
+
+If you add your own Groq API key, the key and the Groq account are yours: use them under Groq's terms, keep the key secret, and do not use a key that is not yours. Sprichst never receives your key or what you send to Groq, and has no control over Groq's limits, prices or availability. Any usage or charges on that account are between you and Groq. If you remove the key or choose "This phone only", nothing is sent to Groq.
 
 ## 8. Exam practice and brand names
 
