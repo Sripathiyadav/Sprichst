@@ -105,7 +105,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _send(),
                       decoration: const InputDecoration(
-                        hintText: 'Write something in German...',
+                        hintText: 'Write in German…',
                       ),
                     ),
                   ),
@@ -506,28 +506,43 @@ class _OfflineSetupBanner extends ConsumerWidget {
       child: SoftCard(
         color: context.softSurface,
         padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(children: [
-          const Icon(Icons.offline_bolt_outlined),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: downloading != null
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Downloading ${tutor.label}…'),
-                      const SizedBox(height: AppSpacing.xs),
-                      LinearProgressIndicator(value: downloading),
-                    ],
-                  )
-                : Text(
-                    'Use the coach without internet: download ${tutor.label} (${formatBytes(tutor.downloadBytes)}), recommended for this phone.'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                builder: (_) => const OnDeviceAIPage())),
-            child: const Text('Set up'),
-          ),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 2),
+                  child: Icon(Icons.offline_bolt_outlined),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: downloading != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Downloading ${tutor.label}…'),
+                            const SizedBox(height: AppSpacing.xs),
+                            LinearProgressIndicator(value: downloading),
+                          ],
+                        )
+                      : Text(
+                          'Use the coach without internet: download ${tutor.label} (${formatBytes(tutor.downloadBytes)}), recommended for this phone.'),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                        builder: (_) => const OnDeviceAIPage())),
+                child: const Text('Set up'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

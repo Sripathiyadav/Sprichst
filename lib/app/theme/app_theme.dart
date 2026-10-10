@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 
 import 'color_system.dart';
@@ -32,7 +33,13 @@ abstract final class SprichstTheme {
     final scheme = palette.scheme(brightness);
     final isDark = brightness == Brightness.dark;
     final background = palette.background(brightness);
-    final text = _textTheme(scheme);
+    // The platform's own type (San Francisco on Apple devices, Roboto
+    // elsewhere) underneath our scale. Material merges this into the app text
+    // theme anyway; doing it here too gives the styles we hand to buttons and
+    // list tiles directly the same font, so every label matches.
+    final typography = Typography.material2021(platform: defaultTargetPlatform);
+    final text = (isDark ? typography.white : typography.black)
+        .merge(_textTheme(scheme));
 
     return ThemeData(
       useMaterial3: true,
