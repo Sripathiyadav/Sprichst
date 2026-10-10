@@ -103,9 +103,8 @@ class _GroqKeySectionState extends ConsumerState<GroqKeySection> {
     return SettingsSection(
       title: 'Groq (your own free account)',
       description:
-          'Optional. Groq gives free accounts a daily allowance, so you get faster and more accurate answers until it runs out; then you choose whether to continue on this phone. '
-          'Sprichst has no server: your messages go from this device straight to Groq under your own account, and the key never leaves this device. '
-          'Anyone who can unlock your phone could use the key, so you can revoke it any time at console.groq.com.',
+          'Optional. A free Groq account has a daily allowance; when it runs out you choose whether to continue on this phone. '
+          'Your messages go from this device straight to Groq, and the key never leaves this device. You can revoke it any time at console.groq.com.',
       children: [
         Padding(
           padding: const EdgeInsets.all(AppSpacing.md),

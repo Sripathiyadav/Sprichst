@@ -7,7 +7,7 @@ import 'glass.dart';
 
 export 'glass.dart';
 
-class PageFrame extends StatelessWidget {
+class PageFrame extends StatefulWidget {
   const PageFrame(
       {super.key,
       required this.title,
@@ -27,72 +27,149 @@ class PageFrame extends StatelessWidget {
   /// kept clear of the bar, so it sets this to false.
   final bool scrollsUnderNav;
 
-  @override
-  Widget build(BuildContext context) => SafeArea(
-        bottom: !scrollsUnderNav,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final compact = constraints.maxWidth < Breakpoints.narrowContent;
-            // Enlarged text or a short window leaves little room: the subtitle is
-            // supporting text, so it yields before the content does.
-            final scale = MediaQuery.textScalerOf(context).scale(1);
-            // The avatar sits beside the title unless the row would be cramped.
-            final stackTrailing =
-                constraints.maxWidth < Breakpoints.stackTrailing ||
-                    scale >= 1.5;
-            final showSubtitle = subtitle != null &&
-                constraints.maxHeight / scale >= Breakpoints.subtitleMinHeight;
-            final horizontal = compact ? AppSpacing.md : AppSpacing.lg;
-            final heading = Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.displaySmall),
-                if (showSubtitle) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(subtitle!, style: Theme.of(context).textTheme.bodyLarge),
-                ],
-              ],
-            );
+  /// How far the page must scroll before the heading folds up, and how close to
+  /// the top it must come back before the heading opens again. The gap stops
+  /// the heading flickering when a scroll hovers near the threshold.
+  static const collapseAfter = 24.0;
+  static const expandBefore = 4.0;
 
-            return Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints:
-                    const BoxConstraints(maxWidth: Breakpoints.contentMaxWidth),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    horizontal,
-                    compact ? AppSpacing.lg : 26,
-                    horizontal,
-                    scrollsUnderNav ? 0 : AppSpacing.lg,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (trailing == null)
-                        heading
-                      else if (stackTrailing) ...[
-                        heading,
-                        const SizedBox(height: AppSpacing.sm),
-                        Align(
-                            alignment: Alignment.centerRight, child: trailing!),
-                      ] else
-                        Row(
-                          children: [
-                            Expanded(child: heading),
-                            trailing!,
-                          ],
-                        ),
-                      const SizedBox(height: AppSpacing.xl),
-                      Expanded(child: child),
-                    ],
-                  ),
+  /// A list must have this much to scroll before the heading folds, because
+  /// folding gives the list room: a list that only just overflows would stop
+  /// overflowing, snap back, and fold again on every nudge.
+  static const minScrollForCollapse = 200.0;
+
+  @override
+  State<PageFrame> createState() => _PageFrameState();
+}
+
+class _PageFrameState extends State<PageFrame> {
+  var _collapsed = false;
+
+  /// Large title that folds into a compact one once the list scrolls (the
+  /// Apple large-title pattern): the heading stays, the subtitle gets out of
+  /// the way, and the content gets the room.
+  bool _onScroll(ScrollNotification note) {
+    if (note.depth != 0 || note.metrics.axis != Axis.vertical) return false;
+    final pixels = note.metrics.pixels;
+    final next = _collapsed
+        ? pixels > PageFrame.expandBefore
+        : pixels > PageFrame.collapseAfter &&
+            note.metrics.maxScrollExtent > PageFrame.minScrollForCollapse;
+    if (next != _collapsed) {
+      // Notifications can arrive while the tree is building.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _collapsed = next);
+      });
+    }
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final still = MediaQuery.disableAnimationsOf(context);
+    final duration = still ? Duration.zero : const Duration(milliseconds: 220);
+
+    return SafeArea(
+      bottom: !widget.scrollsUnderNav,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < Breakpoints.narrowContent;
+          // Enlarged text or a short window leaves little room: the subtitle is
+          // supporting text, so it yields before the content does.
+          final scale = MediaQuery.textScalerOf(context).scale(1);
+          // The avatar sits beside the title unless the row would be cramped.
+          final stackTrailing =
+              constraints.maxWidth < Breakpoints.stackTrailing || scale >= 1.5;
+          final showSubtitle = widget.subtitle != null &&
+              constraints.maxHeight / scale >= Breakpoints.subtitleMinHeight;
+          final horizontal = compact ? AppSpacing.md : AppSpacing.lg;
+          final subtitle = widget.subtitle == null
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.xs),
+                  child:
+                      Text(widget.subtitle!, style: theme.textTheme.bodyLarge),
+                );
+          final heading = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AnimatedDefaultTextStyle(
+                duration: duration,
+                curve: Curves.easeOutCubic,
+                style: (_collapsed
+                        ? theme.textTheme.headlineSmall
+                        : theme.textTheme.displaySmall) ??
+                    const TextStyle(),
+                child: Semantics(header: true, child: Text(widget.title)),
+              ),
+              if (showSubtitle)
+                // With reduced motion the subtitle just goes; an AnimatedSize
+                // with no duration would re-layout itself mid-layout.
+                still
+                    ? (_collapsed ? const SizedBox.shrink() : subtitle)
+                    : AnimatedSize(
+                        duration: duration,
+                        curve: Curves.easeOutCubic,
+                        alignment: Alignment.topLeft,
+                        child: _collapsed
+                            ? const SizedBox(width: double.infinity)
+                            : subtitle,
+                      ),
+            ],
+          );
+          final gap = AnimatedContainer(
+            duration: duration,
+            curve: Curves.easeOutCubic,
+            height: _collapsed ? AppSpacing.md : AppSpacing.xl,
+          );
+
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints:
+                  const BoxConstraints(maxWidth: Breakpoints.contentMaxWidth),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontal,
+                  compact ? AppSpacing.lg : 26,
+                  horizontal,
+                  widget.scrollsUnderNav ? 0 : AppSpacing.lg,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.trailing == null)
+                      heading
+                    else if (stackTrailing) ...[
+                      heading,
+                      const SizedBox(height: AppSpacing.sm),
+                      Align(
+                          alignment: Alignment.centerRight,
+                          child: widget.trailing!),
+                    ] else
+                      Row(
+                        children: [
+                          Expanded(child: heading),
+                          widget.trailing!,
+                        ],
+                      ),
+                    gap,
+                    Expanded(
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: _onScroll,
+                        child: widget.child,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
-      );
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 /// Bottom padding for a page's main scrollable: a comfortable gap plus whatever
@@ -287,7 +364,9 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlassPage(
-        appBar: AppBar(title: Text(title)),
+        // No title in the bar: the page heading below says it, and folds up
+        // to a compact title as the list scrolls.
+        appBar: AppBar(),
         body: PageFrame(
           title: title,
           subtitle: subtitle,
