@@ -35,7 +35,7 @@ class _GamePageState extends ConsumerState<GamePage> {
   Widget build(BuildContext context) {
     final outcome = _outcome;
     return GlassPage(
-      appBar: AppBar(title: Text(widget.game.title)),
+      appBar: MastheadBar(eyebrow: widget.game.title),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(

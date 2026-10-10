@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/theme/app_theme.dart';
+import '../../app/app_controller.dart';
 import '../../domain/learning/adaptive_planner.dart';
+import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../learn/lesson_view.dart';
 import '../practice/practice_session_view.dart';
 
-/// The one thing the learner should do next, and why. The strongest colour on
-/// the screen (black in light mode, gold in dark mode) goes here on purpose:
-/// one clear primary action per screen.
+/// The one thing the learner should do next, and why: the screen's single
+/// feature panel. The action is a labelled coral arrow.
 class PlanCard extends ConsumerWidget {
   const PlanCard({super.key, required this.plan});
 
@@ -17,49 +17,32 @@ class PlanCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: scheme.primary,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FlagStripe(outline: scheme.onPrimary),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Your plan for today',
-            style: theme.textTheme.labelLarge
-                ?.copyWith(color: scheme.onPrimary.withValues(alpha: .85)),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(plan.title,
-              style: theme.textTheme.headlineSmall
-                  ?.copyWith(color: scheme.onPrimary)),
-          const SizedBox(height: AppSpacing.xs),
-          Text(plan.reason,
-              style:
-                  theme.textTheme.bodyLarge?.copyWith(color: scheme.onPrimary)),
-          const SizedBox(height: AppSpacing.lg),
-          FilledButton.icon(
-            style: FilledButton.styleFrom(
-              backgroundColor: scheme.onPrimary,
-              foregroundColor: scheme.primary,
-            ),
-            onPressed: () => startPlan(context, ref, plan),
-            icon: const Icon(Icons.play_arrow_rounded),
-            label: Text(switch (plan.kind) {
-              PlanKind.lesson => 'Open lesson',
-              PlanKind.review => 'Start review',
-              PlanKind.practice => 'Start practice',
-            }),
-          ),
-        ],
-      ),
+    final app = ref.watch(appControllerProvider);
+    final lesson = plan.lesson;
+    final eyebrow = switch (plan.kind) {
+      PlanKind.lesson when lesson != null =>
+        'Lesson ${_number(app, lesson.id)} · ${lesson.level.label} · ${lesson.unit}',
+      PlanKind.review => 'Review',
+      _ => 'Practice',
+    };
+    return FeaturePanel(
+      eyebrow: eyebrow,
+      title: plan.title,
+      meta: lesson == null ? null : '${lesson.durationMinutes} min',
+      actionLabel: switch (plan.kind) {
+        PlanKind.lesson => 'Open lesson',
+        PlanKind.review => 'Start review',
+        PlanKind.practice => 'Start practice',
+      },
+      onAction: () => startPlan(context, ref, plan),
+      children: [Text(plan.reason)],
     );
+  }
+
+  /// "08": the lesson's place in the course.
+  static String _number(AppController app, String lessonId) {
+    final index = app.curriculum.lessons.indexWhere((l) => l.id == lessonId);
+    return (index < 0 ? 1 : index + 1).toString().padLeft(2, '0');
   }
 }
 

@@ -89,6 +89,9 @@ flutter:
 
   assets:
     - curriculum/course.json
+    # The orbit mark, for About and the opening screen.
+    - assets/brand/sprichst-orbit-light.png
+    - assets/brand/sprichst-orbit-dark.png
     # Only the user-facing documents; legal/README.md and legal/internal stay out.
     - legal/privacy-policy.md
     - legal/terms-of-service.md
@@ -106,6 +109,20 @@ flutter:
   # Roboto from fonts.gstatic.com, which tells Google that this visitor opened
   # the app. See assets/fonts/README.md.
   fonts:
+    # Figtree (SIL OFL), the one family of the design system, bundled so the
+    # app never asks Google for it. Roboto stays as the fallback.
+    - family: Figtree
+      fonts:
+        - asset: assets/fonts/figtree/Figtree-Light.ttf
+          weight: 300
+        - asset: assets/fonts/figtree/Figtree-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/figtree/Figtree-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/figtree/Figtree-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/figtree/Figtree-Bold.ttf
+          weight: 700
     - family: Roboto
       fonts:
         - asset: assets/fonts/roboto/Roboto-Light.ttf

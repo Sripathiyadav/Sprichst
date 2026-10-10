@@ -38,17 +38,17 @@ void main() {
         'large at the top, compact once scrolled, large again at the top',
         (tester) async {
       await tester.pumpWidget(_page(items: 30));
-      expect(_titleSize(tester), 34);
+      expect(_titleSize(tester), 40);
       expect(find.text('A line that explains the page.'), findsOneWidget);
 
       await tester.drag(find.byType(ListView), const Offset(0, -300));
       await tester.pumpAndSettle();
-      expect(_titleSize(tester), 22);
+      expect(_titleSize(tester), 28);
       expect(find.text('A line that explains the page.'), findsNothing);
 
       await tester.drag(find.byType(ListView), const Offset(0, 600));
       await tester.pumpAndSettle();
-      expect(_titleSize(tester), 34);
+      expect(_titleSize(tester), 40);
       expect(find.text('A line that explains the page.'), findsOneWidget);
     });
 
@@ -69,7 +69,7 @@ void main() {
         found = true;
         await tester.drag(find.byType(ListView), Offset(0, -extent));
         await tester.pumpAndSettle();
-        expect(_titleSize(tester), 34,
+        expect(_titleSize(tester), 40,
             reason: 'only $extent px to scroll: folding would make it flicker');
       }
       expect(found, isTrue);
@@ -81,7 +81,7 @@ void main() {
       await tester.drag(find.byType(ListView), const Offset(0, -300));
       await tester.pump();
       await tester.pump(); // the post-frame rebuild, no animation frames
-      expect(_titleSize(tester), 22);
+      expect(_titleSize(tester), 28);
     });
 
     testWidgets('the title is announced as a heading', (tester) async {

@@ -4,7 +4,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../domain/learning/exercise_evaluator.dart';
 import '../../../domain/models/learning_models.dart';
 import '../../../shared/haptics.dart';
-import '../../../shared/widgets/pressable.dart';
+import '../../../shared/widgets/app_widgets.dart';
 import 'exam_inputs.dart';
 
 /// Renders the input for an [Exercise] and reports what the learner entered.
@@ -95,15 +95,20 @@ class MultipleChoiceInputState extends State<MultipleChoiceInput> {
     final accepted = widget.exercise.acceptedAnswers;
     return Column(
       children: [
-        for (final option in widget.exercise.options)
+        for (final (index, option) in widget.exercise.options.indexed)
           Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: _OptionTile(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: OptionTile(
               label: option,
-              selected: _selected == option,
-              isAnswer: locked && accepted.contains(option),
-              isWrongPick:
-                  locked && _selected == option && !accepted.contains(option),
+              marker: String.fromCharCode(0x41 + index),
+              locale: const Locale('de'),
+              state: locked && accepted.contains(option)
+                  ? OptionState.correct
+                  : locked && _selected == option
+                      ? OptionState.incorrect
+                      : _selected == option
+                          ? OptionState.selected
+                          : OptionState.idle,
               onTap: locked
                   ? null
                   : () {
@@ -147,12 +152,12 @@ class _TypedInputState extends State<_TypedInput> {
   @override
   Widget build(BuildContext context) {
     final result = widget.result;
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     final color = result == null
         ? null
         : result.isCorrect
-            ? context.onSuccessSurface
-            : scheme.error;
+            ? t.success
+            : t.danger;
     return TextField(
       controller: _controller,
       autofocus: true,
@@ -160,7 +165,7 @@ class _TypedInputState extends State<_TypedInput> {
       autocorrect: false,
       enableSuggestions: false,
       textInputAction: TextInputAction.done,
-      style: Theme.of(context).textTheme.titleMedium,
+      style: Theme.of(context).textTheme.bodyLarge,
       onSubmitted: (_) => widget.onSubmit?.call(),
       decoration: InputDecoration(
         labelText: 'Your answer',
@@ -174,8 +179,8 @@ class _TypedInputState extends State<_TypedInput> {
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.input),
                 borderSide: BorderSide(
-                  color: result.isCorrect ? scheme.tertiary : scheme.error,
-                  width: 3,
+                  color: result.isCorrect ? t.success : t.danger,
+                  width: 2.5,
                 ),
               ),
       ),
@@ -226,7 +231,7 @@ class _WordOrderInputState extends State<_WordOrderInput> {
   Widget build(BuildContext context) {
     final words = widget.exercise.options;
     final locked = widget.result != null;
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -235,9 +240,9 @@ class _WordOrderInputState extends State<_WordOrderInput> {
           width: double.infinity,
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
-            color: scheme.surface,
+            color: t.surface,
             borderRadius: BorderRadius.circular(AppRadius.input),
-            border: Border.all(color: scheme.outlineVariant),
+            border: Border.all(color: t.lineStrong, width: 1.5),
           ),
           child: Wrap(
             spacing: AppSpacing.xs,
@@ -266,111 +271,6 @@ class _WordOrderInputState extends State<_WordOrderInput> {
           ],
         ),
       ],
-    );
-  }
-}
-
-class _OptionTile extends StatelessWidget {
-  const _OptionTile({
-    required this.label,
-    required this.selected,
-    required this.isAnswer,
-    required this.isWrongPick,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final bool isAnswer;
-  final bool isWrongPick;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final fill = isAnswer
-        ? context.successSurface
-        : isWrongPick
-            ? context.dangerSurface
-            : selected
-                ? context.softSurface
-                : scheme.surface;
-    final foreground = isAnswer
-        ? context.onSuccessSurface
-        : isWrongPick
-            ? context.onDangerSurface
-            : scheme.onSurface;
-    final border = isWrongPick
-        ? scheme.error
-        : isAnswer
-            ? scheme.tertiary
-            : selected
-                ? scheme.onSurface
-                : scheme.outline;
-    final icon = isAnswer
-        ? Icons.check_circle
-        : isWrongPick
-            ? Icons.cancel
-            : selected
-                ? Icons.radio_button_checked
-                : Icons.radio_button_unchecked;
-    final shape = RoundedSuperellipseBorder(
-      borderRadius: BorderRadius.circular(AppRadius.control),
-      side: BorderSide(
-        color: border,
-        width: selected || isAnswer || isWrongPick ? 2.5 : 1.5,
-      ),
-    );
-    final status = isAnswer
-        ? ', correct answer'
-        : isWrongPick
-            ? ', your answer, incorrect'
-            : '';
-
-    return Semantics(
-      button: true,
-      inMutuallyExclusiveGroup: true,
-      checked: selected,
-      label: '$label$status',
-      excludeSemantics: true,
-      onTap: onTap,
-      child: PressableScale(
-        enabled: onTap != null,
-        child: Material(
-          color: Colors.transparent,
-          shape: shape,
-          child: Ink(
-            decoration: ShapeDecoration(color: fill, shape: shape),
-            child: InkWell(
-              onTap: onTap,
-              customBorder: shape,
-              child: Container(
-                width: double.infinity,
-                constraints: const BoxConstraints(minHeight: 56),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                child: Row(
-                  children: [
-                    Icon(icon, color: foreground),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        label,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(color: foreground),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

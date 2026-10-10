@@ -88,7 +88,7 @@ void main() {
       await tester.tap(find.text('Greetings').first);
       await tester.pumpAndSettle();
       await _tapVisible(tester, find.text('Start practice'));
-      expect(find.text('Question 1 of 3'), findsOneWidget);
+      expect(find.text('Exercise 1 of 3'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

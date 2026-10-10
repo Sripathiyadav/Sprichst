@@ -26,60 +26,70 @@ class _LessonViewState extends ConsumerState<LessonView> {
   var _wasCompletedBefore = false;
 
   @override
-  Widget build(BuildContext context) => GlassPage(
-        appBar: AppBar(title: Text(widget.lesson.title)),
-        body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: Breakpoints.lessonMaxWidth),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: AnimatedSwitcher(
-                  duration: motionDuration(context),
-                  child: switch (_stage) {
-                    _Stage.introduction => _Introduction(
-                        key: const ValueKey('introduction'),
-                        lesson: widget.lesson,
-                        onStart: _startPractice,
-                      ),
-                    _Stage.practice => ExerciseRunner(
-                        key: const ValueKey('practice'),
-                        exercises: widget.lesson.exercises,
-                        finishLabel: 'Finish lesson',
-                        retryMissed: true,
-                        onFinished: _finish,
-                      ),
-                    _Stage.complete => Column(
-                        key: const ValueKey('complete'),
-                        children: [
-                          Expanded(
-                            child: SessionSummary(
-                              title: 'Lesson complete!',
-                              correct: _results
-                                  .where((r) => r.isCorrect && !r.isRetry)
-                                  .length,
-                              total: _results.where((r) => !r.isRetry).length,
-                              xpEarned: _outcome.xpEarned,
-                              leveledUpTo: _outcome.leveledUpTo,
-                              note: _wasCompletedBefore
-                                  ? 'XP is awarded the first time you complete a lesson.'
-                                  : null,
-                            ),
+  Widget build(BuildContext context) {
+    final lessons = ref.watch(appControllerProvider).curriculum.lessons;
+    final index = lessons.indexWhere((l) => l.id == widget.lesson.id);
+    final number = (index < 0 ? 1 : index + 1).toString().padLeft(2, '0');
+    final lesson = widget.lesson;
+    return GlassPage(
+      appBar: MastheadBar(
+        eyebrow: 'LESSON $number · ${lesson.level.label} · ${lesson.unit}',
+      ),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints:
+                const BoxConstraints(maxWidth: Breakpoints.lessonMaxWidth),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: AnimatedSwitcher(
+                duration: motionDuration(context),
+                child: switch (_stage) {
+                  _Stage.introduction => _Introduction(
+                      key: const ValueKey('introduction'),
+                      lesson: widget.lesson,
+                      number: int.parse(number),
+                      onStart: _startPractice,
+                    ),
+                  _Stage.practice => ExerciseRunner(
+                      key: const ValueKey('practice'),
+                      exercises: widget.lesson.exercises,
+                      finishLabel: 'Finish lesson',
+                      retryMissed: true,
+                      onFinished: _finish,
+                    ),
+                  _Stage.complete => Column(
+                      key: const ValueKey('complete'),
+                      children: [
+                        Expanded(
+                          child: SessionSummary(
+                            title: 'Lesson complete',
+                            correct: _results
+                                .where((r) => r.isCorrect && !r.isRetry)
+                                .length,
+                            total: _results.where((r) => !r.isRetry).length,
+                            xpEarned: _outcome.xpEarned,
+                            leveledUpTo: _outcome.leveledUpTo,
+                            note: _wasCompletedBefore
+                                ? 'XP is awarded the first time you complete a lesson.'
+                                : null,
                           ),
-                          FilledButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Back to learning'),
-                          ),
-                        ],
-                      ),
-                  },
-                ),
+                        ),
+                        PrimaryButton(
+                          label: 'Back to learning',
+                          block: true,
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ],
+                    ),
+                },
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   void _startPractice() {
     final controller = ref.read(appControllerProvider);
@@ -112,14 +122,21 @@ class _LessonViewState extends ConsumerState<LessonView> {
 }
 
 class _Introduction extends StatelessWidget {
-  const _Introduction({super.key, required this.lesson, required this.onStart});
+  const _Introduction({
+    super.key,
+    required this.lesson,
+    required this.number,
+    required this.onStart,
+  });
 
   final Lesson lesson;
+  final int number;
   final VoidCallback onStart;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final t = context.tokens;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -128,18 +145,41 @@ class _Introduction extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${lesson.level.label} · ${lesson.unit}',
-                  style: theme.textTheme.labelLarge
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                const SizedBox(height: AppSpacing.md),
+                Padding(
+                  padding: EdgeInsets.zero,
+                  child: EditorialNumber(
+                    value: number,
+                    label: 'Lesson',
+                    caption: '${lesson.durationMinutes} min',
+                    disc: true,
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(lesson.title, style: theme.textTheme.displaySmall),
-                const SizedBox(height: AppSpacing.sm),
-                Text(lesson.objective, style: theme.textTheme.titleMedium),
-                const SizedBox(height: AppSpacing.lg),
-                Text(lesson.introduction, style: theme.textTheme.bodyLarge),
                 const SizedBox(height: AppSpacing.xl),
+                Semantics(
+                  header: true,
+                  child:
+                      Text(lesson.title, style: theme.textTheme.displaySmall),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(lesson.objective,
+                    style:
+                        theme.textTheme.bodyLarge?.copyWith(color: t.inkMuted)),
+                const SizedBox(height: AppSpacing.xl),
+                FeaturePanel(
+                  title: 'Introduction',
+                  hatch: false,
+                  children: [
+                    Text(lesson.introduction,
+                        style: theme.textTheme.bodyLarge
+                            ?.copyWith(color: t.onPanel)),
+                  ],
+                ),
+                if (lesson.examples.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.xl),
+                  const SectionTitle('Examples'),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 for (final example in lesson.examples)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -147,7 +187,7 @@ class _Introduction extends StatelessWidget {
                       width: double.infinity,
                       child: SoftCard(
                         child:
-                            Text(example, style: theme.textTheme.titleMedium),
+                            Text(example, style: theme.textTheme.headlineSmall),
                       ),
                     ),
                   ),
@@ -156,7 +196,7 @@ class _Introduction extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        FilledButton(onPressed: onStart, child: const Text('Start practice')),
+        PrimaryButton(label: 'Start practice', block: true, onPressed: onStart),
       ],
     );
   }

@@ -62,8 +62,24 @@ class GlassSurface extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         side: BorderSide(color: scheme.outlineVariant),
       );
+      // Light cards get the design system's soft warm shadow; in dark they are
+      // told apart by their hairline alone.
+      final shadows = scheme.brightness == Brightness.light
+          ? const [
+              BoxShadow(
+                  color: Color(0x0F2A2826),
+                  blurRadius: 2,
+                  offset: Offset(0, 1)),
+              BoxShadow(
+                  color: Color(0x1A2A2826),
+                  blurRadius: 12,
+                  spreadRadius: -4,
+                  offset: Offset(0, 4)),
+            ]
+          : const <BoxShadow>[];
       return DecoratedBox(
-        decoration: ShapeDecoration(color: tint ?? scheme.surface, shape: flat),
+        decoration: ShapeDecoration(
+            color: tint ?? scheme.surface, shape: flat, shadows: shadows),
         child: ClipPath(
           clipper: ShapeBorderClipper(shape: flat),
           child: padded,
@@ -185,7 +201,7 @@ class _SpecularEdgePainter extends CustomPainter {
       old.shape != shape;
 }
 
-/// The soft red and gold light that sits behind the app, giving Liquid Glass
+/// The soft coral light that sits behind the app, giving Liquid Glass
 /// something to pick up. With standard surfaces it is just the page colour.
 ///
 /// It paints an opaque base itself, so routes that use it never show the page
@@ -202,10 +218,9 @@ class AmbientBackground extends StatelessWidget {
     final base = theme.scaffoldBackgroundColor;
     if (!glass.enabled) return ColoredBox(color: base, child: child);
 
-    final isDark = theme.brightness == Brightness.dark;
-    final palette = SprichstPalette.flag;
-    final red = Color(palette.red.get(isDark ? 38 : 80));
-    final gold = Color(palette.gold.get(isDark ? 42 : 86));
+    final tokens = context.tokens;
+    final red = tokens.coral;
+    final gold = tokens.coralTint;
     final strength = glass.ambientStrength;
 
     Widget glow(Color color, Alignment center, double radius, double alpha) =>
