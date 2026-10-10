@@ -203,20 +203,20 @@ void main() {
       );
       // The app controller must be initialised to save; mimic the real app by
       // letting the view call it through the provider.
-      expect(find.text('What does it mean?'), findsOneWidget);
-      expect(find.text('1 / 2'), findsOneWidget);
+      expect(find.text('WHAT DOES IT MEAN?'), findsOneWidget);
+      expect(find.text('Card 1 of 2'), findsOneWidget);
       await tester.tap(find.text('Show answer'));
       await tester.pumpAndSettle();
       expect(find.text('Good'), findsOneWidget);
       expect(find.textContaining('1 day'), findsWidgets);
       await tester.tap(find.text('Good'));
       await tester.pumpAndSettle();
-      expect(find.text('2 / 2'), findsOneWidget);
+      expect(find.text('Card 2 of 2'), findsOneWidget);
       await tester.tap(find.text('Show answer'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Easy'));
       await tester.pumpAndSettle();
-      expect(find.text('Session complete!'), findsOneWidget);
+      expect(find.text('Session complete'), findsOneWidget);
       expect(repository.profile!.flashcards.states.length, 2);
     });
 
@@ -227,7 +227,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Again'));
       await tester.pumpAndSettle();
-      expect(find.text('2 / 2'), findsOneWidget);
+      expect(find.text('Card 2 of 2'), findsOneWidget);
     });
 
     testWidgets('keyboard: Space reveals, digits rate', (tester) async {
@@ -238,7 +238,7 @@ void main() {
       expect(find.text('Easy'), findsOneWidget);
       await tester.sendKeyEvent(LogicalKeyboardKey.digit3);
       await tester.pumpAndSettle();
-      expect(find.text('Session complete!'), findsOneWidget);
+      expect(find.text('Session complete'), findsOneWidget);
     });
   });
 

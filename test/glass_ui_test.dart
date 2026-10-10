@@ -42,10 +42,10 @@ Widget _card({
 
 void main() {
   group('defaults and storage', () {
-    test('new learners get Liquid Glass at the default intensity', () {
+    test('new learners get the standard paper-and-panel surfaces', () {
       final profile = LearningProfile.newLearner(
           nativeLanguage: 'English', currentLevel: CefrLevel.preA1);
-      expect(profile.surfaceStyle, SurfaceStyle.glass);
+      expect(profile.surfaceStyle, SurfaceStyle.standard);
       expect(profile.glassIntensity, LearningProfile.defaultGlassIntensity);
     });
 
@@ -67,10 +67,10 @@ void main() {
       );
     });
 
-    test('profiles saved before the setting existed default to glass', () {
+    test('profiles saved before the setting existed default to standard', () {
       final decoded = ProfileCodec.decode({'name': 'Sam'},
           decodeDate: (raw) => DateTime.parse(raw as String));
-      expect(decoded.surfaceStyle, SurfaceStyle.glass);
+      expect(decoded.surfaceStyle, SurfaceStyle.standard);
       expect(decoded.glassIntensity, LearningProfile.defaultGlassIntensity);
     });
 
@@ -135,42 +135,31 @@ void main() {
   });
 
   group('shell', () {
-    testWidgets('glass floats the navigation over the content', (tester) async {
+    testWidgets('the navigation bar is plain and opaque', (tester) async {
       await pumpSprichst(tester,
           size: _phone,
           brightness: Brightness.light,
           repository: InMemoryLearningRepository(_profile()));
-      expect(find.byType(BackdropFilter), findsOneWidget,
-          reason: 'the floating navigation bar blurs what scrolls beneath it');
-      expect(find.byType(NavigationBar), findsOneWidget);
-    });
-
-    testWidgets('standard keeps a plain, opaque navigation bar',
-        (tester) async {
-      await pumpSprichst(tester,
-          size: _phone,
-          brightness: Brightness.light,
-          repository: InMemoryLearningRepository(
-              _profile(style: SurfaceStyle.standard)));
+      // Liquid Glass belonged to the previous look: even a profile saved with
+      // it draws the design system's flat surfaces now.
       expect(find.byType(BackdropFilter), findsNothing);
       expect(find.byType(NavigationBar), findsOneWidget);
     });
 
-    testWidgets('on wide screens the rail is the glass panel', (tester) async {
+    testWidgets('on wide screens the rail replaces the bar', (tester) async {
       await pumpSprichst(tester,
           size: const Size(1280, 800),
           brightness: Brightness.dark,
           repository: InMemoryLearningRepository(_profile()));
       expect(find.byType(NavigationRail), findsOneWidget);
-      expect(find.byType(BackdropFilter), findsOneWidget);
+      expect(find.byType(BackdropFilter), findsNothing);
       expect(find.byType(NavigationBar), findsNothing);
     });
   });
 
   group('Appearance settings', () {
-    Future<InMemoryLearningRepository> open(WidgetTester tester,
-        {LearningProfile? profile}) async {
-      final repository = InMemoryLearningRepository(profile ?? _profile());
+    Future<InMemoryLearningRepository> open(WidgetTester tester) async {
+      final repository = InMemoryLearningRepository(_profile());
       await pumpSprichst(tester,
           size: const Size(1200, 900),
           brightness: Brightness.light,
@@ -182,68 +171,41 @@ void main() {
       return repository;
     }
 
-    testWidgets(
-        'Standard hides the intensity control; Liquid Glass restores it',
+    testWidgets('offers light, dark or the device setting, and nothing else',
         (tester) async {
-      final repository = await open(tester);
-      expect(find.byType(Slider), findsOneWidget);
-
-      await tester.tap(find.text('Standard'));
-      await tester.pumpAndSettle();
-      expect(repository.profile!.surfaceStyle, SurfaceStyle.standard);
+      await open(tester);
+      expect(find.text('Device'), findsOneWidget);
+      expect(find.text('Light'), findsOneWidget);
+      expect(find.text('Dark'), findsOneWidget);
       expect(find.byType(Slider), findsNothing);
-      expect(find.text('Clean, opaque surfaces.'), findsOneWidget);
-
-      await tester.tap(find.text('Liquid Glass'));
-      await tester.pumpAndSettle();
-      expect(repository.profile!.surfaceStyle, SurfaceStyle.glass);
-      expect(find.byType(Slider), findsOneWidget);
+      expect(find.text('Liquid Glass'), findsNothing);
     });
 
-    testWidgets('dragging the slider saves the new intensity on release',
-        (tester) async {
+    testWidgets('choosing Dark saves it and the app follows', (tester) async {
       final repository = await open(tester);
-      expect(repository.profile!.glassIntensity, 60);
-
-      final slider = find.byType(Slider);
-      final rect = tester.getRect(slider);
-      // Drag to the far right of the track.
-      await tester.dragFrom(
-        Offset(rect.left + rect.width * .6, rect.center.dy),
-        Offset(rect.width, 0),
-      );
+      await tester.tap(find.text('Dark'));
       await tester.pumpAndSettle();
-
-      expect(repository.profile!.glassIntensity, 100);
-      expect(find.text('100%'), findsWidgets);
+      expect(
+          repository.profile!.appearancePreference, AppearancePreference.dark);
+      expect(Theme.of(tester.element(find.byType(Scaffold).first)).brightness,
+          Brightness.dark);
     });
 
-    testWidgets('the Account row summarises the current look', (tester) async {
-      await open(tester, profile: _profile(intensity: 35));
-      await tester.pageBack();
+    testWidgets('the Account row says which mode is chosen', (tester) async {
+      await pumpSprichst(tester,
+          size: const Size(1200, 900),
+          brightness: Brightness.light,
+          repository: InMemoryLearningRepository(_profile()));
+      await tester.tap(find.text('Account').last);
       await tester.pumpAndSettle();
-      expect(find.textContaining('Liquid Glass 35%'), findsOneWidget);
-    });
-
-    testWidgets('the app theme follows the setting', (tester) async {
-      final repository = await open(tester);
-      GlassTheme current() =>
-          Theme.of(tester.element(find.byType(Scaffold).first))
-              .extension<GlassTheme>()!;
-
-      expect(current().enabled, isTrue);
-      await tester.tap(find.text('Standard'));
-      await tester.pumpAndSettle();
-      expect(current().enabled, isFalse);
-      expect(repository.profile!.surfaceStyle, SurfaceStyle.standard);
+      expect(find.text('Use device setting'), findsOneWidget);
     });
   });
 
   // The whole app must stay usable and legible whichever look is chosen.
   final looks = <String, LearningProfile>{
     'standard': _profile(style: SurfaceStyle.standard),
-    'glass at 0%': _profile(intensity: 0),
-    'glass at 100%': _profile(intensity: 100),
+    'a profile saved with glass': _profile(intensity: 100),
   };
   for (final entry in looks.entries) {
     for (final brightness in Brightness.values) {

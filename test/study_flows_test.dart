@@ -58,10 +58,12 @@ void main() {
         size: _phone, brightness: Brightness.light, repository: repository);
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
+    for (var step = 0; step < 2; step++) {
+      await tester.ensureVisible(find.text('Continue'));
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+    }
+    await tester.ensureVisible(find.text('Goethe-Zertifikat'));
     await tester.tap(find.text('Goethe-Zertifikat'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Build my learning plan'));
@@ -74,9 +76,9 @@ void main() {
     testWidgets('offers quests, flashcards and all five games', (tester) async {
       await _app(tester);
       await _open(tester, 'Practice');
-      expect(find.text('Daily quests'), findsOneWidget);
-      await _reveal(tester, find.text('Flashcards'));
-      expect(find.text('Flashcards'), findsOneWidget);
+      expect(find.text('DAILY QUESTS'), findsOneWidget);
+      await _reveal(tester, find.text('FLASHCARDS'));
+      expect(find.text('FLASHCARDS'), findsOneWidget);
       await _reveal(tester, find.text('Gespräch'));
       for (final title in [
         'Artikel-Rausch',
@@ -87,14 +89,14 @@ void main() {
       ]) {
         expect(find.text(title), findsOneWidget, reason: title);
       }
-      expect(find.text('Exam training'), findsNothing);
+      expect(find.text('EXAM TRAINING'), findsNothing);
     });
 
     testWidgets('an exam goal adds exam training and a mock exam',
         (tester) async {
       await _app(tester, goal: LearningGoal.goethe);
       await _open(tester, 'Practice');
-      await _reveal(tester, find.text('Exam training'));
+      await _reveal(tester, find.text('EXAM TRAINING'));
       expect(find.text('Preparing for Goethe-Zertifikat'), findsOneWidget);
       await _reveal(tester, find.text('Take a mock exam'));
       await tester.tap(find.text('Take a mock exam'));
@@ -130,10 +132,11 @@ void main() {
         (tester) async {
       await _app(tester, goal: LearningGoal.goethe, size: _wide);
       await _open(tester, 'Progress');
-      expect(find.text('How you learn'), findsOneWidget);
-      await _reveal(tester, find.text('Goethe-Zertifikat readiness'));
-      await _reveal(tester, find.text('Badges'));
-      expect(find.text('Badges'), findsOneWidget);
+      await _reveal(tester, find.text('HOW YOU LEARN'));
+      expect(find.text('HOW YOU LEARN'), findsOneWidget);
+      await _reveal(tester, find.text('GOETHE-ZERTIFIKAT READINESS'));
+      await _reveal(tester, find.text('BADGES'));
+      expect(find.text('BADGES'), findsOneWidget);
     });
   });
 

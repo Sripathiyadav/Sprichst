@@ -263,7 +263,7 @@
     "Speaking"
   ],
   "appearancePreference": "system",
-  "surfaceStyle": "glass",
+  "surfaceStyle": "standard",
   "glassIntensity": 60,
   "aiProviderPreference": "automatic",
   "aiModel": "Qwen",

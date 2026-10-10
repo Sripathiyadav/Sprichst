@@ -3,9 +3,16 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/breakpoints.dart';
+import 'design_widgets.dart';
 import 'glass.dart';
+import 'masthead.dart';
 
+export 'design_widgets.dart';
+export 'geometry.dart';
 export 'glass.dart';
+export 'masthead.dart';
+export 'option_tile.dart';
+export 'wordmark.dart';
 
 class PageFrame extends StatefulWidget {
   const PageFrame(
@@ -14,12 +21,28 @@ class PageFrame extends StatefulWidget {
       this.subtitle,
       required this.child,
       this.trailing,
+      this.eyebrow,
+      this.titleLocale,
+      this.compactHeading = false,
       this.scrollsUnderNav = true});
 
   final String title;
   final String? subtitle;
   final Widget child;
+
+  /// Sits in the masthead row (the profile avatar, a settings button).
   final Widget? trailing;
+
+  /// Context in capitals above the title ("FRIDAY, 9 OCTOBER").
+  final String? eyebrow;
+
+  /// Always shows the small heading and no eyebrow or subtitle, for screens
+  /// that are one fixed layout (the coach) and need the height.
+  final bool compactHeading;
+
+  /// Set to German when the title is a German phrase, so screen readers
+  /// pronounce it correctly.
+  final Locale? titleLocale;
 
   /// Whether [child] is a scrollable that may run beneath the floating
   /// navigation bar. A scrollable pads itself by the inset it is given (use
@@ -45,9 +68,9 @@ class PageFrame extends StatefulWidget {
 class _PageFrameState extends State<PageFrame> {
   var _collapsed = false;
 
-  /// Large title that folds into a compact one once the list scrolls (the
-  /// Apple large-title pattern): the heading stays, the subtitle gets out of
-  /// the way, and the content gets the room.
+  /// The large title folds into a compact one once the list scrolls: the
+  /// heading stays, the subtitle gets out of the way, and the content gets the
+  /// room.
   bool _onScroll(ScrollNotification note) {
     if (note.depth != 0 || note.metrics.axis != Axis.vertical) return false;
     final pixels = note.metrics.pixels;
@@ -67,8 +90,10 @@ class _PageFrameState extends State<PageFrame> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final t = context.tokens;
     final still = MediaQuery.disableAnimationsOf(context);
-    final duration = still ? Duration.zero : const Duration(milliseconds: 220);
+    final duration = still ? Duration.zero : const Duration(milliseconds: 200);
+    final collapsed = _collapsed || widget.compactHeading;
 
     return SafeArea(
       bottom: !widget.scrollsUnderNav,
@@ -78,41 +103,49 @@ class _PageFrameState extends State<PageFrame> {
           // Enlarged text or a short window leaves little room: the subtitle is
           // supporting text, so it yields before the content does.
           final scale = MediaQuery.textScalerOf(context).scale(1);
-          // The avatar sits beside the title unless the row would be cramped.
-          final stackTrailing =
-              constraints.maxWidth < Breakpoints.stackTrailing || scale >= 1.5;
           final showSubtitle = widget.subtitle != null &&
               constraints.maxHeight / scale >= Breakpoints.subtitleMinHeight;
           final horizontal = compact ? AppSpacing.md : AppSpacing.lg;
+
           final subtitle = widget.subtitle == null
               ? const SizedBox.shrink()
               : Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.xs),
-                  child:
-                      Text(widget.subtitle!, style: theme.textTheme.bodyLarge),
+                  child: Text(widget.subtitle!,
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: t.inkMuted)),
                 );
           final heading = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (widget.eyebrow != null && !collapsed)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: Text(widget.eyebrow!.toUpperCase(),
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: t.accent)),
+                ),
               AnimatedDefaultTextStyle(
                 duration: duration,
-                curve: Curves.easeOutCubic,
-                style: (_collapsed
-                        ? theme.textTheme.headlineSmall
+                curve: AppMotion.curve,
+                style: (collapsed
+                        ? theme.textTheme.headlineMedium
                         : theme.textTheme.displaySmall) ??
                     const TextStyle(),
-                child: Semantics(header: true, child: Text(widget.title)),
+                child: Semantics(
+                    header: true,
+                    child: Text(widget.title, locale: widget.titleLocale)),
               ),
               if (showSubtitle)
                 // With reduced motion the subtitle just goes; an AnimatedSize
                 // with no duration would re-layout itself mid-layout.
                 still
-                    ? (_collapsed ? const SizedBox.shrink() : subtitle)
+                    ? (collapsed ? const SizedBox.shrink() : subtitle)
                     : AnimatedSize(
                         duration: duration,
-                        curve: Curves.easeOutCubic,
+                        curve: AppMotion.curve,
                         alignment: Alignment.topLeft,
-                        child: _collapsed
+                        child: collapsed
                             ? const SizedBox(width: double.infinity)
                             : subtitle,
                       ),
@@ -120,8 +153,8 @@ class _PageFrameState extends State<PageFrame> {
           );
           final gap = AnimatedContainer(
             duration: duration,
-            curve: Curves.easeOutCubic,
-            height: _collapsed ? AppSpacing.md : AppSpacing.xl,
+            curve: AppMotion.curve,
+            height: collapsed ? AppSpacing.sm : AppSpacing.lg,
           );
 
           return Align(
@@ -132,28 +165,22 @@ class _PageFrameState extends State<PageFrame> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   horizontal,
-                  compact ? AppSpacing.lg : 26,
+                  compact ? AppSpacing.xs : AppSpacing.md,
                   horizontal,
                   widget.scrollsUnderNav ? 0 : AppSpacing.lg,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.trailing == null)
-                      heading
-                    else if (stackTrailing) ...[
-                      heading,
-                      const SizedBox(height: AppSpacing.sm),
-                      Align(
-                          alignment: Alignment.centerRight,
-                          child: widget.trailing!),
-                    ] else
-                      Row(
-                        children: [
-                          Expanded(child: heading),
-                          widget.trailing!,
-                        ],
-                      ),
+                    Masthead(
+                        leading: Navigator.canPop(context)
+                            ? const BackButton()
+                            : null,
+                        actions: [
+                          if (widget.trailing != null) widget.trailing!
+                        ]),
+                    const SizedBox(height: AppSpacing.lg),
+                    heading,
                     gap,
                     Expanded(
                       child: NotificationListener<ScrollNotification>(
@@ -281,6 +308,8 @@ class SoftCard extends StatelessWidget {
       );
 }
 
+/// The small capitals label that opens a section, with an optional quiet link
+/// on the right.
 class SectionTitle extends StatelessWidget {
   const SectionTitle(this.title, {super.key, this.action});
 
@@ -291,30 +320,47 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         children: [
           Expanded(
-              child:
-                  Text(title, style: Theme.of(context).textTheme.titleLarge)),
+            child: Semantics(
+              header: true,
+              child: Text(title.toUpperCase(),
+                  style: Theme.of(context).textTheme.labelSmall),
+            ),
+          ),
           if (action != null) action!,
         ],
       );
 }
 
+/// A labelled 8px bar for skill scores, lesson progress and the daily goal. The
+/// number is always shown as text too; the bar only illustrates it.
 class SkillMeter extends StatelessWidget {
   const SkillMeter(
       {super.key,
       required this.label,
       required this.value,
+      this.valueLabel,
+      this.onPanel = false,
       this.compact = false});
 
   final String label;
   final double value;
+
+  /// Replaces the percentage ("9 / 15 min").
+  final String? valueLabel;
+
+  /// Colours for a bar that sits inside a [FeaturePanel].
+  final bool onPanel;
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
     final percent = (value * 100).round();
+    final shown = valueLabel ?? '$percent%';
     return Semantics(
       label: label,
-      value: '$percent percent',
+      value: valueLabel ?? '$percent percent',
       excludeSemantics: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,26 +368,25 @@ class SkillMeter extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child:
-                    Text(label, style: Theme.of(context).textTheme.bodyMedium),
+                child: Text(label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                        color: onPanel ? t.onPanelMuted : t.inkMuted)),
               ),
               const SizedBox(width: AppSpacing.xs),
-              Text('$percent%',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontSize: 15)),
+              Text(shown,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                      color: onPanel ? t.onPanel : t.ink,
+                      fontFeatures: const [FontFeature.tabularFigures()])),
             ],
           ),
-          SizedBox(height: compact ? 5 : 8),
+          SizedBox(height: compact ? 5 : AppSpacing.xs),
           ClipRRect(
             borderRadius: BorderRadius.circular(99),
             child: LinearProgressIndicator(
-              value: value,
-              minHeight: compact ? 8 : 12,
-              backgroundColor:
-                  Theme.of(context).colorScheme.surfaceContainerHighest,
-              color: context.accent,
+              value: value.clamp(0, 1),
+              minHeight: 8,
+              backgroundColor: onPanel ? t.lineOnPanel : t.surfaceSunken,
+              color: onPanel ? t.accentOnPanel : t.accent,
             ),
           ),
         ],
@@ -364,9 +409,8 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GlassPage(
-        // No title in the bar: the page heading below says it, and folds up
-        // to a compact title as the list scrolls.
-        appBar: AppBar(),
+        // The masthead carries the wordmark; the page heading below says what
+        // this page is, and folds up to a compact title as the list scrolls.
         body: PageFrame(
           title: title,
           subtitle: subtitle,
@@ -402,15 +446,14 @@ class SettingsSection extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(
-              left: AppSpacing.md,
+              left: AppSpacing.xxs,
               bottom: AppSpacing.xs,
             ),
             child: Semantics(
               header: true,
               child: Text(
-                title,
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.w600),
+                title.toUpperCase(),
+                style: theme.textTheme.labelSmall,
               ),
             ),
           ),
@@ -421,9 +464,9 @@ class SettingsSection extends StatelessWidget {
           if (description != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
+                AppSpacing.xxs,
                 AppSpacing.xs,
-                AppSpacing.md,
+                AppSpacing.xxs,
                 0,
               ),
               child: Text(description!, style: theme.textTheme.bodySmall),
@@ -459,13 +502,15 @@ class SettingsTile extends StatelessWidget {
   final String? subtitle;
   final Widget? trailing;
   final VoidCallback? onTap;
+
+  /// A destructive row (remove key, delete account): crimson, and always
+  /// confirmed first.
   final bool destructive;
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive
-        ? Theme.of(context).colorScheme.error
-        : Theme.of(context).colorScheme.onSurface;
+    final t = context.tokens;
+    final color = destructive ? t.danger : t.ink;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
@@ -473,10 +518,10 @@ class SettingsTile extends StatelessWidget {
         vertical: AppSpacing.xxs,
       ),
       leading: Icon(icon, color: color),
-      title: Text(title, style: destructive ? TextStyle(color: color) : null),
+      title: Text(title, style: TextStyle(color: color)),
       subtitle: subtitle == null ? null : Text(subtitle!),
-      trailing:
-          trailing ?? (onTap == null ? null : const Icon(Icons.chevron_right)),
+      trailing: trailing ??
+          (onTap == null ? null : Icon(Icons.chevron_right, color: t.inkMuted)),
       onTap: onTap,
     );
   }
@@ -537,104 +582,90 @@ Future<bool> showSprichstConfirmation(
       false;
 }
 
-/// The German flag's three bands as a slim decorative accent. Purely visual,
-/// so hidden from assistive technology; the hairline keeps the black band
-/// visible against dark backgrounds.
-class FlagStripe extends StatelessWidget {
-  const FlagStripe({
-    super.key,
-    this.height = 6,
-    this.radius = 99,
-    this.outline,
-  });
+/// How an inline message reads. Each tone pairs an icon with a word; colour
+/// alone never says it.
+enum BannerTone { success, danger, warning, info, offline }
 
-  final double height;
-  final double radius;
-
-  /// Hairline drawn around the stripe so the band matching the backdrop (black
-  /// on black, gold on gold) stays visible. Defaults to a neutral outline.
-  final Color? outline;
-
-  @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius),
-            border: Border.all(
-              color: outline ?? Theme.of(context).colorScheme.outlineVariant,
-              width: outline == null ? .5 : 1.5,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(radius),
-            child: SizedBox(
-              height: height,
-              // Container (not ColoredBox) so each band fills its slot: a
-              // child-less ColoredBox collapses to zero height inside a Row.
-              child: Row(
-                children: [
-                  for (final color in const [
-                    FlagColors.black,
-                    FlagColors.red,
-                    FlagColors.gold,
-                  ])
-                    Expanded(child: Container(color: color)),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-}
-
-/// Correct / not-quite feedback. Colour is reinforced by an icon and a heading,
-/// and the message is announced to screen readers as it appears.
+/// An inline message for answer feedback, warnings and connection status. After
+/// an answer the title gives the verdict ("Correct", "Not quite") and the body
+/// gives the curriculum's explanation, never a judgement of the learner.
+/// `danger` is announced as an alert, every other tone as a status.
 class FeedbackBanner extends StatelessWidget {
   const FeedbackBanner({
     super.key,
-    required this.correct,
+    required this.tone,
+    required this.title,
     required this.message,
+    this.actionLabel,
+    this.onAction,
   });
 
-  final bool correct;
+  /// Feedback on an answer.
+  const FeedbackBanner.answer({
+    Key? key,
+    required bool correct,
+    required String message,
+  }) : this(
+          key: key,
+          tone: correct ? BannerTone.success : BannerTone.danger,
+          title: correct ? 'Correct' : 'Not quite',
+          message: message,
+        );
+
+  final BannerTone tone;
+  final String title;
   final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final background = correct ? context.successSurface : context.dangerSurface;
-    final foreground =
-        correct ? context.onSuccessSurface : context.onDangerSurface;
-    final heading = correct ? 'Correct!' : 'Not quite';
+    final t = context.tokens;
+    final (bg, fg, icon) = switch (tone) {
+      BannerTone.success => (t.successSoft, t.success, Icons.check_circle),
+      BannerTone.danger => (t.dangerSoft, t.danger, Icons.cancel_outlined),
+      BannerTone.warning => (
+          t.warningSoft,
+          t.warning,
+          Icons.warning_amber_rounded
+        ),
+      BannerTone.info => (t.surfaceSunken, t.ink, Icons.info_outline),
+      BannerTone.offline => (t.surfaceSunken, t.ink, Icons.cloud_off),
+    };
     return Semantics(
       liveRegion: true,
       container: true,
-      label: '$heading $message',
+      label: '$title. $message',
       excludeSemantics: true,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(AppRadius.card),
+          color: bg,
+          borderRadius: BorderRadius.circular(AppRadius.control),
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(correct ? Icons.check_circle : Icons.cancel_outlined,
-                  color: foreground, size: 28),
+              Icon(icon, color: fg, size: 24),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(heading,
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(color: foreground)),
+                    Text(title,
+                        style: theme.textTheme.titleSmall?.copyWith(color: fg)),
                     const SizedBox(height: AppSpacing.xxs),
-                    Text(message,
-                        style: theme.textTheme.bodyLarge
-                            ?.copyWith(color: foreground)),
+                    Text(message, style: theme.textTheme.bodyLarge),
+                    if (actionLabel != null)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(
+                          onPressed: onAction,
+                          child: Text(actionLabel!),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -646,47 +677,48 @@ class FeedbackBanner extends StatelessWidget {
   }
 }
 
-/// A single number with an icon and a plain-language label.
+/// A compact statistic: a light numeral, a label and an optional caption. Every
+/// value comes from the learner's real history.
 class StatTile extends StatelessWidget {
   const StatTile({
     super.key,
     required this.icon,
     required this.value,
     required this.label,
+    this.caption,
   });
 
   final IconData icon;
   final String value;
   final String label;
+  final String? caption;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-        label: '$value $label',
-        excludeSemantics: true,
-        child: SoftCard(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: context.softSurface,
-                foregroundColor: Theme.of(context).colorScheme.onSurface,
-                child: Icon(icon),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(value,
-                        style: Theme.of(context).textTheme.headlineSmall),
-                    Text(label),
-                  ],
-                ),
-              ),
-            ],
-          ),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
+    return Semantics(
+      label: '$value $label${caption == null ? '' : ', $caption'}',
+      excludeSemantics: true,
+      child: SoftCard(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: t.ink, size: 20),
+            const SizedBox(height: AppSpacing.sm),
+            Text(value, style: theme.textTheme.headlineLarge),
+            const SizedBox(height: AppSpacing.xxs),
+            Text(label, style: theme.textTheme.labelLarge),
+            if (caption != null)
+              Text(caption!,
+                  style:
+                      theme.textTheme.bodySmall?.copyWith(color: t.inkMuted)),
+          ],
         ),
-      );
+      ),
+    );
+  }
 }
 
 /// Animation length that respects the platform's reduce-motion setting.

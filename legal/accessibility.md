@@ -6,10 +6,10 @@ We want everyone to be able to learn with Sprichst. Our goal is to meet the Web 
 
 ## What is in place
 
-- Light and dark appearances, and a higher-contrast look when your device asks for increased contrast (Account → Appearance).
+- Light, dark or your device's own appearance (Account → Appearance). Every text and control colour pair is checked against WCAG AA contrast in both, by automated tests.
 - Buttons and icon buttons have a minimum touch target of 48 by 48 pixels.
 - Text follows your device's text-size setting.
-- Voice mode reduces its animation when your device asks to reduce motion.
+- When your device asks to reduce motion, animations (headings, option tiles, voice mode) become instant and the loading arc stops, with words beside it.
 - Many controls carry labels or tooltips for screen readers (VoiceOver, TalkBack).
 - Every spoken reply is also shown as text.
 

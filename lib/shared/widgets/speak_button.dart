@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
+import '../../app/theme/app_theme.dart';
 import '../../features/ai_coach/services/audio_player_service.dart';
 
 /// Plays [text] in German through the tutor gateway. If the gateway cannot be
@@ -12,6 +13,7 @@ class SpeakButton extends ConsumerStatefulWidget {
     required this.text,
     this.label = 'Listen',
     this.filled = false,
+    this.onPanel = false,
   });
 
   final String text;
@@ -19,6 +21,9 @@ class SpeakButton extends ConsumerStatefulWidget {
 
   /// Shows a labelled button instead of an icon button.
   final bool filled;
+
+  /// Draws it for a charcoal panel.
+  final bool onPanel;
 
   @override
   ConsumerState<SpeakButton> createState() => _SpeakButtonState();
@@ -44,7 +49,7 @@ class _SpeakButtonState extends ConsumerState<SpeakButton> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
-              'Audio needs the AI tutor connection. You can still read the text.'),
+              'Audio needs a voice downloaded on this phone. You can still read the text.'),
         ));
       }
     } finally {
@@ -60,17 +65,25 @@ class _SpeakButtonState extends ConsumerState<SpeakButton> {
             height: 20,
             child: CircularProgressIndicator(strokeWidth: 2.5),
           )
-        : const Icon(Icons.volume_up_rounded);
+        : const Icon(Icons.volume_up_outlined);
     if (widget.filled) {
+      final t = context.tokens;
       return OutlinedButton.icon(
         onPressed: _busy ? null : _speak,
         icon: icon,
         label: Text(widget.label),
+        style: widget.onPanel
+            ? OutlinedButton.styleFrom(
+                foregroundColor: t.onPanel,
+                side: BorderSide(color: t.onPanelMuted, width: 1.5),
+              )
+            : null,
       );
     }
     return IconButton(
       tooltip: widget.label,
       onPressed: _busy ? null : _speak,
+      color: widget.onPanel ? context.tokens.onPanel : null,
       icon: icon,
     );
   }
