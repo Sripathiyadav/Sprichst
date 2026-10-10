@@ -6,23 +6,27 @@ computer after it is published. No Sprichst-owned server, GPU or paid API.
 ```
                 Flutter app
         ┌──────────┼───────────┐
-   This phone   Groq (the     Firebase
-   (Gemma/Qwen  learner's     Auth + Firestore
-    + Whisper    own key)     (free Spark plan)
-    + Piper)
+   This phone   The learner's  Firebase
+   (Gemma/Qwen  own AI account Auth + Firestore
+    + Whisper    (Groq, Gemini, (free Spark plan)
+    + Piper)     OpenAI, Claude,
+                 Grok, …)
 ```
 
 ## Do I still need a cloud AI server? No.
 
 The AI server existed so a provider key could stay secret on a machine you
-control. With **bring-your-own-key**, each learner makes a free Groq account and
-pastes their own key into the app, so there is no shared key to protect, no
-traffic to carry and nothing to host. The app calls Groq directly
-(`lib/data/ai/groq_ai_repository.dart`). The `ai-server/` folder is a
+control. With **bring-your-own-key**, each learner pastes a key from any platform they
+already use (Groq, Google Gemini, OpenAI, Anthropic Claude, xAI Grok, Mistral,
+DeepSeek, OpenRouter, or any server that speaks the OpenAI chat API), so there
+is no shared key to protect, no traffic to carry and nothing to host. The app
+calls that provider directly (`lib/data/ai/cloud_ai_repository.dart`; the
+providers are listed in `lib/data/ai/cloud_providers.dart`, and adding another
+is one entry). The `ai-server/` folder is a
 developer tool only: debug builds and anyone who types an address use it;
 a released build ignores it.
 
-Do **not** put your own Groq key into the app or a server for everyone: it
+Do **not** put your own provider key into the app or a server for everyone: it
 would be shared by all users, hit one account's limit within minutes, and a
 key inside an app can be extracted. Each learner uses their own.
 
@@ -30,26 +34,27 @@ key inside an app can be extracted. Each learner uses their own.
 
 | Setting (Account → AI & voice) | What happens |
 | --- | --- |
-| **Automatic** (default) | Answers on the phone. If the models are not downloaded and the learner added a Groq key, Groq answers instead. |
-| **Groq (my own key)** | Groq answers while the free daily allowance lasts. When it is used up, offline, or the key is rejected, the coach says so and offers **Answer on this phone**. It never switches by itself, so the learner always knows where their words go. |
+| **Automatic** (default) | Answers on the phone. If the models are not downloaded and the learner added a key, their provider answers instead. |
+| **My own AI key** | The chosen provider answers while the allowance lasts. When it is used up, there is no credit, the learner is offline, or the key is rejected, the coach says so and offers **Answer on this phone**. It never switches by itself, so the learner always knows where their words go. |
 | **This phone only** | Nothing leaves the device. Needs the models downloaded. |
 
-No Groq account is required: the phone-only path is complete (chat,
-corrections, speech recognition, spoken answers). Groq has no German voice, so
+No AI account is required: the phone-only path is complete (chat,
+corrections, speech recognition, spoken answers). No provider has a German voice the app uses, so
 spoken answers always use the phone's Piper voices; speech *recognition* can
-use Groq's Whisper.
+use Whisper at Groq or OpenAI, and falls back to the phone for the others.
 
 ## The key
 
-`GroqSettings` (`lib/data/ai/groq_settings.dart`) keeps the key in
+`CloudAISettings` (`lib/data/ai/cloud_ai_settings.dart`) keeps one key per provider in
 `flutter_secure_storage` (iOS/macOS Keychain, Android Keystore-backed storage;
-the browser's protected storage on web). It is shown masked, validated
-(`gsk_…`) and checked with Groq's `/models` before it is accepted, can be
+the browser's protected storage on web). It is shown masked, checked for shape
+(providers change key formats, so the provider decides) and tested with the provider's `/models` before it is accepted, can be
 removed in one tap, and is never logged, synced to Firebase or placed in the
-profile (`test/groq_test.dart` pins this, and `test/security_audit_test.dart`
+profile (`test/cloud_ai_test.dart` pins this, and `test/security_audit_test.dart`
 fails the build if a real key is committed). Anyone who can unlock a phone
-could use a key stored on it; the screen says so and how to revoke the key at
-console.groq.com.
+could use a key stored on it; the screen says so and how to revoke the key in
+the provider's console. A custom server address must be https, so a key never
+travels in the clear.
 
 ## Free quotas to watch
 
@@ -62,9 +67,12 @@ console.groq.com.
   rejects writes (it does not charge on Spark) and the app keeps the data on the
   device and retries.
 * **Firebase Auth:** generous free tier for Google sign-in.
-* **Groq:** per account and per model; the app handles HTTP 429 (shows the
-  wait time and offers the phone). The lighter 8B model uses the allowance more
-  slowly than the 70B one; the learner can choose in the same screen.
+* **AI providers:** per account and per model. The app handles rate limits
+  (HTTP 429: shows the wait time and offers the phone), no-credit answers and
+  unknown model names. Free tiers exist at Groq, Gemini and OpenRouter (`:free`
+  models); OpenAI, Anthropic and xAI normally need prepaid credit on the
+  learner's own account. The learner can pick a lighter model in the same
+  screen.
 * **No Cloud Functions / Cloud Run:** not needed; avoid them on Spark.
 
 ## Costs that remain
@@ -86,12 +94,12 @@ console.groq.com.
    publish the Privacy Policy at a URL, and answer the Data safety form from
    `legal/internal/records-of-processing.md`: account info and app activity are
    collected for app functionality; no data is sold or shared for advertising;
-   the Groq key and AI text go from the device to Groq only if the user adds a
-   key.
-5. Test in airplane mode with a downloaded model; test a Groq limit (use a key
+   the AI provider key and AI text go from the device to the provider the
+   learner chose, only if the user adds a key.
+5. Test in airplane mode with a downloaded model; test a provider limit (use a key
    with a tiny allowance, or a wrong key) and check the "Answer on this phone"
    offer.
-6. Record the how-to video: create a Groq account, create a key, paste it in
+6. Record the how-to video: create an account at a provider (Groq and Gemini have free tiers), create a key, paste it in
    Account → AI & voice → Save and test, choose the setting, what happens when
    the allowance ends, and the phone-only alternative.
 

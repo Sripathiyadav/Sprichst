@@ -74,7 +74,7 @@ class _AiServerSectionState extends ConsumerState<AiServerSection> {
     return SettingsSection(
       title: 'Developer AI server (advanced)',
       description:
-          'Not needed: the app talks to Groq directly with your own key, or answers on this phone. '
+          'Not needed: the app talks to your own AI provider directly with your own key, or answers on this phone. '
           'This is only for developers running ai-server/ on their own computer; enter its '
           'address (for example 192.168.1.20) and start it with ai-server/run.sh.',
       children: [

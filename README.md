@@ -1,6 +1,6 @@
 # Sprichst
 
-Sprichst is a Flutter German-learning MVP built around a curriculum and learning engine—not a generic chatbot. Learners sign in with Google; their profile lives in Firestore with an on-device copy so they can keep studying offline, and the AI tutor runs on the phone or, optionally, on the learner's own free Groq account. There is no Sprichst AI server.
+Sprichst is a Flutter German-learning MVP built around a curriculum and learning engine—not a generic chatbot. Learners sign in with Google; their profile lives in Firestore with an on-device copy so they can keep studying offline, and the AI tutor runs on the phone or, optionally, on an AI account the learner brings (Groq, Gemini, OpenAI, Claude, Grok, Mistral, DeepSeek, OpenRouter or any OpenAI-compatible server). There is no Sprichst AI server.
 
 ## What is already working
 
@@ -46,9 +46,9 @@ flutter run -d chrome
 
 The real app signs in with Google, so it needs your Firebase project's `lib/firebase_options.dart` (git-ignored; create it with `flutterfire configure`, see [docs/SETUP.md](docs/SETUP.md)). If Firebase cannot start, the app says so instead of showing a blank screen. To try every screen with no Firebase and no AI server, use the preview below.
 
-## AI: the phone, or your own Groq key (no server)
+## AI: the phone, or your own AI key (no server)
 
-Sprichst has no AI server of its own and needs none. The tutor either runs on the phone (see [docs/on-device-ai.md](docs/on-device-ai.md)) or, if the learner adds their own free [Groq](https://console.groq.com) key in Account → AI & voice, calls Groq directly from the app. When the Groq daily allowance runs out the learner is asked whether to continue on the phone; nothing switches silently. The key lives in the device's secure storage and is never synced. The full reasoning and quotas are in [docs/zero-cost-architecture.md](docs/zero-cost-architecture.md).
+Sprichst has no AI server of its own and needs none. The tutor either runs on the phone (see [docs/on-device-ai.md](docs/on-device-ai.md)) or, if the learner adds their own API key from any supported platform in Account → AI & voice (Groq, Google Gemini, OpenAI, Anthropic Claude, xAI Grok, Mistral, DeepSeek, OpenRouter, or any server that speaks the OpenAI chat API), calls that provider directly from the app. Each provider keeps its own key and model, and the learner can type any model id. When the provider's allowance runs out, the key is rejected or the app is offline, the learner is asked whether to continue on the phone; nothing switches silently. The key lives in the device's secure storage and is never synced. The full reasoning and quotas are in [docs/zero-cost-architecture.md](docs/zero-cost-architecture.md).
 
 ## Developer gateway (optional, not part of the released app)
 
@@ -126,6 +126,6 @@ See [SECURITY.md](SECURITY.md) to report a vulnerability.
 
 ## Account and privacy controls
 
-Account preferences are stored with the learner profile. The AI and voice controls are preferences only: they choose where the tutor answers (this phone, or the learner's own Groq account). The Groq key is never part of the profile; it stays in the device's secure storage. The privacy screen describes the real data paths.
+Account preferences are stored with the learner profile. The AI and voice controls are preferences only: they choose where the tutor answers (this phone, or the learner's own AI account). The API key is never part of the profile; it stays in the device's secure storage. The privacy screen describes the real data paths.
 
 Reset learning progress removes completed lessons, reviews, XP, and streaks while retaining the account and preferences. Delete account asks the user to reauthenticate, removes the current Firestore learning documents, then deletes the Firebase Authentication account.

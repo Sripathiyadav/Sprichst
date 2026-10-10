@@ -45,7 +45,7 @@ If you believe something in the app infringes your copyright, follow the process
 
 The AI tutor generates answers with a language model. It can be wrong, outdated, or unsuitable. Use it as a study aid, not as an authority, and read the AI Transparency notice. You are responsible for how you use its output.
 
-If you add your own Groq API key, the key and the Groq account are yours: use them under Groq's terms, keep the key secret, and do not use a key that is not yours. Sprichst never receives your key or what you send to Groq, and has no control over Groq's limits, prices or availability. Any usage or charges on that account are between you and Groq. If you remove the key or choose "This phone only", nothing is sent to Groq.
+If you add your own API key from an AI provider (for example Groq, Google Gemini, OpenAI, Anthropic Claude, xAI Grok, Mistral, DeepSeek or OpenRouter, or another OpenAI-compatible service), the key and the account are yours: use them under the provider's terms, keep the key secret, and do not use a key that is not yours. Sprichst never receives your key or what you send to the provider, and has no control over its limits, prices or availability. Any usage or charges on that account are between you and the provider. If you remove the key or choose "This phone only", nothing is sent to it.
 
 ## 8. Exam practice and brand names
 

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'on_device_ai_page.dart';
 import 'ai_server_section.dart';
-import 'groq_key_section.dart';
+import 'cloud_provider_section.dart';
 import '../../shared/input_rules.dart';
 import 'voice_picker.dart';
 
@@ -691,12 +691,12 @@ class AIAndVoicePageState extends ConsumerState<AIAndVoicePage> {
     return SettingsPage(
       title: 'AI & voice',
       subtitle:
-          'Choose where your tutor answers: on this phone, or on your own free Groq account.',
+          'Choose where your tutor answers: on this phone, or with an AI account of your own (Groq, Gemini, OpenAI, Claude, Grok and more).',
       children: [
         SettingsSection(
           title: 'Where the tutor runs',
           description:
-              'Automatic is recommended: private and offline. Nothing is sent to Groq unless you added a key.',
+              'Automatic is recommended: private and offline. Nothing is sent to an AI provider unless you added a key.',
           children: [
             Padding(
               padding: const EdgeInsets.all(AppSpacing.sm),
@@ -710,7 +710,7 @@ class AIAndVoicePageState extends ConsumerState<AIAndVoicePage> {
                         subtitle: provider.description,
                         leading: switch (provider) {
                           AIProviderPreference.automatic => Icons.auto_awesome,
-                          AIProviderPreference.groq => Icons.cloud_outlined,
+                          AIProviderPreference.cloud => Icons.cloud_outlined,
                           AIProviderPreference.local => Icons.phone_android,
                         },
                         state: provider == profile.aiProviderPreference
@@ -737,7 +737,7 @@ class AIAndVoicePageState extends ConsumerState<AIAndVoicePage> {
             ),
           ],
         ),
-        const GroqKeySection(),
+        const CloudProviderSection(),
         SettingsSection(
           title: 'Voice',
           children: [
@@ -944,9 +944,9 @@ class _PrivacyAndDataPage extends ConsumerWidget {
               ),
               SettingsTile(
                 icon: Icons.psychology_outlined,
-                title: 'Groq (only with your own key)',
+                title: 'Your own AI provider (only with your key)',
                 subtitle:
-                    'If you add a Groq key and choose "Groq (my own key)" (or something is not downloaded yet in Automatic), your message or recording, the last few messages and a compact learning context go straight from this device to Groq under your own account. There is no Sprichst server in between, and your key never leaves this device.',
+                    'If you add a key from a provider you choose (Groq, Gemini, OpenAI, Claude, Grok, Mistral, DeepSeek, OpenRouter or another OpenAI-compatible server) and pick "My own AI key" (or something is not downloaded yet in Automatic), your message or recording, the last few messages and a compact learning context go straight from this device to that provider under your own account. There is no Sprichst server in between, and your key never leaves this device.',
               ),
             ],
           ),
@@ -1021,7 +1021,7 @@ class _AboutPage extends StatelessWidget {
                   title: 'Firebase Authentication & Firestore'),
               SettingsTile(
                   icon: Icons.smart_toy_outlined,
-                  title: 'Groq (your own key), Qwen, Gemma & Whisper'),
+                  title: 'Your own AI provider, Qwen, Gemma & Whisper'),
               SettingsTile(
                   icon: Icons.mic_none_outlined,
                   title: 'Whisper.cpp & local text-to-speech'),
