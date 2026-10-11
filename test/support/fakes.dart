@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sprichst/app/app.dart';
 import 'package:sprichst/app/app_controller.dart';
-import 'package:sprichst/data/ai/groq_settings.dart';
+import 'package:sprichst/data/ai/cloud_ai_settings.dart';
 import 'package:sprichst/data/ai/mock_ai_repository.dart';
 import 'package:sprichst/data/curriculum_parser.dart';
 import 'package:sprichst/domain/models/dialogue_models.dart';
@@ -106,8 +106,8 @@ List<Override> testOverrides(InMemoryLearningRepository learning,
       learningRepositoryProvider.overrideWithValue(learning),
       aiRepositoryProvider.overrideWithValue(MockAIRepository()),
       onDeviceRuntimeProvider.overrideWithValue(FakeRuntime()),
-      groqSettingsProvider
-          .overrideWith((ref) => GroqSettings(store: MemorySecretStore())),
+      cloudAISettingsProvider
+          .overrideWith((ref) => CloudAISettings(store: MemorySecretStore())),
       ...extra,
     ];
 

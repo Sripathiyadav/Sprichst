@@ -318,6 +318,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   String _voiceErrorMessage(Object error) {
     if (error is ModelNotInstalledException ||
         error is ProviderUnavailableException ||
+        error is HearingUnavailableException ||
         error is VoiceUnavailableException) {
       return error.toString();
     }
@@ -480,6 +481,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         // These carry their own plain-language explanation of what to do.
         final explained = error is ModelNotInstalledException ||
             error is ProviderUnavailableException ||
+            error is HearingUnavailableException ||
             error is VoiceUnavailableException;
         // Offer the phone, never do it unasked: the learner decides where
         // their words go.
@@ -541,8 +543,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 }
 
 /// Says where the learner's words go, as the provider labels do: "This phone
-/// only · nothing leaves your phone" or "Groq (my own key) · sends your messages
-/// to Groq".
+/// only · nothing leaves your phone" or "My own AI key · sends your messages to
+/// Gemini".
 class _ProviderChip extends ConsumerWidget {
   const _ProviderChip();
 
@@ -550,7 +552,9 @@ class _ProviderChip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(appControllerProvider).profile!;
     final models = ref.watch(modelManagerProvider);
-    final hasKey = ref.watch(groqSettingsProvider).hasKey;
+    final cloud = ref.watch(cloudAISettingsProvider);
+    final hasKey = cloud.isConfigured;
+    final name = cloud.provider.name;
     final onPhone = models.isSupported && models.activeTutor != null;
 
     final (label, icon) = switch (profile.aiProviderPreference) {
@@ -558,19 +562,19 @@ class _ProviderChip extends ConsumerWidget {
           '${profile.aiProviderPreference.label} · nothing leaves your phone',
           Icons.phone_android
         ),
-      AIProviderPreference.groq => (
-          '${profile.aiProviderPreference.label} · sends your messages to Groq',
+      AIProviderPreference.cloud => (
+          '${profile.aiProviderPreference.label} · sends your messages to $name',
           Icons.cloud_outlined
         ),
       AIProviderPreference.automatic => onPhone
           ? ('Automatic · answers on this phone', Icons.phone_android)
           : hasKey
               ? (
-                  'Automatic · sends your messages to Groq until a model is downloaded',
+                  'Automatic · sends your messages to $name until a model is downloaded',
                   Icons.cloud_outlined
                 )
               : (
-                  'Automatic · download a model or add a Groq key to start',
+                  'Automatic · download a model or add an AI key to start',
                   Icons.info_outline
                 ),
     };

@@ -46,7 +46,7 @@ We close the accounts of users who are repeat infringers, in appropriate circums
 
 ## Trademarks
 
-"Goethe-Zertifikat" is a mark of the Goethe-Institut e. V.; "TestDaF" is a mark of the TestDaF-Institut; "telc", "ÖSD", "Google", "Firebase", "Groq", "Qwen", "Gemma", "Whisper" and other names belong to their owners. We use them only to describe compatibility or the exams our practice material is aimed at. Sprichst is not affiliated with or endorsed by them. To report a trademark issue, use the address above.
+"Goethe-Zertifikat" is a mark of the Goethe-Institut e. V.; "TestDaF" is a mark of the TestDaF-Institut; "telc", "ÖSD", "Google", "Firebase", "Groq", "OpenAI", "Anthropic", "Claude", "Gemini", "xAI", "Grok", "Mistral", "DeepSeek", "OpenRouter", "Qwen", "Gemma", "Whisper" and other names belong to their owners. We use them only to describe compatibility or the exams our practice material is aimed at. Sprichst is not affiliated with or endorsed by them. To report a trademark issue, use the address above.
 
 ## Other illegal content
 

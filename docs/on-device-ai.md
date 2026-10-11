@@ -3,7 +3,7 @@
 The AI Coach runs on the phone itself. The learner downloads the models once
 (Account → AI & voice → On-device AI) and from then on the coach works with no
 internet: chat, corrections, speech recognition and the tutor's voice. Nothing
-the learner says or writes leaves the phone, unless they add their own Groq key
+the learner says or writes leaves the phone, unless they add their own AI key (Groq, Gemini, OpenAI, Claude…)
 and choose to use it (see [zero-cost-architecture.md](zero-cost-architecture.md)).
 There is no Sprichst AI server.
 
@@ -39,14 +39,14 @@ as installed once every file has arrived (a `.complete` marker).
 The learner's "Where the tutor runs" setting (AI & voice) picks the route, see
 `lib/data/ai/hybrid_ai_repository.dart`:
 
-- **Automatic** (default): the phone; the learner's own Groq key only for
+- **Automatic** (default): the phone; the learner's own AI key only for
   something not downloaded yet (and only if they added one).
-- **Groq (my own key)**: Groq first, with the key stored on the device. When
-  Groq cannot answer (daily limit reached, offline, key rejected) the coach
+- **My own AI key**: the chosen provider first, with the key stored on the device. When
+  the provider cannot answer (daily limit reached, offline, key rejected) the coach
   says so and offers "Answer on this phone"; it never switches on its own.
 - **This phone only**: nothing ever leaves the device.
 
-Groq has no German voice, so speaking is always done by the phone's Piper
+No provider has a German voice the app uses, so speaking is always done by the phone's Piper
 voices.
 
 ## How the small models are kept honest
@@ -80,7 +80,7 @@ of them, Gemma 3 4B included.
   before creating a voice so a problem is an error message, not a crash.
 - **Android**: arm64 only for the native libraries. In-memory audio plays
   through a loopback proxy, allowed by `res/xml/network_security_config.xml`.
-- **Web**: models cannot run in a browser; the web build needs the learner's own Groq key to use the tutor (spoken answers need the phone app).
+- **Web**: models cannot run in a browser; the web build needs the learner's own AI key to use the tutor (spoken answers need the phone app).
 
 ## Building for iOS: keychain prompt
 

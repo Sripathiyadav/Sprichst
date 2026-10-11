@@ -42,21 +42,33 @@ extension SurfaceStyleLabel on SurfaceStyle {
 
 /// The AI gateway remains the authority for credentials and model routing.
 /// This value records the learner's safe provider preference only.
-enum AIProviderPreference { automatic, groq, local }
+enum AIProviderPreference {
+  automatic,
+
+  /// The learner's own cloud account (Groq, Gemini, OpenAI…). Stored as
+  /// `groq`, its name from when Groq was the only provider, so saved profiles,
+  /// older app versions and the Firestore rules all keep working.
+  cloud,
+  local;
+
+  String get storedName => this == cloud ? 'groq' : name;
+
+  static AIProviderPreference? fromName(Object? name) =>
+      name == 'groq' ? cloud : values.asNameMap()[name];
+}
 
 extension AIProviderPreferenceLabel on AIProviderPreference {
   String get label => switch (this) {
         AIProviderPreference.automatic => 'Automatic',
-        AIProviderPreference.groq => 'Groq (my own key)',
+        AIProviderPreference.cloud => 'My own AI key',
         AIProviderPreference.local => 'This phone only',
       };
 
-  // `groq` and `local` keep their stored names so saved profiles still load.
   String get description => switch (this) {
         AIProviderPreference.automatic =>
-          'Answers on this phone. Only for what is not downloaded yet does it use your own Groq key, if you added one.',
-        AIProviderPreference.groq =>
-          'Uses your free Groq account while its daily limit lasts. When it runs out or you are offline, you choose whether to continue on this phone.',
+          'Answers on this phone. Only for what is not downloaded yet does it use your own AI key, if you added one.',
+        AIProviderPreference.cloud =>
+          'Uses your own account with the AI provider you chose (Groq, Gemini, OpenAI, Claude, Grok…). When its limit runs out or you are offline, you choose whether to continue on this phone.',
         AIProviderPreference.local =>
           'Never send anything off the phone. Needs the models downloaded.',
       };

@@ -16,23 +16,23 @@ Correcting your German, explaining grammar and vocabulary, practising conversati
 
 On your phone (the default, once downloaded): Qwen2.5 and Gemma 3 language models, Whisper speech recognition, and Piper German voices. They run locally. Nothing leaves your device.
 
-On Groq (optional, with your own key): your device sends the request straight to Groq, which runs Llama models for the answer and Whisper for speech recognition. Sprichst runs no AI server and does not see the request. Groq has no German voice, so spoken replies always come from the voices on your phone. In a web browser the models cannot run, so the web version needs your Groq key.
+With your own AI key (optional): your device sends the request straight to the provider you chose (Groq, Google Gemini, OpenAI, Anthropic Claude, xAI Grok, Mistral, DeepSeek or OpenRouter, or another service that works like OpenAI), which runs its own model for the answer and, where it offers one, speech recognition; providers without it leave speech recognition to your phone. Sprichst runs no AI server and does not see the request. No provider has a German voice the app uses, so spoken replies always come from the voices on your phone. In a web browser the models cannot run, so the web version needs your AI key.
 
 ## What the model sees
 
-Your message or recording, the last few messages of the current conversation (so the tutor does not ask the same thing twice; they are forgotten when you leave the coach screen or reset progress), plus a short learning summary: your CEFR level, current unit and lesson, a few weak skills, some known words and recent mistakes. It does not see your name, email or account. Use "This phone only" in Account → AI & voice if you want nothing to leave your phone. When your Groq allowance runs out, the app tells you and asks before it answers on your phone instead; it never switches without asking.
+Your message or recording, the last few messages of the current conversation (so the tutor does not ask the same thing twice; they are forgotten when you leave the coach screen or reset progress), plus a short learning summary: your CEFR level, current unit and lesson, a few weak skills, some known words and recent mistakes. It does not see your name, email or account. Use "This phone only" in Account → AI & voice if you want nothing to leave your phone. When your provider's allowance runs out, your key is rejected or you are offline, the app tells you and asks before it answers on your phone instead; it never switches without asking.
 
 ## Limits and risks
 
 - It may produce wrong, biased, or inappropriate output. Answers can look convincing and still be incorrect.
-- Small on-device models are weaker than Groq's larger models.
+- Small on-device models are weaker than the larger models cloud providers run.
 - It may misunderstand an accent, background noise, or a dialect.
 - Do not enter secrets, health data, or other people's private information. You do not need to give any for learning.
 - We filter and size-limit what is sent, but we cannot guarantee that the model's output is safe in every case.
 
 ## Training
 
-We do not train or fine-tune any model on your messages, recordings or learning data. With your own Groq key, how Groq treats what you send is governed by your agreement with Groq; check its data and training settings in your Groq account.
+We do not train or fine-tune any model on your messages, recordings or learning data. With your own key, how the provider treats what you send is governed by your agreement with it; check its data and training settings in your account there.
 
 ## Human oversight and reporting problems
 

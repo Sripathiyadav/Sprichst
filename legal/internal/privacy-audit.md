@@ -1,6 +1,6 @@
 # Privacy audit (8 October 2026)
 
-Scope: the Flutter app (web, iOS, Android, desktop) and the web host configuration. The AI path has no Sprichst server: the app calls the learner's own Groq account directly (updated 9 October 2026).
+Scope: the Flutter app (web, iOS, Android, desktop) and the web host configuration. The AI path has no Sprichst server: the app calls the learner's own AI provider account directly (Groq, Gemini, OpenAI, Anthropic, xAI, Mistral, DeepSeek, OpenRouter or a custom OpenAI-compatible server; updated 11 October 2026).
 
 ## 1. Google Fonts and other Google-hosted assets
 
@@ -41,4 +41,4 @@ No cookies are set by us. Firebase Authentication keeps its session in IndexedDB
 ## 5. Open items for the operator
 
 - Choose the Firestore location (EU for EU users) and record it in the Privacy Policy.
-- Groq is contacted only from the learner's device with the learner's own key, only after they add one and choose to use it (or Automatic with a model missing). `api.groq.com` is the one AI host in the web CSP and in `test/privacy_audit_test.dart`.
+- A provider is contacted only from the learner's device with the learner's own key, only after they add one and choose to use it (or Automatic with a model missing). The provider hosts (`api.groq.com`, `generativelanguage.googleapis.com`, `api.openai.com`, `api.anthropic.com`, `api.x.ai`, `api.mistral.ai`, `api.deepseek.com`, `openrouter.ai`) are the only AI hosts in the web CSP and in `test/privacy_audit_test.dart`. A custom server address is typed by the learner, must be https, and is not available in the web build.

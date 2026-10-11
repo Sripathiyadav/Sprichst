@@ -141,7 +141,7 @@ Keep the personal-assistant, Google Calendar, Tasks, and Keep work out of this m
 ## Hardening checklist for a public deployment
 
 1. **Firebase rules:** `cd firebase && npm install && npm test`, then `firebase deploy --only firestore:rules,storage`. Pick the Firestore location (an EU region for EU users) before first use; it cannot be changed later.
-2. **Hosting headers:** `firebase/firebase.json` sets the Content-Security-Policy. It already allows `https://api.groq.com` (each learner's own key) and Google's hosts; browsers block every other origin. Only add your own origin if you run the developer gateway.
+2. **Hosting headers:** `firebase/firebase.json` sets the Content-Security-Policy. It already allows the AI providers a learner can bring their own key for (Groq, OpenAI, Anthropic, xAI, Mistral, DeepSeek, OpenRouter) and Google's hosts (which cover Gemini); browsers block every other origin. Only add your own origin if you run the developer gateway.
 3. **Web build:** run `python3 scripts/vendor_web_deps.py` (once, and after upgrading `firebase_core`), then `flutter build web --release`. The result loads nothing from Google, a CDN or a font service until a learner presses "Continue with Google".
 4. **AI gateway:** `pip install -r ai-server/requirements.txt`, then set `AUTH_REQUIRED=1`, `FIREBASE_PROJECT_ID`, `RATE_LIMIT_PER_MINUTE` and `CORS_ORIGINS` (see `ai-server/.env.example`) and serve it over HTTPS. Provider keys such as `GROQ_API_KEY` belong only in the server's `.env`.
 5. **Legal:** fill the placeholders in `legal/` (`python3 scripts/check_legal_placeholders.py --strict` must pass), register your DMCA agent, and work through `legal/internal/release-checklist.md`.

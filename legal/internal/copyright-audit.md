@@ -23,4 +23,4 @@ A DMCA safe harbour (17 U.S.C. § 512(c)) needs a registered agent. Details go i
 
 ## Trademarks
 
-Do not use another company's logo (Goethe-Institut, TestDaF, telc, Google, Groq). The app uses names in text only.
+Do not use another company's logo (Goethe-Institut, TestDaF, telc, Google, Groq, OpenAI, Anthropic, xAI, Mistral). The app uses names in text only.

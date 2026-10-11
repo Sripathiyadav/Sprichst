@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/ai/ai_server_settings.dart';
-import '../data/ai/groq_ai_repository.dart';
-import '../data/ai/groq_settings.dart';
+import '../data/ai/cloud_ai_repository.dart';
+import '../data/ai/cloud_ai_settings.dart';
 import '../data/ai/http_ai_repository.dart';
 import '../data/ai/hybrid_ai_repository.dart';
 import '../data/on_device/model_manager.dart';
@@ -46,26 +46,30 @@ final onDeviceRuntimeProvider =
 final modelManagerProvider = ChangeNotifierProvider<ModelManager>(
     (ref) => ModelManager(ref.watch(onDeviceRuntimeProvider)));
 
-/// The learner's own Groq key and model. Stored on this device only.
-final groqSettingsProvider =
-    ChangeNotifierProvider<GroqSettings>((ref) => GroqSettings()..load());
+/// The learner's own AI provider, keys and models. Stored on this device only.
+final cloudAISettingsProvider = ChangeNotifierProvider<CloudAISettings>(
+    (ref) => CloudAISettings()..load());
 
-/// The tutor runs on the phone or on the learner's own Groq account, as they
+/// The tutor runs on the phone or on the learner's own AI account (Groq,
+/// Gemini, OpenAI, Claude, Grok…), as they
 /// choose (see [HybridAIRepository]). There is no Sprichst AI server in the
 /// shipped path; the developer gateway is only used by debug builds and by
 /// anyone who typed an address for it.
 final Provider<AIRepository> aiRepositoryProvider =
     Provider<AIRepository>((ref) {
   final models = ref.read(modelManagerProvider);
-  final groqSettings = ref.read(groqSettingsProvider);
+  final cloudSettings = ref.read(cloudAISettingsProvider);
   return HybridAIRepository(
     onDevice: OnDeviceAIRepository(models),
     server: HttpAIRepository.dynamic(
       baseUrl: () => ref.read(aiServerSettingsProvider).url,
       authToken: () => ref.read(authRepositoryProvider).idToken(),
     ),
-    groq: GroqAIRepository(settings: groqSettings),
-    groqAvailable: () => ref.read(groqSettingsProvider).hasKey,
+    cloud: CloudAIRepository(settings: cloudSettings),
+    cloudAvailable: () => ref.read(cloudAISettingsProvider).isConfigured,
+    cloudCanTranscribe: () =>
+        ref.read(cloudAISettingsProvider).provider.canTranscribe,
+    providerName: () => ref.read(cloudAISettingsProvider).provider.name,
     serverEnabled: () => HybridAIRepository.defaultServerEnabled(
         hasCustomAddress: ref.read(aiServerSettingsProvider).isCustom),
     models: models,

@@ -107,7 +107,7 @@ abstract final class ProfileCodec {
         'appearancePreference': profile.appearancePreference.name,
         'surfaceStyle': profile.surfaceStyle.name,
         'glassIntensity': profile.glassIntensity,
-        'aiProviderPreference': profile.aiProviderPreference.name,
+        'aiProviderPreference': profile.aiProviderPreference.storedName,
         'aiModel': profile.aiModel,
         'voice': profile.voice,
         'speechRate': profile.speechRate,
@@ -230,11 +230,9 @@ abstract final class ProfileCodec {
         data['glassIntensity'],
         LearningProfile.defaultGlassIntensity,
       ).clamp(0, 100),
-      aiProviderPreference: _enum(
-        AIProviderPreference.values,
-        data['aiProviderPreference'],
-        AIProviderPreference.automatic,
-      ),
+      aiProviderPreference:
+          AIProviderPreference.fromName(data['aiProviderPreference']) ??
+              AIProviderPreference.automatic,
       aiModel: data['aiModel'] as String? ?? defaults.aiModel,
       voice: data['voice'] as String? ?? defaults.voice,
       speechRate: _int(data['speechRate'], defaults.speechRate),
