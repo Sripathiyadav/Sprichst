@@ -6,7 +6,7 @@
 Flutter Views → Riverpod AppController (view-model) → Repository → local device store
 ```
 
-The app keeps the same repository boundary for local and Firestore-backed learning data. The authenticated application currently selects `FirestoreLearningRepository`; `LocalLearningRepository` remains the compatible local implementation for lessons and local-first evolution.
+The app keeps the same repository boundary for local and Firestore-backed learning data. The authenticated application selects `FirestoreLearningRepository`, which keeps a per-account on-device copy (`SyncedProfileStore`, `lib/data/profile_sync.dart`) so the profile loads and saves offline: the cloud is the source of truth, unsynced local changes win on the next load, and a rejected write is an error rather than a silent pending change. `LocalLearningRepository` serves the canonical `curriculum/course.json` lessons and dialogues (and the no-Firebase preview).
 
 The app shell is responsive: phones use compact navigation, tablets use a navigation rail, and desktop gains an expanded rail. Appearance and account preferences live on `LearningProfile`, so they can be restored alongside the learning state.
 

@@ -10,11 +10,13 @@ Piper voices, with the macOS voice as a fallback) remain local.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 from typing import Any, Literal
 from urllib.error import URLError
@@ -41,6 +43,15 @@ from .security import (
     Turn,
     bearer_token,
     looks_like_audio,
+)
+
+from .reliability import (
+    Busy,
+    InferenceLimiter,
+    ModelOutputError,
+    parse_chat,
+    parse_correction,
+    request_id,
 )
 
 from .voices import (
@@ -97,6 +108,12 @@ GROQ_MODEL = os.getenv(
 
 MAX_TEXT_LENGTH = 1500
 
+if not logging.getLogger().handlers:
+    logging.basicConfig(
+        level=os.getenv("LOG_LEVEL", "INFO").upper(),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
+
 log = logging.getLogger("sprichst")
 
 
@@ -125,6 +142,19 @@ CORS_ORIGINS = [
 ]
 
 rate_limiter = RateLimiter(limit=RATE_LIMIT_PER_MINUTE)
+
+# How many model, transcription and speech jobs may run at once. Extra requests
+# wait up to INFERENCE_WAIT_SECONDS for a free slot, then get a 503 "busy", so a
+# burst cannot exhaust memory or run up the provider bill.
+inference_limiter = InferenceLimiter(
+    slots=int(os.getenv("MAX_CONCURRENT_INFERENCE", "4")),
+    wait_seconds=float(os.getenv("INFERENCE_WAIT_SECONDS", "10")),
+)
+
+# Optional second provider to try when the first is down or answers badly
+# ("ollama", "groq", or empty for none). Errors the learner caused (4xx) never
+# trigger it.
+AI_FALLBACK_PROVIDER = os.getenv("AI_FALLBACK_PROVIDER", "").strip().lower()
 token_verifier = (
     FirebaseTokenVerifier(FIREBASE_PROJECT_ID) if AUTH_REQUIRED else None
 )
@@ -173,15 +203,39 @@ app.add_middleware(
     allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=False,  # tokens travel in a header, never in cookies
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
-    expose_headers=["X-Voice-Used", "X-Voice-Fallback"],
+    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
+    expose_headers=["X-Voice-Used", "X-Voice-Fallback", "X-Request-ID"],
     max_age=600,
 )
 
 
 @app.middleware("http")
 async def protect(request: HttpRequest, call_next):
-    """Caps request size and adds safe response headers."""
+    """Caps request size, tags each request with an id, logs it, and adds safe
+    response headers."""
+
+    rid = request_id(request.headers.get("x-request-id"))
+    request.state.request_id = rid
+    started = time.monotonic()
+
+    def finish(response):
+        response.headers["X-Request-ID"] = rid
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'none'; frame-ancestors 'none'"
+        )
+        # Method, path, status and timing only: never bodies or tokens.
+        log.info(
+            "request id=%s %s %s status=%s ms=%d",
+            rid,
+            request.method,
+            request.url.path,
+            response.status_code,
+            (time.monotonic() - started) * 1000,
+        )
+        return response
 
     declared = request.headers.get("content-length")
     if request.method == "POST":
@@ -191,24 +245,21 @@ async def protect(request: HttpRequest, call_next):
             else MAX_JSON_BODY
         )
         if declared is None:
-            return JSONResponse(
-                {"detail": "A Content-Length header is required."},
-                status_code=411,
+            return finish(
+                JSONResponse(
+                    {"detail": "A Content-Length header is required."},
+                    status_code=411,
+                )
             )
         if not declared.isdigit() or int(declared) > limit:
-            return JSONResponse(
-                {"detail": "The request is too large."},
-                status_code=413,
+            return finish(
+                JSONResponse(
+                    {"detail": "The request is too large."},
+                    status_code=413,
+                )
             )
 
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["Cache-Control"] = "no-store"
-    response.headers["Referrer-Policy"] = "no-referrer"
-    response.headers["Content-Security-Policy"] = (
-        "default-src 'none'; frame-ancestors 'none'"
-    )
-    return response
+    return finish(await call_next(request))
 
 
 def caller(request: HttpRequest) -> Caller:
@@ -506,33 +557,90 @@ def _groq_json(
 # Provider router
 # ---------------------------------------------------------------------------
 
-def _ai_json(
+def _busy() -> HTTPException:
+    return HTTPException(
+        status_code=503,
+        detail="The service is busy. Try again in a moment.",
+        headers={"Retry-After": "5"},
+    )
+
+
+def _call_provider(
+    name: str,
     user_prompt: str,
     context: LearningContext,
     schema_hint: str,
 ) -> dict[str, Any]:
 
-    if AI_PROVIDER == "groq":
-        return _groq_json(
-            user_prompt,
-            context,
-            schema_hint,
-        )
+    if name == "groq":
+        return _groq_json(user_prompt, context, schema_hint)
 
-    if AI_PROVIDER == "ollama":
-        return _ollama_json(
-            user_prompt,
-            context,
-            schema_hint,
-        )
+    if name == "ollama":
+        return _ollama_json(user_prompt, context, schema_hint)
 
     raise HTTPException(
         status_code=500,
         detail=(
-            f"Unsupported AI_PROVIDER '{AI_PROVIDER}'. "
+            f"Unsupported AI provider '{name}'. "
             "Use 'groq' or 'ollama'."
         ),
     )
+
+
+def _ai_json(
+    user_prompt: str,
+    context: LearningContext,
+    schema_hint: str,
+) -> dict[str, Any]:
+    """Asks the configured provider, within the concurrency limit, and falls
+    back to AI_FALLBACK_PROVIDER when the provider is down (502, 503, 504)."""
+
+    providers = [AI_PROVIDER]
+    if AI_FALLBACK_PROVIDER and AI_FALLBACK_PROVIDER != AI_PROVIDER:
+        providers.append(AI_FALLBACK_PROVIDER)
+
+    try:
+        with inference_limiter.slot():
+            for index, name in enumerate(providers):
+                started = time.monotonic()
+                try:
+                    result = _call_provider(
+                        name, user_prompt, context, schema_hint
+                    )
+                except HTTPException as error:
+                    log.warning(
+                        "provider=%s failed status=%s ms=%d",
+                        name,
+                        error.status_code,
+                        (time.monotonic() - started) * 1000,
+                    )
+                    last = index == len(providers) - 1
+                    if last or error.status_code not in (502, 503, 504):
+                        raise
+                    continue
+                log.info(
+                    "provider=%s ok ms=%d",
+                    name,
+                    (time.monotonic() - started) * 1000,
+                )
+                return result
+    except Busy as error:
+        raise _busy() from error
+
+    raise HTTPException(status_code=500, detail="No AI provider is configured.")
+
+
+def _checked(validate, data: Any) -> dict[str, Any]:
+    """Only well-formed model output reaches the app."""
+
+    try:
+        return validate(data)
+    except ModelOutputError as error:
+        log.warning("Unusable model output: %s", error)
+        raise HTTPException(
+            status_code=502,
+            detail="The AI model returned an unusable answer. Please try again.",
+        ) from error
 
 
 # ---------------------------------------------------------------------------
@@ -544,6 +652,41 @@ def health() -> dict[str, str]:
     """Lightweight service check. Says nothing about providers or models."""
 
     return {"status": "ok"}
+
+
+_ready_cache: dict[str, Any] = {"at": 0.0, "ok": False}
+
+
+def _provider_ready() -> bool:
+    """Whether the configured provider can answer: Ollama is reachable, or a
+    hosted provider has its key. Cached briefly so probes cost nothing."""
+
+    if time.monotonic() - _ready_cache["at"] < 10:
+        return _ready_cache["ok"]
+
+    if AI_PROVIDER == "groq":
+        ok = bool(GROQ_API_KEY)
+    else:
+        try:
+            with urlopen(
+                f"{OLLAMA_BASE_URL.rstrip('/')}/api/tags", timeout=2
+            ):
+                ok = True
+        except (URLError, TimeoutError, OSError):
+            ok = False
+
+    _ready_cache.update(at=time.monotonic(), ok=ok)
+    return ok
+
+
+@app.get("/health/ready")
+def ready() -> JSONResponse:
+    """Whether the AI provider is usable, not only whether this process is up.
+    Says nothing about which provider, model or address is configured."""
+
+    if _provider_ready():
+        return JSONResponse({"status": "ready"})
+    return JSONResponse({"status": "degraded"}, status_code=503)
 
 
 # ---------------------------------------------------------------------------
@@ -619,14 +762,23 @@ async def transcribe(
             str(input_path),
         ]
 
+        def _transcribe() -> "subprocess.CompletedProcess[str]":
+            with inference_limiter.slot():
+                return subprocess.run(
+                    command,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                    check=False,
+                )
+
         try:
-            result = subprocess.run(
-                command,
-                capture_output=True,
-                text=True,
-                timeout=60,
-                check=False,
-            )
+            # whisper.cpp runs for seconds; in a worker thread it cannot stall
+            # every other request on the event loop.
+            result = await asyncio.to_thread(_transcribe)
+
+        except Busy as error:
+            raise _busy() from error
 
         except subprocess.TimeoutExpired as error:
             raise HTTPException(
@@ -670,8 +822,10 @@ def correct(
     who: Caller = Depends(caller),
 ) -> dict[str, Any]:
 
-    return _ai_json(
-        f"""
+    return _checked(
+        lambda data: parse_correction(data, request.text),
+        _ai_json(
+            f"""
 Analyze this German sentence as a German language tutor.
 
 Sentence:
@@ -770,6 +924,7 @@ Explanation:
   "followUp": string
 }
 """,
+        ),
     )
 
 
@@ -801,8 +956,10 @@ def chat(
     who: Caller = Depends(caller),
 ) -> dict[str, Any]:
 
-    return _ai_json(
-        f"""
+    return _checked(
+        parse_chat,
+        _ai_json(
+            f"""
 You are having a German-learning conversation with the learner.
 
 {_conversation_block(request.conversation)}Learner message:
@@ -1016,6 +1173,7 @@ The learner's weak skills are:
   "followUp": string
 }
 """,
+        ),
     )
 
 
@@ -1051,10 +1209,13 @@ def speak(
     voice, is_fallback = voice_catalogue.resolve(request.voice)
 
     try:
-        if voice.engine == "piper":
-            audio = piper_engine.synthesize(text, voice, request.rate)
-        else:
-            audio = _speak_with_system_voice(text, voice, request.rate)
+        with inference_limiter.slot():
+            if voice.engine == "piper":
+                audio = piper_engine.synthesize(text, voice, request.rate)
+            else:
+                audio = _speak_with_system_voice(text, voice, request.rate)
+    except Busy as error:
+        raise _busy() from error
     except HTTPException:
         raise
     except Exception as error:  # a broken model must not take the app down

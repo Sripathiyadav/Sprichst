@@ -1,6 +1,6 @@
 # Sprichst
 
-Sprichst is a Flutter German-learning MVP built around a curriculum and learning engine—not a generic chatbot. It includes a polished local-first learning flow today and clean boundaries for Firebase sync and a private Ollama-backed AI tutor next.
+Sprichst is a Flutter German-learning MVP built around a curriculum and learning engine—not a generic chatbot. Learners sign in with Google; their profile lives in Firestore with an on-device copy so they can keep studying offline, and the AI tutor runs on the phone with an optional FastAPI gateway.
 
 ## What is already working
 
@@ -20,9 +20,9 @@ Sprichst is a Flutter German-learning MVP built around a curriculum and learning
 - Learning engine: eight exercise types with deterministic evaluation, per-skill accuracy, weak-skill tracking, mistake reviews, and targeted practice
 - 48 lessons from Pre-A1 to B2 in `curriculum/course.json`, with 308 vocabulary words, 13 dialogues, Goethe A1–B2 task lessons and a four-part TestDaF track (reading, listening, written argument, speaking)
 - Deterministic spaced repetition for reviews and flashcards (Again → 10 minutes; successful recalls grow the gap)
-- On-device persistence through `shared_preferences`, so progress survives an app restart
+- Offline-tolerant sync: the profile is saved to Firestore and mirrored per account on the device. Offline changes are kept and pushed on the next load (the policy is documented in `lib/data/profile_sync.dart`: the cloud is the source of truth, pending local changes win, last writer wins)
 - Separate reset-learning-progress and reauthenticated delete-account flows
-- FastAPI AI gateway with `/health`, `/v1/correct`, `/v1/chat`, `/v1/explain`, and `/v1/practice`
+- FastAPI AI gateway: `GET /health`, `GET /health/ready` (provider reachable?), `POST /v1/correct`, `POST /v1/chat`, `POST /v1/transcribe`, `POST /v1/speak`, `GET /v1/voices`. Model answers are validated before they reach the app, concurrent jobs are capped, and an optional fallback provider is supported
 - Versioned curriculum JSON, validated by both a script and the app's parser
 - Firebase Firestore and Storage security rules ready to deploy
 
@@ -44,7 +44,7 @@ flutter pub get
 flutter run -d chrome
 ```
 
-The app runs immediately in local-first demo mode. It deliberately does not require a Firebase project or an LLM to launch.
+The real app signs in with Google, so it needs your Firebase project's `lib/firebase_options.dart` (git-ignored; create it with `flutterfire configure`, see [docs/SETUP.md](docs/SETUP.md)). If Firebase cannot start, the app says so instead of showing a blank screen. To try every screen with no Firebase and no AI server, use the preview below.
 
 ## Run the AI gateway (optional)
 

@@ -87,7 +87,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-Open `http://127.0.0.1:8000/health`; its `ollama` value should be `available`.
+Open `http://127.0.0.1:8000/health` (the process is up) and `http://127.0.0.1:8000/health/ready` (`ready` once Ollama answers, or the hosted provider's key is set; `degraded` with HTTP 503 otherwise).
 
 The app finds the gateway by itself in development (`lib/app/ai_server_url.dart`): the iOS simulator, desktop and web use `http://127.0.0.1:8000`, and the Android emulator uses `http://10.0.2.2:8000`, its alias for your computer. Both were checked end to end (voices, chat, speech, playback, transcription).
 
@@ -145,3 +145,11 @@ Keep the personal-assistant, Google Calendar, Tasks, and Keep work out of this m
 3. **Web build:** run `python3 scripts/vendor_web_deps.py` (once, and after upgrading `firebase_core`), then `flutter build web --release`. The result loads nothing from Google, a CDN or a font service until a learner presses "Continue with Google".
 4. **AI gateway:** `pip install -r ai-server/requirements.txt`, then set `AUTH_REQUIRED=1`, `FIREBASE_PROJECT_ID`, `RATE_LIMIT_PER_MINUTE` and `CORS_ORIGINS` (see `ai-server/.env.example`) and serve it over HTTPS. Provider keys such as `GROQ_API_KEY` belong only in the server's `.env`.
 5. **Legal:** fill the placeholders in `legal/` (`python3 scripts/check_legal_placeholders.py --strict` must pass), register your DMCA agent, and work through `legal/internal/release-checklist.md`.
+
+## Gateway load, limits and logs
+
+- `MAX_CONCURRENT_INFERENCE` (default 4) caps model, transcription and speech jobs at once; a request that cannot get a slot within `INFERENCE_WAIT_SECONDS` (default 10) receives `503` with `Retry-After`. Size it to your hardware.
+- `AI_FALLBACK_PROVIDER=ollama|groq` is tried when `AI_PROVIDER` is unreachable or answers badly (502, 503, 504). Errors caused by the request (4xx) never fall back.
+- Every response carries `X-Request-ID` (a caller-supplied id is kept if it is 8 to 64 letters, digits or dashes). Each request logs one line with the id, method, path, status and milliseconds, and each provider call logs its outcome and duration. Bodies, tokens and learner text are never logged. `LOG_LEVEL` controls verbosity.
+- Voices: Piper (default) runs on any OS. The macOS `say` voice is only a fallback on a Mac; on Linux install a Piper voice.
+- Speech recognition needs `whisper.cpp` on the gateway (`WHISPER_CPP_BIN`, `WHISPER_MODEL_PATH`). It is optional: the phone app transcribes on the device.
