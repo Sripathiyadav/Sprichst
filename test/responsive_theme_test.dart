@@ -76,6 +76,12 @@ void main() {
       // No profile yet: onboarding.
       expect(find.text('Start'), findsOneWidget);
       await _tapVisible(tester, find.text('Start'));
+      // The tour, page by page, with nothing overflowing at any size.
+      for (var page = 0; page < 5; page++) {
+        expect(find.textContaining('${page + 1} OF 5'), findsOneWidget);
+        expect(tester.takeException(), isNull, reason: 'tour page ${page + 1}');
+        await _tapVisible(tester, find.byKey(const ValueKey('tour-next')));
+      }
       await _tapVisible(tester, find.text('Continue')); // language
       await _tapVisible(tester, find.text('Continue')); // level
       expect(find.text('What do you want German for?'), findsOneWidget);

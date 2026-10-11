@@ -57,6 +57,7 @@ dependencies:
   archive: ^4.1.0
   crypto: ^3.0.7
   flutter_secure_storage: ^11.2.0
+  lottie: ^3.6.1
 # Privacy: the real google_sign_in_web contacts accounts.google.com on every page
 # load. The web build signs in through Firebase instead, so the plugin is
 # replaced by an empty stub. See tool/stubs/google_sign_in_web/README.md.
@@ -92,6 +93,8 @@ flutter:
     # The orbit mark, for About and the opening screen.
     - assets/brand/sprichst-orbit-light.png
     - assets/brand/sprichst-orbit-dark.png
+    # Lottie animations (welcome, tour, lesson complete…), a light and a dark file each.
+    - assets/lottie/
     # Only the user-facing documents; legal/README.md and legal/internal stay out.
     - legal/privacy-policy.md
     - legal/terms-of-service.md

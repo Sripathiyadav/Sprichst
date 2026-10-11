@@ -17,12 +17,9 @@ Choose the file by theme, for example `Theme.of(context).brightness == Brightnes
 
 ## Using them in Flutter
 
-These files aren't wired up yet. To use them:
+`SprichstLottie('name')` (`lib/shared/widgets/lottie_view.dart`) picks the light or dark file, hides the animation from screen readers and, under reduced motion, shows a still frame instead of playing. Today it is used by the welcome screen (`welcome_intro`), the five tour pages (`tour_*`, played once and held) and the lesson summary (`lesson_complete`). The others are ready for use.
 
-1. Add the `lottie` package to `pubspec.yaml` (pure Dart, no network access). Check its version against the project's Flutter SDK first.
-2. List the folder under `flutter: assets:` as `- assets/lottie/`.
-3. Play each animation once (`repeat: false`) and hide it from screen readers (`ExcludeSemantics`). The text beside it carries the meaning.
-4. When `MediaQuery.disableAnimationsOf(context)` is true, jump to the last frame instead of playing.
+Tour animations (240x180, 3 s, play once): `tour_lessons`, `tour_coach`, `tour_review`, `tour_private`, `tour_design`.
 
 ## Regenerating
 
