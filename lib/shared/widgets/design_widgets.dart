@@ -330,6 +330,62 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
+/// Progress through the current CEFR level as a ring, with the level in the
+/// middle ("A1"). The words are in the semantics label, so the ring is never
+/// the only way to read it.
+class LevelRing extends StatelessWidget {
+  const LevelRing(
+      {super.key, required this.level, required this.progress, this.size = 96});
+
+  final CefrLevel level;
+
+  /// 0 to 1: the share of this level's lessons that are done.
+  final double progress;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
+    final short = level == CefrLevel.preA1 ? 'A0' : level.label;
+    final percent = (progress.clamp(0, 1) * 100).round();
+    return Semantics(
+      label: 'Level $short, $percent percent of its lessons done',
+      excludeSemantics: true,
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox.expand(
+              child: CircularProgressIndicator(
+                key: const ValueKey('level-ring'),
+                value: progress.clamp(0, 1).toDouble(),
+                strokeWidth: 8,
+                strokeCap: StrokeCap.round,
+                backgroundColor: t.surfaceSunken,
+                color: t.coral,
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(short,
+                    style: theme.textTheme.headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.w700, color: t.ink)),
+                Text('$percent%',
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: t.inkMuted)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// A small label for status, category or provider, with an optional icon.
 /// Status chips always pair an icon with a word.
 class DsChip extends StatelessWidget {

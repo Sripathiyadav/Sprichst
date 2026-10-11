@@ -25,6 +25,7 @@ class PageFrame extends StatefulWidget {
       this.eyebrow,
       this.titleLocale,
       this.compactHeading = false,
+      this.onLogoTap,
       this.scrollsUnderNav = true});
 
   final String title;
@@ -33,6 +34,9 @@ class PageFrame extends StatefulWidget {
 
   /// Sits in the masthead row (the profile avatar, a settings button).
   final Widget? trailing;
+
+  /// Makes the logo in the masthead a button.
+  final VoidCallback? onLogoTap;
 
   /// Context in capitals above the title ("FRIDAY, 9 OCTOBER").
   final String? eyebrow;
@@ -174,6 +178,7 @@ class _PageFrameState extends State<PageFrame> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Masthead(
+                        onLogoTap: widget.onLogoTap,
                         leading: Navigator.canPop(context)
                             ? const BackButton()
                             : null,

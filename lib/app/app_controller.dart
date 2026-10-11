@@ -241,6 +241,21 @@ class AppController extends ChangeNotifier {
     }
   }
 
+  /// Pull-to-refresh: sends anything not yet saved, then reads the learner's
+  /// profile again. Returns false, changing nothing, when that fails (offline).
+  Future<bool> refresh() async {
+    if (profile == null) return false;
+    try {
+      await flushPendingChanges();
+      final latest = await _learningRepository.loadProfile();
+      if (latest != null) profile = latest;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void clearSession() {
     isLoading = true;
     profile = null;

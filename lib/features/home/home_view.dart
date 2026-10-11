@@ -8,6 +8,7 @@ import '../../domain/learning/achievements.dart';
 import '../../domain/learning/adaptive_planner.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../account/account_view.dart';
 import '../learn/lesson_view.dart';
 import '../practice/practice_session_view.dart';
 import '../gamification/quests_card.dart';
@@ -17,11 +18,41 @@ import 'plan_card.dart';
 /// From the top: the date and greeting, the streak as the one big number beside
 /// the level and today's quests, CONTINUE LEARNING as the screen's one feature
 /// panel, YOUR DAILY PRACTICE, and the rest of the picture.
-class HomeView extends ConsumerWidget {
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends ConsumerState<HomeView> {
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  /// Pull-to-refresh and the logo both end up here.
+  Future<void> _refresh() async {
+    final ok = await ref.read(appControllerProvider).refresh();
+    if (!mounted || ok) return;
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Could not refresh. Check your connection.')));
+  }
+
+  /// The logo: back to the top, then refresh.
+  void _logoTapped() {
+    if (_scroll.hasClients && _scroll.offset > 0) {
+      _scroll.animateTo(0,
+          duration: motionDuration(context, 250), curve: Curves.easeOut);
+    }
+    _refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final app = ref.watch(appControllerProvider);
     final profile = app.profile!;
     final plan = app.plan;
@@ -35,98 +66,153 @@ class HomeView extends ConsumerWidget {
       title: '${_greeting(now.hour)}, ${profile.name}',
       titleLocale: const Locale('de'),
       subtitle: 'Ready for today’s practice?',
-      trailing: ProfileAvatar(name: profile.name),
-      child: ListView(
-        padding: pageListPadding(context),
-        children: [
-          _Today(profile: profile, streak: streak, now: now),
-          const SizedBox(height: AppSpacing.xxl),
-          if (plan != null) ...[
-            const SectionTitle('Continue learning'),
-            const SizedBox(height: AppSpacing.sm),
-            PlanCard(plan: plan),
-            if (plan.kind != PlanKind.lesson && lesson != null) ...[
-              const SizedBox(height: AppSpacing.md),
-              _NextLessonCard(lesson: lesson),
-            ],
-            const SizedBox(height: AppSpacing.xxl),
-          ],
-          const SectionTitle('Your daily practice'),
-          const SizedBox(height: AppSpacing.sm),
-          _PracticeCards(due: app.dueReviews),
-          const SizedBox(height: AppSpacing.xxl),
-          SectionTitle(
-            'Daily quests',
-            action: Text(
-                '${_questsDone(profile, now)} / ${Achievements.todaysQuests(now).length}',
-                style: Theme.of(context).textTheme.labelLarge),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          QuestsCard(profile: profile, now: now),
-          const SizedBox(height: AppSpacing.xxl),
-          const SectionTitle('Your progress'),
-          const SizedBox(height: AppSpacing.sm),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              // Two columns whenever they fit, including on phones; one column
-              // when the width is tight or text is enlarged.
-              final enlarged = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-              final twoColumns =
-                  constraints.maxWidth >= Breakpoints.twoStatTiles && !enlarged;
-              final width = twoColumns
-                  ? (constraints.maxWidth - AppSpacing.sm) / 2
-                  : constraints.maxWidth;
-              return Wrap(
-                spacing: AppSpacing.sm,
-                runSpacing: AppSpacing.sm,
-                children: [
-                  for (final tile in [
-                    StatTile(
-                      icon: Icons.bolt_outlined,
-                      value: '${profile.xp}',
-                      label: 'XP earned',
-                    ),
-                    StatTile(
-                      icon: Icons.refresh,
-                      value: '${app.dueReviews}',
-                      label: 'Reviews due',
-                    ),
-                    StatTile(
-                      icon: Icons.auto_fix_high_outlined,
-                      value: '${app.pendingMistakes}',
-                      label: 'Mistakes to fix',
-                    ),
-                  ])
-                    SizedBox(width: width, child: tile),
-                ],
-              );
-            },
-          ),
-          if (weak.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.xxl),
-            const SectionTitle('Needs practice'),
-            const SizedBox(height: AppSpacing.sm),
-            Wrap(
-              spacing: AppSpacing.xs,
-              runSpacing: AppSpacing.xs,
-              children: [
-                for (final skill in weak)
-                  ActionChip(
-                    label: Text(skillLabel(skill)),
-                    avatar: const Icon(Icons.bolt, size: 18),
-                    onPressed: () => openPractice(
-                      context,
-                      ref,
-                      skillIds: [skill],
-                      title: skillLabel(skill),
-                    ),
-                  ),
-              ],
+      onLogoTap: _logoTapped,
+      trailing: Semantics(
+        button: true,
+        label: 'Account',
+        excludeSemantics: true,
+        child: InkWell(
+          key: const ValueKey('home-account'),
+          customBorder: const CircleBorder(),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => const GlassPage(body: AccountView()))),
+          child: ProfileAvatar(name: profile.name),
+        ),
+      ),
+      child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          controller: _scroll,
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: pageListPadding(context),
+          children: [
+            _Today(
+              profile: profile,
+              streak: streak,
+              now: now,
+              levelProgress: app.curriculum.levelProgress(
+                  profile.currentLevel, profile.isLessonCompleted),
+              onStartQuests: () =>
+                  _startQuests(context, ref, app, profile, now),
             ),
+            const SizedBox(height: AppSpacing.xxl),
+            if (plan != null) ...[
+              const SectionTitle('Continue learning'),
+              const SizedBox(height: AppSpacing.sm),
+              PlanCard(plan: plan),
+              if (plan.kind != PlanKind.lesson && lesson != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                _NextLessonCard(lesson: lesson),
+              ],
+              const SizedBox(height: AppSpacing.xxl),
+            ],
+            const SectionTitle('Your daily practice'),
+            const SizedBox(height: AppSpacing.sm),
+            _PracticeCards(due: app.dueReviews),
+            const SizedBox(height: AppSpacing.xxl),
+            SectionTitle(
+              'Daily quests',
+              action: Text(
+                  '${_questsDone(profile, now)} / ${Achievements.todaysQuests(now).length}',
+                  style: Theme.of(context).textTheme.labelLarge),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            QuestsCard(profile: profile, now: now),
+            const SizedBox(height: AppSpacing.xxl),
+            const SectionTitle('Your progress'),
+            const SizedBox(height: AppSpacing.sm),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Two columns whenever they fit, including on phones; one column
+                // when the width is tight or text is enlarged.
+                final enlarged =
+                    MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+                final twoColumns =
+                    constraints.maxWidth >= Breakpoints.twoStatTiles &&
+                        !enlarged;
+                final width = twoColumns
+                    ? (constraints.maxWidth - AppSpacing.sm) / 2
+                    : constraints.maxWidth;
+                return Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    for (final tile in [
+                      StatTile(
+                        icon: Icons.bolt_outlined,
+                        value: '${profile.xp}',
+                        label: 'XP earned',
+                      ),
+                      StatTile(
+                        icon: Icons.refresh,
+                        value: '${app.dueReviews}',
+                        label: 'Reviews due',
+                      ),
+                      StatTile(
+                        icon: Icons.auto_fix_high_outlined,
+                        value: '${app.pendingMistakes}',
+                        label: 'Mistakes to fix',
+                      ),
+                    ])
+                      SizedBox(width: width, child: tile),
+                  ],
+                );
+              },
+            ),
+            if (weak.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.xxl),
+              const SectionTitle('Needs practice'),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.xs,
+                runSpacing: AppSpacing.xs,
+                children: [
+                  for (final skill in weak)
+                    ActionChip(
+                      label: Text(skillLabel(skill)),
+                      avatar: const Icon(Icons.bolt, size: 18),
+                      onPressed: () => openPractice(
+                        context,
+                        ref,
+                        skillIds: [skill],
+                        title: skillLabel(skill),
+                      ),
+                    ),
+                ],
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
+  }
+
+  /// Opens the first of today's quests that is not done yet.
+  static void _startQuests(BuildContext context, WidgetRef ref,
+      AppController app, LearningProfile profile, DateTime now) {
+    final state = profile.gamification;
+    final next = Achievements.todaysQuests(now)
+        .where((q) => !Achievements.isDone(state, q, now))
+        .firstOrNull;
+    if (next == null) return;
+    switch (next.kind) {
+      case QuestKind.lesson:
+        final plan = app.plan;
+        final lesson = app.currentLesson;
+        if (plan != null) {
+          startPlan(context, ref, plan);
+        } else if (lesson != null) {
+          Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => LessonView(lesson: lesson)));
+        } else {
+          ref.read(shellTabRequestProvider.notifier).state = 1;
+        }
+      case QuestKind.cards:
+      case QuestKind.games:
+        ref.read(shellTabRequestProvider.notifier).state = 2;
+      case QuestKind.correct:
+        openPractice(context, ref, title: 'Practice');
+    }
   }
 
   static int _questsDone(LearningProfile profile, DateTime now) {
@@ -171,69 +257,97 @@ class HomeView extends ConsumerWidget {
   }
 }
 
-/// The streak as the screen's one big number beside the level and today's
-/// quests. A learner without a streak yet gets an invitation, not a zero.
+/// The top of Home, in a column: the streak with the level ring beside it,
+/// then today's quests across the full width with the button that starts them.
+/// A learner without a streak yet gets an invitation, not a zero.
 class _Today extends StatelessWidget {
-  const _Today(
-      {required this.profile, required this.streak, required this.now});
+  const _Today({
+    required this.profile,
+    required this.streak,
+    required this.now,
+    required this.levelProgress,
+    required this.onStartQuests,
+  });
 
   final LearningProfile profile;
   final int streak;
   final DateTime now;
+  final double levelProgress;
+  final VoidCallback onStartQuests;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final quests = Achievements.todaysQuests(now);
     final state = profile.gamification;
     final done = quests.where((q) => Achievements.isDone(state, q, now)).length;
     final total = quests.length;
+    final allDone = total > 0 && done == total;
 
-    final side = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        LevelBadge(level: profile.currentLevel, caption: 'Your level'),
-        const SizedBox(height: AppSpacing.md),
-        SkillMeter(
-          label: 'Today’s quests',
-          value: total == 0 ? 0 : done / total,
-          valueLabel: '$done / $total',
-          compact: true,
-        ),
-      ],
-    );
-
-    if (streak < 1) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Finish a lesson today to start your streak.',
-              style: Theme.of(context).textTheme.bodyLarge),
-          const SizedBox(height: AppSpacing.md),
-          side,
-        ],
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.md),
-      child: Wrap(
-        spacing: AppSpacing.xl,
-        runSpacing: AppSpacing.lg,
-        crossAxisAlignment: WrapCrossAlignment.end,
-        children: [
-          EditorialNumber(
+    final streakPart = streak < 1
+        ? Text('Finish a lesson today to start your streak.',
+            style: theme.textTheme.bodyLarge)
+        : EditorialNumber(
             value: streak,
             label: 'Day streak',
             unit: streak == 1 ? 'day' : 'days',
+            size: EditorialSize.numeral,
             disc: true,
+          );
+    // A little air on the right so the stroke is never trimmed by the list.
+    final ring = Padding(
+      padding: const EdgeInsets.all(AppSpacing.xxs),
+      child: LevelRing(
+          level: profile.currentLevel, progress: levelProgress, size: 92),
+    );
+
+    final enlarged = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final top = enlarged
+        ? Wrap(
+            spacing: AppSpacing.xl,
+            runSpacing: AppSpacing.lg,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [streakPart, ring],
+          )
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                  child: Align(
+                      alignment: Alignment.centerLeft, child: streakPart)),
+              const SizedBox(width: AppSpacing.md),
+              ring,
+            ],
+          );
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          top,
+          const SizedBox(height: AppSpacing.xl),
+          SkillMeter(
+            label: 'Today’s quests',
+            value: total == 0 ? 0 : done / total,
+            valueLabel: '$done / $total',
           ),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 140, maxWidth: 190),
-            child: Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-                child: side),
-          ),
+          const SizedBox(height: AppSpacing.md),
+          if (allDone)
+            Row(children: [
+              Icon(Icons.check_circle, color: context.tokens.success),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                  child: Text('All of today’s quests are done.',
+                      style: theme.textTheme.titleSmall)),
+            ])
+          else
+            PrimaryButton(
+              key: const ValueKey('start-quests'),
+              label: 'Start today’s quests',
+              block: true,
+              onPressed: onStartQuests,
+            ),
         ],
       ),
     );
