@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
 import 'geometry.dart';
+import 'lottie_view.dart';
 
 /// Duration for [AppMotion.quick], [AppMotion.standard] and
 /// [AppMotion.emphasis] that respects the system's reduce-motion setting.
@@ -329,6 +330,69 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
+/// Progress through the current CEFR level as a ring, with the level in the
+/// middle ("A1"). The words are in the semantics label, so the ring is never
+/// the only way to read it.
+class LevelRing extends StatelessWidget {
+  const LevelRing(
+      {super.key, required this.level, required this.progress, this.size = 96});
+
+  final CefrLevel level;
+
+  /// 0 to 1: the share of this level's lessons that are done.
+  final double progress;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
+    final short = level == CefrLevel.preA1 ? 'A0' : level.label;
+    final percent = (progress.clamp(0, 1) * 100).round();
+    return Semantics(
+      label: 'Level $short, $percent percent of its lessons done',
+      excludeSemantics: true,
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox.expand(
+              child: CircularProgressIndicator(
+                key: const ValueKey('level-ring'),
+                value: progress.clamp(0, 1).toDouble(),
+                strokeWidth: 8,
+                strokeCap: StrokeCap.round,
+                backgroundColor: t.surfaceSunken,
+                color: t.coral,
+              ),
+            ),
+            // Scales down with the ring, so enlarged text never spills out of it.
+            Padding(
+              padding: EdgeInsets.all(size * .2),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(short,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700, color: t.ink)),
+                    Text('$percent%',
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: t.inkMuted)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// A small label for status, category or provider, with an optional icon.
 /// Status chips always pair an icon with a word.
 class DsChip extends StatelessWidget {
@@ -473,6 +537,14 @@ class StateMessage extends StatelessWidget {
         StateKind.loading => Icons.hourglass_empty,
       };
 
+  /// The drawn, animated version of the state; loading keeps the progress arc.
+  String? get _animation => switch (kind) {
+        StateKind.empty => 'empty_state',
+        StateKind.error => 'error_state',
+        StateKind.offline => 'offline_state',
+        StateKind.loading => null,
+      };
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -486,38 +558,41 @@ class StateMessage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 96,
-              height: 96,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Geometry(shape: GeometryShape.ring, size: 96),
-                  const Positioned(
-                      right: 6,
-                      top: 6,
-                      child: Geometry(
-                          shape: GeometryShape.disc,
-                          size: 28,
-                          tone: GeometryTone.coral)),
-                  if (kind == StateKind.loading)
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: CircularProgressIndicator(
-                        // Under reduced motion the arc stays still; the words
-                        // beside it say what is happening.
-                        value: still ? .3 : null,
-                        strokeWidth: 3,
-                        color: t.accent,
-                        backgroundColor: t.surfaceSunken,
-                      ),
-                    )
-                  else
-                    Icon(_icon, size: 32, color: t.ink),
-                ],
+            if (_animation != null)
+              SprichstLottie(_animation!, width: 96, height: 96)
+            else
+              SizedBox(
+                width: 96,
+                height: 96,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Geometry(shape: GeometryShape.ring, size: 96),
+                    const Positioned(
+                        right: 6,
+                        top: 6,
+                        child: Geometry(
+                            shape: GeometryShape.disc,
+                            size: 28,
+                            tone: GeometryTone.coral)),
+                    if (kind == StateKind.loading)
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          // Under reduced motion the arc stays still; the words
+                          // beside it say what is happening.
+                          value: still ? .3 : null,
+                          strokeWidth: 3,
+                          color: t.accent,
+                          backgroundColor: t.surfaceSunken,
+                        ),
+                      )
+                    else
+                      Icon(_icon, size: 32, color: t.ink),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: AppSpacing.lg),
             Text(title,
                 textAlign: TextAlign.center, style: theme.textTheme.titleLarge),

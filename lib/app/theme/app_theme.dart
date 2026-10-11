@@ -150,7 +150,8 @@ abstract final class SprichstTheme {
         backgroundColor: tokens.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        indicatorColor: tokens.accentSoft,
+        // The selected icon sits on the animated nav_indicator pill instead.
+        indicatorColor: Colors.transparent,
         // Labels stay visible: icons alone are not self-explanatory.
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         iconTheme: WidgetStatePropertyAll(IconThemeData(color: tokens.ink)),
@@ -164,7 +165,7 @@ abstract final class SprichstTheme {
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: tokens.surface,
-        indicatorColor: tokens.accentSoft,
+        indicatorColor: Colors.transparent,
         selectedIconTheme: IconThemeData(color: tokens.ink),
         unselectedIconTheme: IconThemeData(color: tokens.ink),
         selectedLabelTextStyle: text.labelMedium

@@ -6,6 +6,7 @@ import '../../app/theme/app_theme.dart';
 import '../../data/on_device/model_catalogue.dart';
 import '../../data/on_device/model_manager.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../../shared/widgets/lottie_view.dart';
 
 /// Download and choose the models that run the AI Coach on this phone.
 class OnDeviceAIPage extends ConsumerStatefulWidget {
@@ -180,7 +181,14 @@ class ModelTile extends ConsumerWidget {
         if (progress != null)
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.xs),
-            child: LinearProgressIndicator(value: progress),
+            child: Row(
+              children: [
+                const SprichstLottie('download_model',
+                    width: 28, height: 28, repeat: true),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(child: LinearProgressIndicator(value: progress)),
+              ],
+            ),
           ),
         if (error != null)
           Text(error,

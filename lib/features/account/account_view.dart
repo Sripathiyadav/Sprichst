@@ -9,6 +9,7 @@ import 'cloud_provider_section.dart';
 import '../../shared/input_rules.dart';
 import 'voice_picker.dart';
 
+import '../onboarding/intro_tour.dart' show IntroTourPage;
 import '../onboarding/onboarding_view.dart' show GoalPicker;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,6 +108,13 @@ class AccountView extends ConsumerWidget {
           SettingsSection(
             title: 'Privacy & support',
             children: [
+              SettingsTile(
+                icon: Icons.explore_outlined,
+                title: 'How Sprichst works',
+                subtitle:
+                    'A five-screen tour of lessons, the coach and privacy.',
+                onTap: () => _push(context, const IntroTourPage()),
+              ),
               SettingsTile(
                 icon: Icons.privacy_tip_outlined,
                 title: 'Privacy & data',

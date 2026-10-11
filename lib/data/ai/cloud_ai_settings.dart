@@ -43,8 +43,10 @@ class CloudAISettings extends ChangeNotifier {
 
   // Groq's names predate the other providers; they are what the scheme below
   // produces for it, so keys saved by earlier versions still load.
-  static String keyNameOf(String providerId) => 'sprichst_${providerId}_api_key';
-  static String modelNameOf(String providerId) => 'sprichst_${providerId}_model';
+  static String keyNameOf(String providerId) =>
+      'sprichst_${providerId}_api_key';
+  static String modelNameOf(String providerId) =>
+      'sprichst_${providerId}_model';
   static const _providerName = 'sprichst_ai_provider';
   static const _customUrlName = 'sprichst_custom_base_url';
 
@@ -118,7 +120,8 @@ class CloudAISettings extends ChangeNotifier {
     try {
       final preferences = await SharedPreferences.getInstance();
       _provider = CloudProvider.byId(preferences.getString(_providerName));
-      _customBaseUrl = validBaseUrl(preferences.getString(_customUrlName) ?? '');
+      _customBaseUrl =
+          validBaseUrl(preferences.getString(_customUrlName) ?? '');
       for (final p in cloudProviders) {
         final model = preferences.getString(modelNameOf(p.id));
         if (model != null && validModel(model) != null) _models[p.id] = model;

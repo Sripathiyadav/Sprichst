@@ -47,8 +47,8 @@ final modelManagerProvider = ChangeNotifierProvider<ModelManager>(
     (ref) => ModelManager(ref.watch(onDeviceRuntimeProvider)));
 
 /// The learner's own AI provider, keys and models. Stored on this device only.
-final cloudAISettingsProvider = ChangeNotifierProvider<CloudAISettings>(
-    (ref) => CloudAISettings()..load());
+final cloudAISettingsProvider =
+    ChangeNotifierProvider<CloudAISettings>((ref) => CloudAISettings()..load());
 
 /// The tutor runs on the phone or on the learner's own AI account (Groq,
 /// Gemini, OpenAI, Claude, Grok…), as they
@@ -238,6 +238,21 @@ class AppController extends ChangeNotifier {
     } finally {
       isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Pull-to-refresh: sends anything not yet saved, then reads the learner's
+  /// profile again. Returns false, changing nothing, when that fails (offline).
+  Future<bool> refresh() async {
+    if (profile == null) return false;
+    try {
+      await flushPendingChanges();
+      final latest = await _learningRepository.loadProfile();
+      if (latest != null) profile = latest;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 

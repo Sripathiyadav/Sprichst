@@ -15,6 +15,7 @@ import '../features/progress/progress_view.dart';
 import '../domain/models/learning_models.dart';
 import '../shared/haptics.dart';
 import '../shared/widgets/app_widgets.dart';
+import '../shared/widgets/lottie_view.dart';
 import 'app_controller.dart';
 import 'theme/app_theme.dart';
 import 'theme/breakpoints.dart';
@@ -223,7 +224,7 @@ class _LearningShell extends StatelessWidget {
         for (final item in _destinations)
           NavigationRailDestination(
             icon: Icon(item.icon),
-            selectedIcon: Icon(item.selected),
+            selectedIcon: _Selected(item.selected),
             label: Text(item.label),
           ),
       ],
@@ -258,7 +259,7 @@ class _LearningShell extends StatelessWidget {
         ])
           NavigationDestination(
             icon: Icon(item.icon),
-            selectedIcon: Icon(item.selected),
+            selectedIcon: _Selected(item.selected),
             label: item.label,
           ),
       ],
@@ -301,6 +302,29 @@ class _LearningShell extends StatelessWidget {
               : bar,
     );
   }
+}
+
+/// The selected destination's icon on the animated pill. The pill grows when
+/// the destination is selected (this widget only exists while it is), and the
+/// built-in indicator is switched off in the theme so the two never overlap.
+class _Selected extends StatelessWidget {
+  const _Selected(this.icon);
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 64,
+        height: 32,
+        child: Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            const SprichstLottie('nav_indicator', width: 64, height: 40),
+            Icon(icon),
+          ],
+        ),
+      );
 }
 
 /// The brand's initial in the navigation rail: an S with the coral dot.

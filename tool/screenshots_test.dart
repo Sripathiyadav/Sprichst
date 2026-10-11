@@ -106,6 +106,13 @@ void main() {
       await _shot(tester, '$mode-onboarding');
       await tester.tap(find.text('Start'));
       await tester.pumpAndSettle();
+      for (var page = 1; page <= 5; page++) {
+        await _shot(tester, '$mode-tour-$page');
+        final next = find.byKey(const ValueKey('tour-next'));
+        await tester.ensureVisible(next);
+        await tester.tap(next);
+        await tester.pumpAndSettle();
+      }
       await _shot(tester, '$mode-onboarding-language');
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();

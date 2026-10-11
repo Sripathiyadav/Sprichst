@@ -9,10 +9,14 @@ import 'wordmark.dart';
 /// [Masthead] sits inside a page (tab roots); [MastheadBar] is the same thing
 /// as an app bar for pushed pages, with a back button.
 class Masthead extends StatelessWidget {
-  const Masthead({super.key, this.actions = const [], this.leading});
+  const Masthead(
+      {super.key, this.actions = const [], this.leading, this.onLogoTap});
 
   final List<Widget> actions;
   final Widget? leading;
+
+  /// Makes the wordmark a button (Home uses it to refresh).
+  final VoidCallback? onLogoTap;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +35,24 @@ class Masthead extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: EdgeInsets.only(left: leading == null ? 0 : 4),
-                    child: const Wordmark(),
+                    child: onLogoTap == null
+                        ? const Wordmark()
+                        : Semantics(
+                            button: true,
+                            label: 'Refresh',
+                            excludeSemantics: true,
+                            child: InkWell(
+                              key: const ValueKey('logo-refresh'),
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: onLogoTap,
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: AppSpacing.sm,
+                                    horizontal: AppSpacing.xxs),
+                                child: Wordmark(),
+                              ),
+                            ),
+                          ),
                   ),
                 ),
               ),

@@ -89,7 +89,9 @@ class HybridAIRepository implements AIRepository {
     if (!models.isSupported) return _cloud(call, hearing: hearing);
 
     // The provider cannot hear: the phone's Whisper does, whatever the mode.
-    if (hearing && pref != AIProviderPreference.local && _hasCloud &&
+    if (hearing &&
+        pref != AIProviderPreference.local &&
+        _hasCloud &&
         !_cloudCanTranscribe()) {
       return call(onDevice);
     }
