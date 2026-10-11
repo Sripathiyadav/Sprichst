@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
+import '../../app/theme/breakpoints.dart';
+import '../../data/on_device/model_catalogue.dart';
+import '../../data/on_device/on_device_ai_repository.dart';
 import '../../domain/models/learning_models.dart';
+import '../../shared/input_rules.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../account/on_device_ai_page.dart';
 import 'services/audio_player_service.dart';
 import 'services/audio_recorder_service.dart';
+import 'voice/voice_mode_view.dart';
+import 'voice/voice_session.dart';
 
 class AICoachView extends ConsumerStatefulWidget {
   const AICoachView({super.key});
@@ -26,6 +34,15 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   var _sending = false;
   var _recording = false;
   var _transcribing = false;
+  var _startingRecording = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // An empty screen is a new conversation; the tutor must not remember an
+    // earlier one the learner can no longer see.
+    ref.read(appControllerProvider).startNewConversation();
+  }
 
   @override
   void dispose() {
@@ -41,6 +58,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     final profile = app.profile!;
 
     return PageFrame(
+      scrollsUnderNav: false,
       title: 'AI Coach',
       subtitle:
           'Practice German with your personal tutor through text or voice.',
@@ -48,9 +66,10 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         builder: (context, constraints) {
           final conversation = Column(
             children: [
+              const _OfflineSetupBanner(),
               Expanded(
                 child: _messages.isEmpty
-                    ? const _CoachEmptyState()
+                    ? _CoachEmptyState(onVoiceMode: _openVoiceMode)
                     : ListView.separated(
                         itemCount: _messages.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -74,6 +93,9 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                       controller: _text,
                       minLines: 1,
                       maxLines: 3,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(InputLimits.message),
+                      ],
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _send(),
                       decoration: const InputDecoration(
@@ -82,6 +104,14 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  IconButton.filledTonal(
+                    tooltip: 'Voice mode: talk hands-free',
+                    onPressed: _sending || _recording || _transcribing
+                        ? null
+                        : _openVoiceMode,
+                    icon: const Icon(Icons.graphic_eq),
+                  ),
+                  const SizedBox(width: 4),
                   IconButton.filled(
                     tooltip: _recording ? 'Stop recording' : 'Record German',
                     onPressed:
@@ -91,16 +121,17 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                         : const Icon(Icons.mic),
                   ),
                   const SizedBox(width: 4),
-                  FilledButton(
+                  IconButton.filled(
+                    tooltip: 'Send message',
                     onPressed:
                         _sending || _recording || _transcribing ? null : _send,
-                    child: _sending || _transcribing
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
+                    icon: _sending || _transcribing
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           )
                         : const Icon(Icons.send),
@@ -111,18 +142,14 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
           );
 
           final contextCard = SoftCard(
-            color: SprichstTheme.sand,
+            color: context.softSurface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'LEARNING CONTEXT',
-                  style: TextStyle(
-                    color: SprichstTheme.forest,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.1,
-                  ),
+                Text(
+                  'Learning context',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 14),
                 Text(
@@ -146,7 +173,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
             ),
           );
 
-          if (constraints.maxWidth > 820) {
+          if (constraints.maxWidth > Breakpoints.sideBySideContent) {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -155,20 +182,28 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                 ),
                 const SizedBox(width: 20),
                 SizedBox(
-                  width: 260,
+                  width: Breakpoints.sidePanelWidth,
                   child: contextCard,
                 ),
               ],
             );
           }
 
+          // Narrow screens keep the whole height for the conversation and show
+          // the learning context as a single line instead of a card.
           return Column(
             children: [
-              Expanded(
-                child: conversation,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: Text(
+                    '${profile.currentLevel.label} · ${app.currentLesson?.title ?? 'Not started'}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              contextCard,
+              Expanded(child: conversation),
             ],
           );
         },
@@ -176,42 +211,76 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     );
   }
 
+  /// Opens the hands-free conversation and keeps what was said in the chat.
+  Future<void> _openVoiceMode() async {
+    final turns = await Navigator.of(context).push<List<VoiceTurn>>(
+      MaterialPageRoute(builder: (_) => const VoiceModeView()),
+    );
+    if (!mounted || turns == null || turns.isEmpty) return;
+    setState(() {
+      for (final turn in turns) {
+        _messages
+          ..add(_Message(text: turn.user, fromUser: true))
+          ..add(_Message(
+            text: turn.tutor,
+            fromUser: false,
+            speechText: turn.speech,
+          ));
+      }
+    });
+  }
+
   Future<void> _toggleRecording() async {
     if (_recording) {
       await _stopRecording();
       return;
     }
+    // Ignore taps while the permission prompt or the recorder is starting.
+    if (_startingRecording) return;
+    _startingRecording = true;
 
     try {
-      final permission = await _audioRecorder.hasPermission();
-
-      if (!permission) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Microphone permission is required.'),
-            ),
-          );
-        }
+      if (!await _audioRecorder.hasPermission()) {
+        _showMessage(
+          'Microphone access is off. Turn it on for Sprichst in your device '
+          'settings to practise speaking.',
+        );
         return;
       }
 
       await _audioRecorder.start();
-
-      if (mounted) {
-        setState(() {
-          _recording = true;
-        });
-      }
+      if (mounted) setState(() => _recording = true);
     } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not start recording: $error'),
-          ),
-        );
-      }
+      _showMessage('Could not start recording. Please try again.');
+      debugPrint('Recording failed to start: $error');
+    } finally {
+      _startingRecording = false;
     }
+  }
+
+  /// Plain-language reason a voice turn failed; the raw error goes to the log.
+  String _voiceErrorMessage(Object error) {
+    if (error is ModelNotInstalledException) return error.toString();
+    final text = error.toString();
+    if (text.contains('No speech was detected')) {
+      return 'I did not catch that. Hold the phone closer and try again.';
+    }
+    if (text.contains('No recording was created')) {
+      return 'Nothing was recorded. Please try again.';
+    }
+    if (text.contains('SocketException') ||
+        text.contains('ClientException') ||
+        text.contains('Connection')) {
+      return 'Could not reach the AI server. Check that it is running and that the address is right in Account → AI & voice → AI server.';
+    }
+    return 'The voice conversation did not work this time. Please try again.';
+  }
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   Future<void> _stopRecording() async {
@@ -237,7 +306,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 
       final result = await ref.read(aiRepositoryProvider).transcribeAudio(
             capture,
-            app.profile!,
+            app.tutorContext,
           );
 
       final text = result.text.trim();
@@ -267,11 +336,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
           _transcribing = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Voice conversation failed: $error'),
-          ),
-        );
+        _showMessage(_voiceErrorMessage(error));
+        debugPrint('Voice conversation failed: $error');
       }
     }
   }
@@ -293,6 +359,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         ),
       );
       _sending = true;
+      _text.clear(); // the message is on screen now; leave the box empty
     });
 
     try {
@@ -300,7 +367,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       final reply = await app.chat(text);
 
       final displayParts = <String>[
-        reply.reply,
+        if (reply.reply.trim().isNotEmpty) reply.reply,
         if (reply.correction != null && reply.correction!.trim().isNotEmpty)
           'Correction: ${reply.correction}',
         if (reply.explanation != null && reply.explanation!.trim().isNotEmpty)
@@ -311,7 +378,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       final tutorMessage = displayParts.join('\n\n');
 
       final speechParts = <String>[
-        reply.reply,
+        if (reply.reply.trim().isNotEmpty) reply.reply,
         if (reply.correction != null && reply.correction!.trim().isNotEmpty)
           reply.correction!,
         if (reply.followUp.trim().isNotEmpty) reply.followUp,
@@ -334,29 +401,30 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       });
 
       if (speakResponse && speechText.isNotEmpty) {
-        final audio = await ref.read(aiRepositoryProvider).synthesizeSpeech(
-              speechText,
-              app.profile!,
-            );
+        final audio = await app.speak(speechText);
 
-        await _audioPlayer.playBytes(audio);
+        await _audioPlayer.playBytes(audio.bytes);
       }
     } catch (error) {
       if (mounted) {
         setState(() {
           _messages.add(
-            const _Message(
-              text: 'I could not reach the coach. Please try again.',
+            _Message(
+              text: error is ModelNotInstalledException
+                  ? error.toString()
+                  : 'I could not reach the coach. Check Account → AI & voice → AI server, then try again.',
               fromUser: false,
             ),
           );
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('AI Coach error: $error'),
-          ),
-        );
+        if (error is! ModelNotInstalledException) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('AI Coach error: $error'),
+            ),
+          );
+        }
       }
     } finally {
       if (mounted) {
@@ -377,12 +445,9 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     try {
       final app = ref.read(appControllerProvider);
 
-      final audio = await ref.read(aiRepositoryProvider).synthesizeSpeech(
-            speechText,
-            app.profile!,
-          );
+      final audio = await app.speak(speechText);
 
-      await _audioPlayer.playBytes(audio);
+      await _audioPlayer.playBytes(audio.bytes);
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -395,32 +460,87 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   }
 }
 
+/// Shown until a tutor model is on the phone: the coach then works offline.
+class _OfflineSetupBanner extends ConsumerWidget {
+  const _OfflineSetupBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final models = ref.watch(modelManagerProvider);
+    models.ensureLoaded();
+    if (!models.isSupported || !models.isReady || models.activeTutor != null) {
+      return const SizedBox.shrink();
+    }
+    final tutor = models.recommendedTutorModel;
+    final downloading = models.progressOf(tutor.id);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: SoftCard(
+        color: context.softSurface,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(children: [
+          const Icon(Icons.offline_bolt_outlined),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: downloading != null
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Downloading ${tutor.label}…'),
+                      const SizedBox(height: AppSpacing.xs),
+                      LinearProgressIndicator(value: downloading),
+                    ],
+                  )
+                : Text(
+                    'Use the coach without internet: download ${tutor.label} (${formatBytes(tutor.downloadBytes)}), recommended for this phone.'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => const OnDeviceAIPage())),
+            child: const Text('Set up'),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
 class _CoachEmptyState extends StatelessWidget {
-  const _CoachEmptyState();
+  const _CoachEmptyState({required this.onVoiceMode});
+
+  final VoidCallback onVoiceMode;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SoftCard(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.forum_outlined,
-              size: 44,
-              color: SprichstTheme.forest,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Start a German conversation',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Write a sentence or use the microphone to talk with your tutor.',
-              textAlign: TextAlign.center,
-            ),
-          ],
+      child: SingleChildScrollView(
+        child: SoftCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.forum_outlined,
+                size: 44,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Start a German conversation',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Write a sentence, or just talk: voice mode listens, answers aloud and listens again, with no buttons in between.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: onVoiceMode,
+                icon: const Icon(Icons.graphic_eq),
+                label: const Text('Start voice conversation'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -454,13 +574,18 @@ class _MessageBubble extends StatelessWidget {
       alignment:
           message.fromUser ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 560,
-        ),
+        constraints:
+            const BoxConstraints(maxWidth: Breakpoints.messageMaxWidth),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: message.fromUser ? SprichstTheme.forest : Colors.white,
+            color: message.fromUser
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(18),
+            border: message.fromUser
+                ? null
+                : Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant),
           ),
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -470,7 +595,9 @@ class _MessageBubble extends StatelessWidget {
                 Text(
                   message.text,
                   style: TextStyle(
-                    color: message.fromUser ? Colors.white : SprichstTheme.ink,
+                    color: message.fromUser
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.onSurface,
                     height: 1.45,
                   ),
                 ),

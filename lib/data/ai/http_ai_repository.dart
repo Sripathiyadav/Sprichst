@@ -4,31 +4,72 @@ import 'package:http/http.dart' as http;
 
 import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/learning_repository.dart';
+import '../../shared/input_rules.dart';
 
 class HttpAIRepository implements AIRepository {
   HttpAIRepository({
-    required this.baseUrl,
+    required String baseUrl,
     http.Client? client,
-  }) : _client = client ?? http.Client();
+    Future<String?> Function()? authToken,
+  })  : _baseUrl = (() => baseUrl),
+        _authToken = authToken,
+        _client = client ?? http.Client();
 
-  final String baseUrl;
+  /// Reads the address on every request, so a change in settings takes effect
+  /// straight away.
+  HttpAIRepository.dynamic({
+    required String Function() baseUrl,
+    http.Client? client,
+    Future<String?> Function()? authToken,
+  })  : _baseUrl = baseUrl,
+        _authToken = authToken,
+        _client = client ?? http.Client();
+
+  final String Function() _baseUrl;
+
+  /// Supplies the learner's Firebase ID token. A server that requires sign-in
+  /// (AUTH_REQUIRED=1) rejects calls without it; one that does not ignores it.
+  final Future<String?> Function()? _authToken;
+
+  Future<Map<String, String>> _headers({bool json = true}) async {
+    // Failing to get a token (signed out, or no Firebase in this build) must
+    // not stop a server that does not ask for one from answering.
+    String? token;
+    try {
+      token = await _authToken?.call();
+    } catch (_) {
+      token = null;
+    }
+    return {
+      if (json) 'Content-Type': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
+  }
+
   final http.Client _client;
+
+  /// How long a request may take before it counts as unreachable. Generating a
+  /// reply is slow on a small local model; everything else is quick.
+  static const _slow = Duration(seconds: 90);
+  static const _quick = Duration(seconds: 15);
+
+  String get baseUrl => _baseUrl();
 
   @override
   Future<CoachReply> correctGerman(
     String text,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/v1/correct'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'message': text,
-        'context': _buildContext(profile),
-      }),
-    );
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/v1/correct'),
+          headers: await _headers(),
+          body: jsonEncode({
+            'text': text,
+            'context': _encode(context),
+          }),
+        )
+        .timeout(_slow);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -50,18 +91,19 @@ class HttpAIRepository implements AIRepository {
   @override
   Future<TutorReply> chat(
     String message,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/v1/chat'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'message': message,
-        'context': _buildContext(profile),
-      }),
-    );
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/v1/chat'),
+          headers: await _headers(),
+          body: jsonEncode({
+            'message': message,
+            'context': _encode(context),
+            'conversation': _encodeConversation(context.conversation),
+          }),
+        )
+        .timeout(_slow);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -82,13 +124,14 @@ class HttpAIRepository implements AIRepository {
   @override
   Future<TranscriptionResult> transcribeAudio(
     AudioCapture audio,
-    LearningProfile profile,
+    TutorContext context,
   ) async {
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('$baseUrl/v1/transcribe'),
     )
-      ..fields['context'] = jsonEncode(_buildContext(profile))
+      ..headers.addAll(await _headers(json: false))
+      ..fields['context'] = jsonEncode(_encode(context))
       ..files.add(
         http.MultipartFile.fromBytes(
           'audio',
@@ -97,7 +140,7 @@ class HttpAIRepository implements AIRepository {
         ),
       );
 
-    final streamed = await request.send();
+    final streamed = await request.send().timeout(_slow);
     final response = await http.Response.fromStream(streamed);
 
     if (response.statusCode != 200) {
@@ -113,26 +156,47 @@ class HttpAIRepository implements AIRepository {
   }
 
   @override
-  Future<List<int>> synthesizeSpeech(
+  Future<SpeechAudio> synthesizeSpeech(
     String text,
-    LearningProfile profile,
-  ) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/v1/speak'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'message': text,
-        'context': _buildContext(profile),
-      }),
-    );
+    TutorContext context, {
+    String? voice,
+    int? speechRate,
+  }) async {
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/v1/speak'),
+          headers: await _headers(),
+          body: jsonEncode({
+            'message': text,
+            if (voice != null) 'voice': voice,
+            if (speechRate != null) 'rate': speechRate,
+            'context': _encode(context),
+          }),
+        )
+        .timeout(_slow);
 
     if (response.statusCode != 200) {
       throw Exception(_errorMessage(response));
     }
 
-    return response.bodyBytes;
+    return SpeechAudio(
+      response.bodyBytes,
+      voiceUsed: response.headers['x-voice-used'],
+      usedFallback: response.headers['x-voice-fallback'] == 'true',
+    );
+  }
+
+  @override
+  Future<VoiceList> listVoices() async {
+    final response = await _client
+        .get(Uri.parse('$baseUrl/v1/voices'),
+            headers: await _headers(json: false))
+        .timeout(_quick);
+    if (response.statusCode != 200) {
+      throw Exception(_errorMessage(response));
+    }
+    return VoiceList.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>);
   }
 
   String _errorMessage(http.Response response) {
@@ -146,21 +210,37 @@ class HttpAIRepository implements AIRepository {
     }
   }
 
-  Map<String, dynamic> _buildContext(LearningProfile profile) {
-    return {
-      'level': profile.currentLevel.label,
-      'current_unit': null,
-      'current_lesson': profile.currentLessonId,
-      'weak_skills': _weakSkills(profile),
-      'known_vocabulary': <String>[],
-      'recent_mistakes': <String>[],
-    };
+  /// The recent turns as the server accepts them: cleaned and clipped, empty
+  /// ones dropped, and only the newest few.
+  List<Map<String, String>> _encodeConversation(List<ConversationTurn> turns) {
+    final encoded = [
+      for (final turn in turns)
+        if (sanitizeText(turn.text, maxLength: InputLimits.turn).isNotEmpty)
+          {
+            'role': turn.fromLearner ? 'learner' : 'tutor',
+            'text': sanitizeText(turn.text, maxLength: InputLimits.turn),
+          },
+    ];
+    return encoded.length > InputLimits.turns
+        ? encoded.sublist(encoded.length - InputLimits.turns)
+        : encoded;
   }
 
-  List<String> _weakSkills(LearningProfile profile) {
-    final entries = profile.scores.entries.entries.toList()
-      ..sort((a, b) => a.value.compareTo(b.value));
-
-    return entries.take(2).map((entry) => entry.key).toList();
-  }
+  /// The learner's context as the server accepts it: every text cleaned and
+  /// within the server's limits (see [InputLimits]).
+  Map<String, dynamic> _encode(TutorContext context) => {
+        'level': context.level,
+        'current_unit': context.unit == null
+            ? null
+            : sanitizeText(context.unit!, maxLength: InputLimits.medium),
+        'current_lesson': context.lesson == null
+            ? null
+            : sanitizeText(context.lesson!, maxLength: InputLimits.medium),
+        'weak_skills': sanitizeList(context.weakSkills,
+            max: InputLimits.weakSkills, maxLength: InputLimits.short),
+        'known_vocabulary': sanitizeList(context.knownVocabulary,
+            max: InputLimits.vocabulary, maxLength: InputLimits.short),
+        'recent_mistakes': sanitizeList(context.recentMistakes,
+            max: InputLimits.mistakes, maxLength: InputLimits.medium),
+      };
 }

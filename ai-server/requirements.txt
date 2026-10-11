@@ -2,3 +2,6 @@ fastapi==0.115.6
 uvicorn[standard]==0.32.1
 python-dotenv==1.0.1
 python-multipart==0.0.20
+# Verifies Firebase ID tokens when AUTH_REQUIRED=1 (see app/security.py).
+PyJWT==2.10.1
+cryptography>=43,<47

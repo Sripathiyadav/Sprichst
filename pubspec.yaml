@@ -36,6 +36,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^2.6.1
+  # Perceptual colour maths (HCT) behind the app's colour system.
+  material_color_utilities: ^0.13.0
   go_router: ^15.1.2
   shared_preferences: ^2.5.3
   firebase_core: ^4.15.0
@@ -48,6 +50,19 @@ dependencies:
   path_provider: ^2.1.6
   just_audio_web: ^0.4.16
   web: ^1.1.1
+  llamadart: 0.8.24
+  llamadart_llama_cpp_flutter: 0.0.19
+  sherpa_onnx: ^1.13.8
+  device_info_plus: ^13.2.0
+  archive: ^4.1.0
+  crypto: ^3.0.7
+# Privacy: the real google_sign_in_web contacts accounts.google.com on every page
+# load. The web build signs in through Firebase instead, so the plugin is
+# replaced by an empty stub. See tool/stubs/google_sign_in_web/README.md.
+dependency_overrides:
+  google_sign_in_web:
+    path: tool/stubs/google_sign_in_web
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,6 +84,41 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - curriculum/course.json
+    # Only the user-facing documents; legal/README.md and legal/internal stay out.
+    - legal/privacy-policy.md
+    - legal/terms-of-service.md
+    - legal/your-rights.md
+    - legal/ai-transparency.md
+    - legal/cookies-and-storage.md
+    - legal/disclaimer.md
+    - legal/copyright-and-takedown.md
+    - legal/security-summary.md
+    - legal/accessibility.md
+    - legal/impressum.md
+    - legal/third-party-notices.md
+
+  # Our own copy of Roboto (Apache-2.0). Without it Flutter's web engine fetches
+  # Roboto from fonts.gstatic.com, which tells Google that this visitor opened
+  # the app. See assets/fonts/README.md.
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/roboto/Roboto-Light.ttf
+          weight: 300
+        - asset: assets/fonts/roboto/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/roboto/Roboto-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/roboto/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/roboto/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/roboto/Roboto-Black.ttf
+          weight: 900
 
   # To add assets to your application, add an assets section, like this:
   # assets:

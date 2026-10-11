@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
+import '../../app/theme/breakpoints.dart';
+import '../../domain/learning/adaptive_planner.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../learn/lesson_view.dart';
+import '../practice/practice_session_view.dart';
+import '../gamification/quests_card.dart';
+import 'plan_card.dart';
 
 class HomeView extends ConsumerWidget {
   const HomeView({super.key});
@@ -14,135 +19,137 @@ class HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final app = ref.watch(appControllerProvider);
     final profile = app.profile!;
-    final lesson = app.currentLesson!;
+    final plan = app.plan;
+    final lesson = app.currentLesson;
+    final weak = app.weakSkills;
+
     return PageFrame(
-      title: 'Guten Abend, ${profile.name}.',
-      subtitle: '${profile.currentLevel.label} · ${lesson.unit}',
-      trailing: CircleAvatar(
-        backgroundColor: SprichstTheme.sand,
-        child: Text(profile.name.substring(0, 1)),
-      ),
+      title: '${_greeting(DateTime.now().hour)}, ${profile.name}',
+      subtitle: lesson == null
+          ? profile.currentLevel.label
+          : '${profile.currentLevel.label} · ${lesson.unit}',
+      trailing: ProfileAvatar(name: profile.name),
       child: ListView(
+        padding: pageListPadding(context),
         children: [
-          SoftCard(
-            color: SprichstTheme.forest,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('TODAY’S PLAN',
-                    style: TextStyle(
-                        color: Color(0xFFD9F3D8),
-                        letterSpacing: 1.2,
-                        fontWeight: FontWeight.w700)),
-                const SizedBox(height: 8),
-                Text('Continue ${lesson.title}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.copyWith(color: Colors.white)),
-                const SizedBox(height: 8),
-                Text('${lesson.durationMinutes} minutes · ${lesson.objective}',
-                    style: const TextStyle(color: Colors.white70)),
-                const SizedBox(height: 18),
-                FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: SprichstTheme.forest),
-                  onPressed: () => _openLesson(context, lesson),
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Continue lesson'),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 26),
-          const SectionTitle('Review'),
-          const SizedBox(height: 12),
+          if (plan != null) PlanCard(plan: plan),
+          if (plan != null &&
+              plan.kind != PlanKind.lesson &&
+              lesson != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            _NextLessonCard(lesson: lesson),
+          ],
+          const SizedBox(height: AppSpacing.md),
+          QuestsCard(profile: profile, now: DateTime.now()),
+          const SizedBox(height: AppSpacing.xl),
+          const SectionTitle('Your progress'),
+          const SizedBox(height: AppSpacing.sm),
           LayoutBuilder(
-            builder: (context, constraints) => Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            builder: (context, constraints) {
+              // Two columns whenever they fit, including on phones; one column
+              // when the width is tight or text is enlarged.
+              final enlarged = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+              final twoColumns =
+                  constraints.maxWidth >= Breakpoints.twoStatTiles && !enlarged;
+              final width = twoColumns
+                  ? (constraints.maxWidth - AppSpacing.sm) / 2
+                  : constraints.maxWidth;
+              return Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  for (final tile in [
+                    StatTile(
+                      icon: Icons.local_fire_department_outlined,
+                      value: '${profile.streakAt(DateTime.now())}',
+                      label: 'day streak',
+                    ),
+                    StatTile(
+                      icon: Icons.bolt_outlined,
+                      value: '${profile.xp}',
+                      label: 'XP earned',
+                    ),
+                    StatTile(
+                      icon: Icons.refresh,
+                      value: '${app.dueReviews}',
+                      label: 'reviews due',
+                    ),
+                    StatTile(
+                      icon: Icons.auto_fix_high_outlined,
+                      value: '${app.pendingMistakes}',
+                      label: 'mistakes to fix',
+                    ),
+                  ])
+                    SizedBox(width: width, child: tile),
+                ],
+              );
+            },
+          ),
+          if (weak.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xl),
+            const SectionTitle('Needs practice'),
+            const SizedBox(height: AppSpacing.sm),
+            Wrap(
+              spacing: AppSpacing.xs,
+              runSpacing: AppSpacing.xs,
               children: [
-                SizedBox(
-                    width: constraints.maxWidth > 560
-                        ? (constraints.maxWidth - 12) / 2
-                        : constraints.maxWidth,
-                    child: _MetricCard(
-                        value: '${app.dueReviews}',
-                        label: 'items due today',
-                        icon: Icons.refresh)),
-                SizedBox(
-                    width: constraints.maxWidth > 560
-                        ? (constraints.maxWidth - 12) / 2
-                        : constraints.maxWidth,
-                    child: const _MetricCard(
-                        value: '2',
-                        label: 'mistakes to fix',
-                        icon: Icons.auto_fix_high)),
+                for (final skill in weak)
+                  ActionChip(
+                    label: Text(skillLabel(skill)),
+                    avatar: const Icon(Icons.bolt, size: 18),
+                    onPressed: () => openPractice(
+                      context,
+                      ref,
+                      skillIds: [skill],
+                      title: skillLabel(skill),
+                    ),
+                  ),
               ],
             ),
-          ),
-          const SizedBox(height: 26),
-          const SectionTitle('Quick practice'),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: ['Vocabulary', 'Articles', 'Grammar', 'Listening']
-                .map((label) => ActionChip(
-                    label: Text(label),
-                    avatar: const Icon(Icons.bolt, size: 17),
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                '$label practice is ready in the Practice tab.')))))
-                .toList(),
-          ),
-          const SizedBox(height: 24),
-          SoftCard(
-            color: SprichstTheme.sand,
-            child: Row(
-              children: [
-                const Icon(Icons.local_fire_department_rounded,
-                    color: SprichstTheme.coral, size: 32),
-                const SizedBox(width: 14),
-                Expanded(
-                    child: Text(
-                        '${profile.streak}-day streak\n${profile.xp} XP earned',
-                        style: Theme.of(context).textTheme.titleMedium)),
-              ],
-            ),
-          ),
+          ],
         ],
       ),
     );
   }
 
-  void _openLesson(BuildContext context, Lesson lesson) {
-    Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => LessonView(lesson: lesson)));
+  static String _greeting(int hour) {
+    if (hour < 11) return 'Guten Morgen';
+    if (hour < 18) return 'Guten Tag';
+    return 'Guten Abend';
   }
 }
 
-class _MetricCard extends StatelessWidget {
-  const _MetricCard(
-      {required this.value, required this.label, required this.icon});
-  final String value;
-  final String label;
-  final IconData icon;
+class _NextLessonCard extends StatelessWidget {
+  const _NextLessonCard({required this.lesson});
+
+  final Lesson lesson;
 
   @override
   Widget build(BuildContext context) => SoftCard(
         child: Row(
           children: [
-            CircleAvatar(
-                backgroundColor: SprichstTheme.sand,
-                child: Icon(icon, color: SprichstTheme.forest)),
-            const SizedBox(width: 14),
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(value, style: Theme.of(context).textTheme.headlineSmall),
-              Text(label)
-            ]),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Next lesson',
+                      style: Theme.of(context).textTheme.bodyMedium),
+                  Text(lesson.title,
+                      style: Theme.of(context).textTheme.titleLarge),
+                  Text('${lesson.durationMinutes} min · ${lesson.objective}',
+                      style: Theme.of(context).textTheme.bodyMedium),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => LessonView(lesson: lesson),
+                ),
+              ),
+              child: const Text('Open'),
+            ),
           ],
         ),
       );

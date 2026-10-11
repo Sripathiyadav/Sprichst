@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:js_interop';
 import 'dart:typed_data';
 
@@ -6,6 +7,7 @@ import 'package:web/web.dart' as web;
 class AudioPlayerService {
   web.HTMLAudioElement? _audio;
   String? _objectUrl;
+  Completer<void>? _finished;
 
   Future<void> playBytes(
     List<int> bytes, {
@@ -36,7 +38,19 @@ class AudioPlayerService {
       _objectUrl = objectUrl;
       _audio = audio;
 
+      // Complete when the clip ends (or is stopped), like the native player,
+      // so hands-free voice mode knows when the tutor has finished speaking.
+      final finished = Completer<void>();
+      _finished = finished;
+      void done(web.Event _) {
+        if (!finished.isCompleted) finished.complete();
+      }
+
+      audio.addEventListener('ended', done.toJS);
+      audio.addEventListener('error', done.toJS);
+
       await audio.play().toDart;
+      await finished.future;
     } catch (e) {
       await stop();
       throw Exception('Web audio playback failed: $e');
@@ -44,6 +58,9 @@ class AudioPlayerService {
   }
 
   Future<void> stop() async {
+    final finished = _finished;
+    if (finished != null && !finished.isCompleted) finished.complete();
+    _finished = null;
     final audio = _audio;
 
     if (audio != null) {

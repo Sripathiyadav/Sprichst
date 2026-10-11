@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Debug builds only: allow plain HTTP so the app can reach the AI server
+         on your own computer (for example http://192.168.1.20:8000). Release
+         builds use the stricter file in src/main, which allows cleartext for the
+         device's own loopback address only. -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

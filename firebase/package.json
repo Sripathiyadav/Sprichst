@@ -1,0 +1,13 @@
+{
+  "name": "sprichst-firebase-rules",
+  "private": true,
+  "type": "module",
+  "description": "Tests for the Firestore and Storage security rules.",
+  "scripts": {
+    "test": "firebase emulators:exec --only firestore,storage --project demo-sprichst \"node --test tests/\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
+    "firebase": "^12.0.0"
+  }
+}

@@ -53,6 +53,20 @@ firebase deploy --only firestore:rules,firestore:indexes,storage
 
 During `firebase init`, preserve the generated project alias and configure the CLI to use `firebase/firestore.rules`, `firebase/firestore.indexes.json`, and `firebase/storage.rules` (or copy those paths into the generated root `firebase.json`). Test with a non-owner account: it must not read or write another `users/{uid}` path.
 
+### iOS Google sign-in checklist
+
+Sign-in fails on iOS unless all three of these are in place:
+
+1. **Download `GoogleService-Info.plist` after enabling Google sign-in** in Firebase (Authentication → Sign-in method). A plist downloaded earlier lacks `CLIENT_ID` and `REVERSED_CLIENT_ID`; re-download it and replace `ios/Runner/GoogleService-Info.plist` (git-ignored).
+2. **`ios/Runner/Info.plist` carries two values from that file**: `GIDClientID` (the `CLIENT_ID`) and a `CFBundleURLTypes` entry whose scheme is the `REVERSED_CLIENT_ID`. Google redirects back into the app through that scheme. If you ever regenerate the Firebase iOS app, update both.
+3. The bundle identifier in Xcode matches the one registered in Firebase (`com.example.sprichst` today).
+
+On a simulator, iOS shows a "Wants to Use google.com to Sign In" prompt first; that is expected. If Firebase later reports `keychain-error`, enable **Keychain Sharing** for the Runner target in Xcode.
+
+### Microphone permissions
+
+Voice practice needs a usage string on each platform, or the OS ends the app the moment the microphone is touched: `NSMicrophoneUsageDescription` in `ios/Runner/Info.plist` and `macos/Runner/Info.plist`, `RECORD_AUDIO` in the Android manifest, and the `com.apple.security.device.audio-input` entitlement for sandboxed macOS builds. Browsers need HTTPS or localhost.
+
 ## 5. Add Google sign-in safely
 
 Use Firebase Authentication as the identity layer only. Its user ID should be the Firestore namespace: `users/{uid}/...`.
@@ -75,15 +89,27 @@ uvicorn app.main:app --reload --port 8000
 
 Open `http://127.0.0.1:8000/health`; its `ollama` value should be `available`.
 
-For development, point an `ApiAIRepository` at `http://127.0.0.1:8000`. For an Android emulator use `10.0.2.2` instead of `127.0.0.1`; for a real phone, do not expose Ollama directly. Put the gateway behind HTTPS, verify Firebase ID tokens server-side, and use a private tunnel or a server you control.
+The app finds the gateway by itself in development (`lib/app/ai_server_url.dart`): the iOS simulator, desktop and web use `http://127.0.0.1:8000`, and the Android emulator uses `http://10.0.2.2:8000`, its alias for your computer. Both were checked end to end (voices, chat, speech, playback, transcription).
 
-## 7. Connect the app to the gateway
+For a real phone on the same Wi-Fi:
 
-Replace `MockAIRepository` in `lib/app/app_controller.dart` with an HTTP-backed `AIRepository`. Send the learner’s level, current lesson, selected weak skills, and recent mistakes—not their whole Firestore document. Use the JSON endpoints the gateway exposes. Treat malformed model data and an unavailable model as graceful in-app errors, never as a reason to block learning.
+1. Start the gateway with `ai-server/run.sh`. It listens on your network (a plain `uvicorn ... --reload` only listens on this computer, which a phone cannot reach) and prints the address to use.
+2. If macOS asks whether Python may accept incoming connections, choose Allow. If you missed it: System Settings → Network → Firewall → Options, and allow the Python that runs the server.
+3. In the app, open Account → AI & voice → AI server, enter that address (for example `192.168.1.20`) and tap Save and test. The result says what is wrong if it fails. The address is remembered on that phone.
+
+Alternatively, bake the address in at build time with `flutter run --dart-define=AI_SERVER_URL=http://<your-computer's-LAN-IP>:8000`.
+
+iOS and debug Android builds are allowed to use plain HTTP on the local network for this (`NSAllowsLocalNetworking` in `Info.plist`; a debug-only `network_security_config.xml`). Release builds must use HTTPS. Only do this on a network you trust: unless you set `AUTH_REQUIRED=1` (see the hardening checklist at the end), the gateway accepts any caller. Do not expose Ollama directly. For anything beyond your own desk, put the gateway behind HTTPS, verify Firebase ID tokens server-side, and use a private tunnel or a server you control.
+
+Android blocks plain HTTP by default. `android/app/src/main/res/xml/network_security_config.xml` allows it only for the device's own loopback address, which `just_audio` needs to play the tutor's speech.
+
+## 7. On-device AI and the gateway
+
+The app already uses the gateway through `HybridAIRepository` (`lib/app/app_controller.dart`): the AI Coach runs on the phone once its models are downloaded, and uses the gateway only as the learner's setting allows. See [on-device-ai.md](on-device-ai.md) for the models, platform requirements (iOS 16.4+) and the one-time keychain prompt during the first iOS build.
 
 ## 8. Add content before adding more features
 
-Create your lessons in `curriculum/pre_a1/` and `curriculum/a1/`. Run this before committing:
+Add lessons to `curriculum/course.json`; the app bundles it as an asset and checks it when it starts. Skill ids on exercises are stable keys for weak-skill tracking, so never rename one once learners have data. Run this before committing:
 
 ```bash
 python3 scripts/validate_curriculum.py
@@ -110,3 +136,12 @@ Keep content in Git as the source of truth. When you need cloud distribution, pu
 6. A1 content, then adaptive practice.
 
 Keep the personal-assistant, Google Calendar, Tasks, and Keep work out of this milestone. The learning engine should be solid first.
+
+
+## Hardening checklist for a public deployment
+
+1. **Firebase rules:** `cd firebase && npm install && npm test`, then `firebase deploy --only firestore:rules,storage`. Pick the Firestore location (an EU region for EU users) before first use; it cannot be changed later.
+2. **Hosting headers:** `firebase/firebase.json` sets the Content-Security-Policy. Replace `__AI_GATEWAY_ORIGIN__` with your AI gateway's origin (for example `https://ai.example.com`) before deploying; browsers will block calls to any other origin.
+3. **Web build:** run `python3 scripts/vendor_web_deps.py` (once, and after upgrading `firebase_core`), then `flutter build web --release`. The result loads nothing from Google, a CDN or a font service until a learner presses "Continue with Google".
+4. **AI gateway:** `pip install -r ai-server/requirements.txt`, then set `AUTH_REQUIRED=1`, `FIREBASE_PROJECT_ID`, `RATE_LIMIT_PER_MINUTE` and `CORS_ORIGINS` (see `ai-server/.env.example`) and serve it over HTTPS. Provider keys such as `GROQ_API_KEY` belong only in the server's `.env`.
+5. **Legal:** fill the placeholders in `legal/` (`python3 scripts/check_legal_placeholders.py --strict` must pass), register your DMCA agent, and work through `legal/internal/release-checklist.md`.

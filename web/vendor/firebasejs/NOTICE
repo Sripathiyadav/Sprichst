@@ -1,0 +1,7 @@
+Firebase JavaScript SDK 12.19.0
+Copyright Google LLC. Licensed under the Apache License, Version 2.0
+(see assets/fonts/roboto/LICENSE.txt for the licence text, or
+https://www.apache.org/licenses/LICENSE-2.0).
+Source: https://github.com/firebase/firebase-js-sdk
+Self-hosted so visitors' IP addresses are not sent to www.gstatic.com.
+Regenerate with: python3 scripts/vendor_web_deps.py
