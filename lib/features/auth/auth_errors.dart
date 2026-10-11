@@ -8,6 +8,8 @@ String describeAuthError(Object error) {
     GoogleSignInException(:final code) => switch (code) {
         GoogleSignInExceptionCode.clientConfigurationError =>
           'Google sign-in is not configured for this build. Check the iOS GoogleService-Info.plist and URL scheme.',
+        GoogleSignInExceptionCode.providerConfigurationError =>
+          'Google sign-in could not start on this device. Check your internet connection and that Keychain access is allowed, then try again.',
         GoogleSignInExceptionCode.interrupted =>
           'Sign-in was interrupted. Please try again.',
         GoogleSignInExceptionCode.uiUnavailable =>
