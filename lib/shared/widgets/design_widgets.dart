@@ -368,16 +368,23 @@ class LevelRing extends StatelessWidget {
                 color: t.coral,
               ),
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(short,
-                    style: theme.textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w700, color: t.ink)),
-                Text('$percent%',
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: t.inkMuted)),
-              ],
+            // Scales down with the ring, so enlarged text never spills out of it.
+            Padding(
+              padding: EdgeInsets.all(size * .2),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(short,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700, color: t.ink)),
+                    Text('$percent%',
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: t.inkMuted)),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
