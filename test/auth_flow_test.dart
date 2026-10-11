@@ -27,6 +27,16 @@ void main() {
       expect(message, contains('GoogleService-Info.plist'));
     });
 
+    test('says what to check when Google sign-in does not complete', () {
+      final message = describeAuthError(const GoogleSignInException(
+          code: GoogleSignInExceptionCode.unknownError));
+      expect(message, contains('Google account is added'));
+      expect(
+          describeAuthError(const GoogleSignInException(
+              code: GoogleSignInExceptionCode.clientConfigurationError)),
+          contains('SHA-1'));
+    });
+
     test('explains network and keychain failures plainly', () {
       expect(
           describeAuthError(
