@@ -98,7 +98,7 @@ void main() {
         await tester.tap(find.text('Check answer'));
         await tester.pumpAndSettle();
         expect(find.text('Not quite'), findsOneWidget);
-        expect(find.byIcon(Icons.cancel), findsWidgets,
+        expect(find.byIcon(Icons.cancel_outlined), findsWidgets,
             reason: 'a wrong pick shows an icon, not only a colour');
         expect(find.byIcon(Icons.check_circle), findsWidgets,
             reason: 'the right answer is also marked with an icon');
@@ -162,6 +162,6 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
-    expect(find.text('Correct!'), findsOneWidget);
+    expect(find.text('Correct'), findsOneWidget);
   });
 }

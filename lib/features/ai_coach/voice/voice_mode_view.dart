@@ -133,8 +133,8 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
         child: Focus(
           autofocus: true,
           child: GlassPage(
-            appBar: AppBar(
-              title: const Text('Voice mode'),
+            appBar: MastheadBar(
+              eyebrow: 'Voice mode',
               leading: IconButton(
                 tooltip: 'End conversation',
                 onPressed: _end,
@@ -143,14 +143,10 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
               actions: [
                 if (voiceName != null)
                   Padding(
-                    padding: const EdgeInsets.only(right: AppSpacing.sm),
+                    padding: const EdgeInsets.only(right: AppSpacing.xs),
                     child: Center(
-                      child: Chip(
-                        avatar: const Icon(Icons.record_voice_over_outlined,
-                            size: 18),
-                        label: Text(voiceName),
-                        visualDensity: VisualDensity.compact,
-                      ),
+                      child: DsChip(voiceName,
+                          icon: Icons.record_voice_over_outlined),
                     ),
                   ),
               ],

@@ -10,74 +10,89 @@ double _contrast(Color a, Color b) {
   return (math.max(la, lb) + .05) / (math.min(la, lb) + .05);
 }
 
+/// Holds the design system's pairs to WCAG AA in both themes. Each pair is the
+/// one a token's usage note names: ink on canvas, surface and every soft tint,
+/// muted ink on its three grounds, panel text on the panel, and so on.
 void main() {
-  test('the brand colours are the official flag values', () {
-    expect(FlagColors.black, const Color(0xFF000000));
-    expect(FlagColors.red, const Color(0xFFDD0000));
-    expect(FlagColors.gold, const Color(0xFFFFCE00));
-  });
-
   for (final entry in {
-    'light': SprichstTheme.light,
-    'dark': SprichstTheme.dark,
+    'light': SprichstTokens.light,
+    'dark': SprichstTokens.dark,
   }.entries) {
-    group('${entry.key} theme', () {
-      final theme = entry.value;
-      final scheme = theme.colorScheme;
-      final body = theme.textTheme.bodyMedium!.color!;
-      final strong = theme.textTheme.bodyLarge!.color!;
-      final isDark = scheme.brightness == Brightness.dark;
-      final accent = isDark ? scheme.primary : scheme.secondary;
+    group('${entry.key} tokens', () {
+      final t = entry.value;
 
-      test('text is readable (WCAG AA, 4.5:1) on every surface it appears on',
-          () {
+      test('text reaches 4.5:1 on the grounds it is used on', () {
         final pairs = <String, (Color, Color)>{
-          'body on scaffold': (body, theme.scaffoldBackgroundColor),
-          'strong on scaffold': (strong, theme.scaffoldBackgroundColor),
-          'body on card': (body, scheme.surface),
-          'strong on card': (strong, scheme.surface),
-          'body on soft surface': (body, scheme.surfaceContainerHigh),
-          'strong on soft surface': (strong, scheme.surfaceContainerHigh),
-          'on primary (buttons, plan card)': (scheme.onPrimary, scheme.primary),
-          'primary on onPrimary (inverse button)': (
-            scheme.primary,
-            scheme.onPrimary
-          ),
-          'on secondary': (scheme.onSecondary, scheme.secondary),
-          'on tertiary (gold)': (scheme.onTertiary, scheme.tertiary),
-          'correct feedback': (
-            scheme.onTertiaryContainer,
-            scheme.tertiaryContainer
-          ),
-          'wrong feedback': (scheme.onErrorContainer, scheme.errorContainer),
-          'selected option': (strong, scheme.primaryContainer),
-          'on error': (scheme.onError, scheme.error),
-          'error text on card': (scheme.error, scheme.surface),
-          'error text on scaffold': (
-            scheme.error,
-            theme.scaffoldBackgroundColor
-          ),
-          'accent text on card': (accent, scheme.surface),
-          'accent text on scaffold': (accent, theme.scaffoldBackgroundColor),
-          'snack bar': (scheme.onInverseSurface, scheme.inverseSurface),
+          'ink on canvas': (t.ink, t.canvas),
+          'ink on surface': (t.ink, t.surface),
+          'ink on surface-sunken': (t.ink, t.surfaceSunken),
+          'ink on accent-soft': (t.ink, t.accentSoft),
+          'ink on success-soft': (t.ink, t.successSoft),
+          'ink on warning-soft': (t.ink, t.warningSoft),
+          'ink on danger-soft': (t.ink, t.dangerSoft),
+          'ink-muted on canvas': (t.inkMuted, t.canvas),
+          'ink-muted on surface': (t.inkMuted, t.surface),
+          'ink-muted on surface-sunken': (t.inkMuted, t.surfaceSunken),
+          'on-panel on panel': (t.onPanel, t.panel),
+          'on-panel-muted on panel': (t.onPanelMuted, t.panel),
+          'accent-on-panel on panel': (t.accentOnPanel, t.panel),
+          'on-action on action': (t.onAction, t.action),
+          'on-accent on accent': (t.onAccent, t.accent),
+          'accent on canvas': (t.accent, t.canvas),
+          'accent on surface': (t.accent, t.surface),
+          'accent on surface-sunken': (t.accent, t.surfaceSunken),
+          'accent on accent-soft': (t.accent, t.accentSoft),
+          'success on canvas': (t.success, t.canvas),
+          'success on surface': (t.success, t.surface),
+          'success on success-soft': (t.success, t.successSoft),
+          'warning on canvas': (t.warning, t.canvas),
+          'warning on surface': (t.warning, t.surface),
+          'warning on warning-soft': (t.warning, t.warningSoft),
+          'danger on canvas': (t.danger, t.canvas),
+          'danger on surface': (t.danger, t.surface),
+          'danger on danger-soft': (t.danger, t.dangerSoft),
+          'der chip': (t.articleDerInk, t.articleDerBg),
+          'die chip': (t.articleDieInk, t.articleDieBg),
+          'das chip': (t.articleDasInk, t.articleDasBg),
         };
         for (final MapEntry(key: name, value: (fg, bg)) in pairs.entries) {
           expect(_contrast(fg, bg), greaterThanOrEqualTo(4.5), reason: name);
         }
       });
 
-      test('controls and indicators reach 3:1 against their background', () {
+      test('controls, marks and large coral reach 3:1', () {
         final pairs = <String, (Color, Color)>{
-          'input border on card': (scheme.outline, scheme.surface),
-          'option border on card': (scheme.outline, scheme.surface),
-          'progress fill on track': (accent, scheme.surfaceContainerHighest),
-          'progress fill on card': (accent, scheme.surface),
-          'focused border on card': (scheme.onSurface, scheme.surface),
+          'control border on canvas': (t.lineStrong, t.canvas),
+          'control border on surface': (t.lineStrong, t.surface),
+          'chart mark on surface': (t.mark, t.surface),
+          'chart mark on canvas': (t.mark, t.canvas),
+          'coral (24px and up) on canvas': (t.coral, t.canvas),
+          'coral (24px and up) on surface': (t.coral, t.surface),
+          'action arrow on action': (t.actionGlyph, t.action),
+          'focus ring on canvas': (t.ink, t.canvas),
+          'focus ring on surface': (t.ink, t.surface),
+          'focus ring on panel': (t.onPanel, t.panel),
         };
         for (final MapEntry(key: name, value: (fg, bg)) in pairs.entries) {
           expect(_contrast(fg, bg), greaterThanOrEqualTo(3), reason: name);
         }
       });
+
+      test('the theme paints its text from these tokens', () {
+        final theme = SprichstTheme.build(t.brightness);
+        expect(theme.scaffoldBackgroundColor, t.canvas);
+        expect(theme.colorScheme.surface, t.surface);
+        expect(theme.colorScheme.primary, t.action);
+        expect(theme.textTheme.bodyLarge!.color, t.ink);
+        expect(theme.textTheme.bodySmall!.color, t.inkMuted);
+        expect(theme.extension<SprichstTokens>(), isNotNull);
+      });
     });
   }
+
+  test('the strongest control is the highest-contrast one in both themes', () {
+    // Charcoal in light, coral in dark: each is the primary action's fill.
+    expect(SprichstTokens.light.action, const Color(0xFF2A2826));
+    expect(SprichstTokens.dark.action, SprichstTokens.dark.accent);
+  });
 }

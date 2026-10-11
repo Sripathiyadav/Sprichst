@@ -19,8 +19,17 @@ import '../test/support/fakes.dart';
 final _dir = Platform.environment['SHOT_DIR'] ?? 'build/shots';
 
 Future<void> _loadFonts() async {
+  final figtree = FontLoader('Figtree');
   // Text with no font named (button labels, for one) is drawn with the test
   // font, solid blocks. Giving that font's name to Roboto makes it readable.
+  for (final file in Directory('assets/fonts/figtree')
+      .listSync()
+      .whereType<File>()
+      .where((f) => f.path.endsWith('.ttf'))) {
+    figtree.addFont(Future.value(
+        ByteData.view(Uint8List.fromList(file.readAsBytesSync()).buffer)));
+  }
+  await figtree.load();
   for (final family in ['Roboto', 'Ahem']) {
     final loader = FontLoader(family);
     for (final file in Directory('assets/fonts/roboto')
@@ -48,8 +57,8 @@ Future<void> _loadFonts() async {
 
 Future<void> _shot(WidgetTester tester, String name) async {
   await tester.pumpAndSettle();
-  final boundary = tester.renderObject<RenderRepaintBoundary>(
-      find.byType(RepaintBoundary).first);
+  final boundary = tester
+      .renderObject<RenderRepaintBoundary>(find.byType(RepaintBoundary).first);
   await tester.runAsync(() async {
     final image = await boundary.toImage(pixelRatio: 2);
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -59,17 +68,20 @@ Future<void> _shot(WidgetTester tester, String name) async {
 }
 
 LearningProfile _learner() => LearningProfile.newLearner(
-        nativeLanguage: 'English', currentLevel: CefrLevel.a1)
-    .copyWith(
-  name: 'Mord',
-  goal: LearningGoal.goethe,
-  xp: 340,
-  streak: 6,
-  lessonProgress: const {
-    'pre_a1_greetings': LessonProgress(
-        status: LessonStatus.completed, attempts: 1, bestCorrect: 5, total: 6),
-  },
-);
+            nativeLanguage: 'English', currentLevel: CefrLevel.a1)
+        .copyWith(
+      name: 'Mord',
+      goal: LearningGoal.goethe,
+      xp: 340,
+      streak: 6,
+      lessonProgress: const {
+        'pre_a1_greetings': LessonProgress(
+            status: LessonStatus.completed,
+            attempts: 1,
+            bestCorrect: 5,
+            total: 6),
+      },
+    );
 
 void main() {
   setUpAll(_loadFonts);
@@ -92,6 +104,16 @@ void main() {
           brightness: brightness,
           repository: InMemoryLearningRepository());
       await _shot(tester, '$mode-onboarding');
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      await _shot(tester, '$mode-onboarding-language');
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await _shot(tester, '$mode-onboarding-level');
+      await tester.ensureVisible(find.text('Continue'));
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await _shot(tester, '$mode-onboarding-goal');
     });
 
     testWidgets('study screens, $mode', (tester) async {
@@ -107,6 +129,35 @@ void main() {
       await _shot(tester, '$mode-exercise');
       await tester.pageBack();
       await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      // Flashcards.
+      await tester.tap(find.text('Practice').last);
+      await tester.pumpAndSettle();
+      final review = find.textContaining(RegExp(r'^Review \d+ cards'));
+      await tester.scrollUntilVisible(review, 300,
+          scrollable: find.byType(Scrollable).first);
+      await tester.pumpAndSettle();
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      await _shot(tester, '$mode-flashcard');
+      await tester.tap(find.text('Show answer'));
+      await tester.pumpAndSettle();
+      await _shot(tester, '$mode-flashcard-answer');
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      // A game and the mock exam.
+      await tester.tap(find.text('Practice').last);
+      await tester.pumpAndSettle();
+      final game = find.text('Artikel-Rausch');
+      await tester.scrollUntilVisible(game, 300,
+          scrollable: find.byType(Scrollable).first);
+      await tester.pumpAndSettle();
+      await tester.tap(game);
+      await tester.pumpAndSettle();
+      await _shot(tester, '$mode-game');
       await tester.pageBack();
       await tester.pumpAndSettle();
 
@@ -153,9 +204,6 @@ void main() {
       await tester.tap(find.text('Legal'));
       await tester.pumpAndSettle();
       await _shot(tester, '$mode-legal-hub');
-      await tester.tap(find.text('Privacy Policy').first);
-      await tester.pumpAndSettle();
-      await _shot(tester, '$mode-legal-doc');
     });
   }
 

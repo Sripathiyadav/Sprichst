@@ -94,7 +94,7 @@ class AccountView extends ConsumerWidget {
                 title: 'AI & voice',
                 subtitle:
                     '${profile.aiProviderPreference.label} · ${VoiceList.offline.labelOf(profile.voice)} · ${profile.speechRate} wpm',
-                onTap: () => _push(context, const _AIAndVoicePage()),
+                onTap: () => _push(context, const AIAndVoicePage()),
               ),
               SettingsTile(
                 icon: Icons.notifications_none_rounded,
@@ -178,10 +178,7 @@ class AccountView extends ConsumerWidget {
   }
 
   static String _appearanceSummary(LearningProfile profile) {
-    final mode = profile.appearancePreference.label;
-    return profile.surfaceStyle == SurfaceStyle.glass
-        ? '$mode · Liquid Glass ${profile.glassIntensity}%'
-        : '$mode · Standard';
+    return profile.appearancePreference.label;
   }
 
   static String _notificationSummary(LearningProfile profile) {
@@ -671,14 +668,14 @@ class _LearningPreferencesPage extends ConsumerWidget {
   }
 }
 
-class _AIAndVoicePage extends ConsumerStatefulWidget {
-  const _AIAndVoicePage();
+class AIAndVoicePage extends ConsumerStatefulWidget {
+  const AIAndVoicePage({super.key});
 
   @override
-  ConsumerState<_AIAndVoicePage> createState() => _AIAndVoicePageState();
+  ConsumerState<AIAndVoicePage> createState() => AIAndVoicePageState();
 }
 
-class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
+class AIAndVoicePageState extends ConsumerState<AIAndVoicePage> {
   late double _speechRate;
 
   @override
@@ -701,18 +698,31 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
           description:
               'Automatic is recommended: private and offline. Nothing is sent to Groq unless you added a key.',
           children: [
-            for (final provider in AIProviderPreference.values)
-              RadioListTile<AIProviderPreference>(
-                value: provider,
-                groupValue: profile.aiProviderPreference,
-                title: Text(provider.label),
-                subtitle: Text(provider.description),
-                onChanged: (value) {
-                  if (value != null) {
-                    _save(profile.copyWith(aiProviderPreference: value));
-                  }
-                },
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: Column(
+                children: [
+                  for (final provider in AIProviderPreference.values)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                      child: OptionTile(
+                        label: provider.label,
+                        subtitle: provider.description,
+                        leading: switch (provider) {
+                          AIProviderPreference.automatic => Icons.auto_awesome,
+                          AIProviderPreference.groq => Icons.cloud_outlined,
+                          AIProviderPreference.local => Icons.phone_android,
+                        },
+                        state: provider == profile.aiProviderPreference
+                            ? OptionState.selected
+                            : OptionState.idle,
+                        onTap: () => _save(
+                            profile.copyWith(aiProviderPreference: provider)),
+                      ),
+                    ),
+                ],
               ),
+            ),
           ],
         ),
         SettingsSection(
@@ -986,15 +996,18 @@ class _AboutPage extends StatelessWidget {
         title: 'About Sprichst',
         subtitle: 'A curriculum-led, AI-powered German learning workspace.',
         children: [
-          SoftCard(
-            color: context.softSurface,
+          Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('SPRICHST',
-                    style: Theme.of(context).textTheme.headlineSmall),
+                const AppIcon(size: 96),
+                const SizedBox(height: AppSpacing.md),
+                const Wordmark(size: 32),
                 const SizedBox(height: AppSpacing.xs),
-                const Text('Version ${AppInfo.version}'),
+                Text('Version ${AppInfo.version}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: context.tokens.inkMuted)),
               ],
             ),
           ),

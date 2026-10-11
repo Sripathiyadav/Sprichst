@@ -103,7 +103,7 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
 
   @override
   Widget build(BuildContext context) => GlassPage(
-        appBar: AppBar(title: const Text('Flashcards')),
+        appBar: const MastheadBar(eyebrow: 'FLASHCARDS'),
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
@@ -124,7 +124,11 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
                             xp: _done!.xp,
                           )
                         : _saving
-                            ? const Center(child: CircularProgressIndicator())
+                            ? const StateMessage(
+                                kind: StateKind.loading,
+                                title: 'Saving your session',
+                                message: 'Scheduling your next reviews.',
+                              )
                             : _card == null
                                 ? const _Empty()
                                 : _board(_card!),
@@ -141,29 +145,26 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
     final item = card.item;
     final toGerman = card.asksForGerman;
     final state = card.state;
+    final t = context.tokens;
     return Column(
       key: ValueKey('card$_index'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const SizedBox(height: AppSpacing.sm),
         Row(children: [
-          Text('${_index + 1} / ${_queue.length}',
-              style: theme.textTheme.titleMedium),
-          const Spacer(),
-          Chip(
-            visualDensity: VisualDensity.compact,
-            label: Text(card.isNew ? 'New word' : 'Review'),
+          Expanded(
+            child: SkillMeter(
+              label: 'Card ${_index + 1} of ${_queue.length}',
+              value: _index / _queue.length,
+              valueLabel: ' ',
+              compact: true,
+            ),
           ),
+          const SizedBox(width: AppSpacing.md),
+          DsChip(card.isNew ? 'New word' : 'Review',
+              icon: card.isNew ? Icons.fiber_new_outlined : Icons.refresh,
+              tone: ChipTone.outline),
         ]),
-        const SizedBox(height: AppSpacing.xs),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(99),
-          child: LinearProgressIndicator(
-            value: _index / _queue.length,
-            minHeight: 8,
-            backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            color: context.accent,
-          ),
-        ),
         const SizedBox(height: AppSpacing.md),
         Expanded(
           child: Semantics(
@@ -178,65 +179,76 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: _revealed ? null : _reveal,
-              child: SoftCard(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: SizedBox.expand(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        toGerman ? 'In German:' : 'What does it mean?',
-                        style: theme.textTheme.labelLarge,
+              child: _CardPanel(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      (toGerman ? 'In German' : 'What does it mean?')
+                          .toUpperCase(),
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: t.accentOnPanel),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        toGerman ? item.english : item.german,
+                        locale: toGerman ? null : const Locale('de'),
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.displayMedium
+                            ?.copyWith(color: t.onPanel),
                       ),
-                      const SizedBox(height: AppSpacing.md),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          toGerman ? item.english : item.german,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.displayMedium,
-                        ),
-                      ),
-                      if (!_revealed && item.isNoun && !toGerman) ...[
-                        const SizedBox(height: AppSpacing.xs),
-                        Text('Which article?',
-                            style: theme.textTheme.bodyMedium),
-                      ],
-                      if (_revealed) ...[
-                        const Divider(height: AppSpacing.xxl),
-                        if (item.article != null)
-                          ArticleChip(item.article!, large: true),
-                        if (item.article != null)
-                          const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          toGerman ? item.display : item.english,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.headlineMedium,
-                        ),
-                        if (item.example != null) ...[
-                          const SizedBox(height: AppSpacing.md),
-                          Text(item.example!,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.titleMedium),
-                          if (item.exampleEnglish != null)
-                            Text(item.exampleEnglish!,
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.bodyMedium),
-                        ],
-                        const SizedBox(height: AppSpacing.sm),
-                        SpeakButton(
-                          text: item.example ?? item.display,
-                          label: 'Listen',
-                          filled: true,
-                        ),
-                      ] else
-                        Padding(
-                          padding: const EdgeInsets.only(top: AppSpacing.xl),
-                          child: Text('Tap the card or press Space',
-                              style: theme.textTheme.bodyMedium),
-                        ),
+                    ),
+                    if (!_revealed && item.isNoun && !toGerman) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      Text('Which article?',
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(color: t.onPanelMuted)),
                     ],
-                  ),
+                    if (_revealed) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      Container(height: 1, color: t.lineOnPanel),
+                      const SizedBox(height: AppSpacing.lg),
+                      if (item.article != null)
+                        ArticleChip(item.article!, large: true),
+                      if (item.article != null)
+                        const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        toGerman ? item.display : item.english,
+                        locale: toGerman ? const Locale('de') : null,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.headlineMedium
+                            ?.copyWith(color: t.onPanel),
+                      ),
+                      if (item.example != null) ...[
+                        const SizedBox(height: AppSpacing.md),
+                        Text(item.example!,
+                            locale: const Locale('de'),
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.headlineSmall
+                                ?.copyWith(color: t.onPanel)),
+                        if (item.exampleEnglish != null)
+                          Text(item.exampleEnglish!,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: t.onPanelMuted)),
+                      ],
+                      const SizedBox(height: AppSpacing.sm),
+                      SpeakButton(
+                        text: item.example ?? item.display,
+                        label: 'Listen',
+                        filled: true,
+                        onPanel: true,
+                      ),
+                    ] else
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.xl),
+                        child: Text('Tap the card or press Space',
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color: t.onPanelMuted)),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -244,7 +256,7 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
         ),
         const SizedBox(height: AppSpacing.md),
         if (!_revealed)
-          FilledButton(onPressed: _reveal, child: const Text('Show answer'))
+          PrimaryButton(label: 'Show answer', block: true, onPressed: _reveal)
         else
           Row(children: [
             for (final rating in CardRating.values) ...[
@@ -258,10 +270,52 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
                 ),
               ),
               if (rating != CardRating.values.last)
-                const SizedBox(width: AppSpacing.xxs),
+                const SizedBox(width: AppSpacing.xs),
             ],
           ]),
       ],
+    );
+  }
+}
+
+/// The flashcard: a charcoal panel with the hatch in its corner.
+class _CardPanel extends StatelessWidget {
+  const _CardPanel({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    final shape = RoundedSuperellipseBorder(
+        borderRadius: BorderRadius.circular(AppRadius.panel));
+    return DecoratedBox(
+      decoration: ShapeDecoration(color: t.panel, shape: shape, shadows: const [
+        BoxShadow(
+            color: Color(0x59000000),
+            blurRadius: 36,
+            spreadRadius: -12,
+            offset: Offset(0, 18)),
+      ]),
+      child: ClipPath(
+        clipper: ShapeBorderClipper(shape: shape),
+        child: Stack(
+          children: [
+            const Positioned(
+              left: -8,
+              top: -8,
+              child: Geometry(
+                  shape: GeometryShape.hatch,
+                  size: 96,
+                  tone: GeometryTone.onPanel),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: SizedBox.expand(child: child),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -282,45 +336,54 @@ class _RatingButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final (background, foreground) = switch (rating) {
-      CardRating.again => (context.dangerSurface, context.onDangerSurface),
-      CardRating.hard => (scheme.surfaceContainerHigh, scheme.onSurface),
-      CardRating.good => (context.successSurface, context.onSuccessSurface),
-      CardRating.easy => (scheme.primary, scheme.onPrimary),
-    };
+    final t = context.tokens;
+    final again = rating == CardRating.again;
+    final good = rating == CardRating.good;
+    final ink = good ? t.onAction : (again ? t.danger : t.ink);
+    final label = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(rating.label,
+              style: theme.textTheme.labelLarge?.copyWith(color: ink)),
+        ),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(hint,
+              style: theme.textTheme.bodySmall?.copyWith(color: ink)),
+        ),
+      ],
+    );
+    const padding =
+        EdgeInsets.symmetric(horizontal: 2, vertical: AppSpacing.xs);
+    const size = Size(0, 64);
     return Semantics(
       button: true,
       label: '${rating.label}, next review in $hint. Shortcut $shortcut.',
       excludeSemantics: true,
       onTap: onPressed,
-      child: FilledButton(
-        style: FilledButton.styleFrom(
-          backgroundColor: background,
-          foregroundColor: foreground,
-          padding: const EdgeInsets.symmetric(
-              horizontal: 2, vertical: AppSpacing.xs),
-          minimumSize: const Size(0, 64),
-        ),
-        onPressed: onPressed,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(rating.label,
-                  style:
-                      theme.textTheme.titleMedium?.copyWith(color: foreground)),
+      // Good is the filled default; Again is outlined in danger.
+      child: good
+          ? FilledButton(
+              style: FilledButton.styleFrom(
+                  padding: padding,
+                  minimumSize: size,
+                  foregroundColor: t.onAction),
+              onPressed: onPressed,
+              child: label,
+            )
+          : OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: padding,
+                minimumSize: size,
+                foregroundColor: again ? t.danger : t.ink,
+                side: BorderSide(
+                    color: again ? t.danger : t.lineStrong, width: 1.5),
+              ),
+              onPressed: onPressed,
+              child: label,
             ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(hint,
-                  style:
-                      theme.textTheme.bodySmall?.copyWith(color: foreground)),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -329,17 +392,12 @@ class _Empty extends StatelessWidget {
   const _Empty();
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check_circle_outline, size: 56),
-            const SizedBox(height: AppSpacing.md),
-            Text('All caught up',
-                style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: AppSpacing.xs),
-            const Text('No cards are due right now.'),
-          ],
+  Widget build(BuildContext context) => const Center(
+        child: StateMessage(
+          kind: StateKind.empty,
+          title: 'All caught up',
+          message:
+              'No cards are due right now. They come back when they are due.',
         ),
       );
 }
@@ -366,7 +424,7 @@ class _Summary extends ConsumerWidget {
             child: Column(
               children: [
                 SessionSummaryBadge(
-                  title: 'Session complete!',
+                  title: 'Session complete',
                   line:
                       'You remembered $recalled of $total cards${xp > 0 ? ' and earned $xp XP' : ''}.',
                 ),
@@ -378,9 +436,10 @@ class _Summary extends ConsumerWidget {
             ),
           ),
         ),
-        FilledButton(
+        PrimaryButton(
+          label: 'Done',
+          block: true,
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Done'),
         ),
       ],
     );
@@ -397,22 +456,40 @@ class SessionSummaryBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return Column(
       children: [
         const SizedBox(height: AppSpacing.xl),
-        CircleAvatar(
-          radius: 38,
-          backgroundColor: scheme.tertiary,
-          foregroundColor: scheme.onTertiary,
-          child: const Icon(Icons.emoji_events, size: 38),
+        SizedBox(
+          width: 96,
+          height: 96,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const Geometry(shape: GeometryShape.ring, size: 96),
+              const Positioned(
+                right: 6,
+                top: 6,
+                child: Geometry(shape: GeometryShape.disc, size: 28),
+              ),
+              Icon(Icons.check, size: 40, color: t.ink),
+            ],
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Text(title,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.displaySmall),
+        Semantics(
+          header: true,
+          child: Text(title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.displaySmall),
+        ),
         const SizedBox(height: AppSpacing.xs),
-        Text(line, textAlign: TextAlign.center),
+        Text(line,
+            textAlign: TextAlign.center,
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(color: t.inkMuted)),
       ],
     );
   }

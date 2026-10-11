@@ -51,15 +51,14 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Semantics(
-          label: 'Progress',
-          value: '${_session.position} of ${_session.total} questions',
-          excludeSemantics: true,
-          child: LinearProgressIndicator(
-            value: _session.position / _session.total,
-            minHeight: 10,
-            borderRadius: BorderRadius.circular(99),
-          ),
+        const SizedBox(height: AppSpacing.md),
+        SkillMeter(
+          label: _session.isRetry
+              ? 'Try again'
+              : 'Exercise ${_session.position + 1} of ${_session.total}',
+          value: _session.position / _session.total,
+          valueLabel: ' ',
+          compact: true,
         ),
         const SizedBox(height: AppSpacing.xl),
         Expanded(
@@ -68,13 +67,8 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
               key: ValueKey(exercise.id),
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _session.isRetry
-                      ? 'Try again'
-                      : 'Question ${_session.position + 1} of ${_session.total}',
-                  style: theme.textTheme.labelLarge
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                ),
+                Text(_instruction(exercise.kind),
+                    style: theme.textTheme.labelSmall),
                 if (exercise.examPart != null) ...[
                   const SizedBox(height: AppSpacing.xs),
                   ExamPartTag(exercise.examPart!),
@@ -96,7 +90,7 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
                 ),
                 if (checked != null) ...[
                   const SizedBox(height: AppSpacing.md),
-                  FeedbackBanner(
+                  FeedbackBanner.answer(
                     correct: checked.isCorrect,
                     message: checked.feedback,
                   ),
@@ -106,19 +100,28 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        FilledButton(
+        PrimaryButton(
           onPressed: _buttonEnabled ? _onPressed : null,
-          child: Text(
-            checked == null
-                ? 'Check answer'
-                : isLast
-                    ? widget.finishLabel
-                    : 'Next question',
-          ),
+          block: true,
+          label: checked == null
+              ? 'Check answer'
+              : isLast
+                  ? widget.finishLabel
+                  : 'Continue',
         ),
       ],
     );
   }
+
+  /// The instruction above the prompt, in capitals.
+  static String _instruction(ExerciseKind kind) => switch (kind) {
+        ExerciseKind.multipleChoice => 'CHOOSE THE ANSWER',
+        ExerciseKind.cloze => 'FILL IN THE GAPS',
+        ExerciseKind.listening => 'LISTEN, THEN ANSWER',
+        ExerciseKind.writing => 'WRITE YOUR ANSWER',
+        ExerciseKind.speaking => 'SAY IT ALOUD',
+        _ => 'ANSWER',
+      };
 
   bool get _buttonEnabled =>
       !_finishing && (_session.checked != null || _response != null);
@@ -146,7 +149,8 @@ class _ExerciseRunnerState extends State<ExerciseRunner> {
   }
 }
 
-/// The closing card shown after a lesson or practice session.
+/// The closing screen after a lesson or practice session: the score as the one
+/// big number, and what it earned.
 class SessionSummary extends StatelessWidget {
   const SessionSummary({
     super.key,
@@ -166,34 +170,50 @@ class SessionSummary extends StatelessWidget {
   final CefrLevel? leveledUpTo;
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          CircleAvatar(
-            radius: 38,
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-            foregroundColor: Theme.of(context).colorScheme.onTertiary,
-            child: const Icon(Icons.emoji_events, size: 38),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(title, style: Theme.of(context).textTheme.displaySmall),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'You got $correct of $total correct'
-            '${xpEarned > 0 ? ' and earned $xpEarned XP' : ''}.',
-            textAlign: TextAlign.center,
-          ),
-          if (leveledUpTo != null) ...[
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Level up! You are now working at ${leveledUpTo!.label}.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium,
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.zero,
+              child: EditorialNumber(
+                value: correct,
+                label: 'Correct',
+                unit: 'of $total',
+                disc: true,
+              ),
             ),
-          ],
-          if (note != null) ...[
+            const SizedBox(height: AppSpacing.xl),
+            Semantics(
+              header: true,
+              child: Text(title, style: theme.textTheme.displaySmall),
+            ),
             const SizedBox(height: AppSpacing.xs),
-            Text(note!, textAlign: TextAlign.center),
+            Text(
+              'You got $correct of $total correct'
+              '${xpEarned > 0 ? ' and earned $xpEarned XP' : ''}.',
+              style: theme.textTheme.bodyLarge?.copyWith(color: t.inkMuted),
+            ),
+            if (leveledUpTo != null) ...[
+              const SizedBox(height: AppSpacing.md),
+              FeedbackBanner(
+                tone: BannerTone.success,
+                title: 'New level',
+                message: 'You are now working at ${leveledUpTo!.label}.',
+              ),
+            ],
+            if (note != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(note!, style: theme.textTheme.bodyMedium),
+            ],
           ],
-        ]),
-      );
+        ),
+      ),
+    );
+  }
 }

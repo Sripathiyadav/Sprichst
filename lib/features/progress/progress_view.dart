@@ -9,6 +9,7 @@ import '../../domain/learning/exam_readiness.dart';
 import '../../domain/learning/learner_insights.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../gamification/badge_icons.dart';
+import '../learn/lesson_view.dart';
 
 class ProgressView extends ConsumerWidget {
   const ProgressView({super.key});
@@ -19,62 +20,81 @@ class ProgressView extends ConsumerWidget {
     final profile = app.profile!;
     final weak = app.weakSkills;
     final next = app.currentLesson;
+    final now = DateTime.now();
+    final completed = profile.completedLessonCount;
+    final streak = profile.streakAt(now);
     return PageFrame(
       title: 'Your progress',
       subtitle:
-          'These learning signals help Sprichst choose what to teach next. They are not CEFR certification.',
+          'Signals that help Sprichst choose what to teach next. Not a CEFR certificate.',
       child: ListView(padding: pageListPadding(context), children: [
-        SoftCard(
-          color: Theme.of(context).colorScheme.primary,
-          child: Row(children: [
-            CircleAvatar(
-                radius: 26,
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                foregroundColor:
-                    Theme.of(context).colorScheme.onPrimaryContainer,
-                child: const Icon(Icons.workspace_premium)),
-            const SizedBox(width: 16),
-            Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                  Text('${profile.currentLevel.label} learner',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary)),
-                  Text(
-                      '${profile.xp} XP · ${profile.completedLessonCount} lessons complete · ${profile.streakAt(DateTime.now())}-day streak',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ))
-                ])),
-          ]),
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.md),
+          child: Wrap(
+            spacing: AppSpacing.xl,
+            runSpacing: AppSpacing.md,
+            crossAxisAlignment: WrapCrossAlignment.end,
+            children: [
+              EditorialNumber(
+                value: completed,
+                label: 'Lessons completed',
+                unit: completed == 1 ? 'lesson' : 'lessons',
+                disc: completed > 0,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+                child: LevelBadge(
+                    level: profile.currentLevel, caption: 'Your level'),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xl),
+        Row(
+          children: [
+            Expanded(
+              child: StatTile(
+                icon: Icons.bolt_outlined,
+                value: '${profile.xp}',
+                label: 'XP earned',
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: StatTile(
+                icon: Icons.local_fire_department_outlined,
+                value: '$streak',
+                label: streak == 1 ? 'Day streak' : 'Day streak',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xxl),
         const SectionTitle('Skill matrix'),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         SoftCard(
             child: Column(children: [
           for (final skill in profile.scores.entries.entries) ...[
             SkillMeter(label: skill.key, value: skill.value),
-            const SizedBox(height: 17)
+            const SizedBox(height: AppSpacing.md)
           ]
         ])),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xxl),
         const SectionTitle('How you learn'),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         for (final insight in app.insights) ...[
           _InsightCard(insight: insight),
           const SizedBox(height: AppSpacing.sm),
         ],
         if (app.examReadiness != null) ...[
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.lg),
           SectionTitle('${profile.goal.label} readiness'),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           _ReadinessCard(readiness: app.examReadiness!, goal: profile.goal),
         ],
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xxl),
         const SectionTitle('Needs attention'),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         SoftCard(
           child: weak.isEmpty
               ? const Text(
@@ -85,26 +105,37 @@ class ProgressView extends ConsumerWidget {
                       label: _weakSkillLabel(profile, skill),
                       value: profile.skillStats[skill]!.accuracy,
                     ),
-                    const SizedBox(height: 17),
+                    const SizedBox(height: AppSpacing.md),
                   ],
                 ]),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xxl),
         SectionTitle(
           'Badges',
           action: Text(
-              '${profile.gamification.badges.length} / ${Achievements.catalogue.length}'),
+              '${profile.gamification.badges.length} / ${Achievements.catalogue.length}',
+              style: Theme.of(context).textTheme.labelLarge),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         _BadgeGrid(earned: profile.gamification.badges.keys.toSet()),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xxl),
         const SectionTitle('Next milestone'),
-        const SizedBox(height: 12),
-        SoftCard(
-          child: Text(next == null
-              ? 'Your curriculum is loading.'
-              : 'Next up: ${next.title}. ${next.objective}'),
-        ),
+        const SizedBox(height: AppSpacing.sm),
+        if (next == null)
+          const SoftCard(child: Text('Your curriculum is loading.'))
+        else
+          FeaturePanel(
+            eyebrow: '${next.level.label} · ${next.unit}',
+            title: next.title,
+            meta: '${next.durationMinutes} min',
+            actionLabel: 'Open lesson',
+            onAction: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => LessonView(lesson: next),
+              ),
+            ),
+            children: [Text(next.objective)],
+          ),
       ]),
     );
   }
@@ -121,11 +152,11 @@ class _InsightCard extends StatelessWidget {
   final LearnerInsight insight;
 
   static IconData _icon(InsightKind kind) => switch (kind) {
-        InsightKind.productionGap => Icons.compare_arrows_rounded,
-        InsightKind.weakestMode => Icons.track_changes_rounded,
+        InsightKind.productionGap => Icons.compare_arrows,
+        InsightKind.weakestMode => Icons.track_changes,
         InsightKind.strength => Icons.thumb_up_alt_outlined,
-        InsightKind.consistency => Icons.event_repeat_rounded,
-        InsightKind.learning => Icons.insights_rounded,
+        InsightKind.consistency => Icons.event_repeat,
+        InsightKind.learning => Icons.insights,
       };
 
   @override
@@ -217,7 +248,6 @@ class _BadgeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
     return Semantics(
       label:
           '${badge.title}. ${badge.description} ${earned ? 'Earned.' : 'Not earned yet.'}',
@@ -228,10 +258,12 @@ class _BadgeTile extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundColor: earned ? scheme.tertiary : context.softSurface,
-              foregroundColor: earned ? scheme.onTertiary : scheme.outline,
-              child: Icon(
-                  earned ? badgeIcon(badge.icon) : Icons.lock_outline_rounded,
+              backgroundColor: earned
+                  ? context.tokens.successSoft
+                  : context.tokens.surfaceSunken,
+              foregroundColor:
+                  earned ? context.tokens.success : context.tokens.inkMuted,
+              child: Icon(earned ? badgeIcon(badge.icon) : Icons.lock_outline,
                   size: 28),
             ),
             const SizedBox(height: AppSpacing.xxs),
@@ -240,7 +272,7 @@ class _BadgeTile extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelMedium?.copyWith(
-                  color: earned ? scheme.onSurface : scheme.onSurfaceVariant,
+                  color: earned ? context.tokens.ink : context.tokens.inkMuted,
                 )),
           ],
         ),

@@ -72,6 +72,10 @@ final Provider<AIRepository> aiRepositoryProvider =
   );
 });
 
+/// A screen asking the shell to open another tab (Home's "Talk" opens Coach).
+/// The shell reads it, switches, and clears it.
+final shellTabRequestProvider = StateProvider<int?>((ref) => null);
+
 final appControllerProvider = ChangeNotifierProvider<AppController>((ref) {
   final ai = ref.watch(aiRepositoryProvider);
   final controller = AppController(

@@ -59,23 +59,21 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
     // XP total, say) do not rebuild the whole MaterialApp.
     final look = ref.watch(appControllerProvider.select((app) {
       final profile = app.profile;
-      return profile == null
-          ? null
-          : (
-              profile.appearancePreference,
-              profile.surfaceStyle,
-              profile.glassIntensity,
-            );
+      return profile?.appearancePreference;
     }));
-    final glass = GlassTheme.fromProfile(
-      look?.$2 ?? SurfaceStyle.glass,
-      look?.$3 ?? LearningProfile.defaultGlassIntensity,
-    );
+    // Liquid Glass belonged to the previous look. The design system draws
+    // flat paper-and-panel surfaces, so every learner gets them.
+    const glass = GlassTheme.standard;
     final isLoading =
         ref.watch(appControllerProvider.select((app) => app.isLoading));
     final isOnboarded =
         ref.watch(appControllerProvider.select((app) => app.isOnboarded));
     final authState = ref.watch(authViewModelProvider);
+    ref.listen<int?>(shellTabRequestProvider, (_, requested) {
+      if (requested == null) return;
+      setState(() => _selectedIndex = requested);
+      ref.read(shellTabRequestProvider.notifier).state = null;
+    });
 
     return MaterialApp(
       navigatorKey: _navigatorKey,
@@ -83,7 +81,7 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
       debugShowCheckedModeBanner: false,
       theme: SprichstTheme.build(Brightness.light, glass: glass),
       darkTheme: SprichstTheme.build(Brightness.dark, glass: glass),
-      themeMode: switch (look?.$1) {
+      themeMode: switch (look) {
         AppearancePreference.light => ThemeMode.light,
         AppearancePreference.dark => ThemeMode.dark,
         _ => ThemeMode.system,
@@ -133,32 +131,25 @@ class _SplashView extends StatelessWidget {
   const _SplashView();
 
   @override
-  Widget build(BuildContext context) => GlassPage(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'SPRICHST',
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall
-                    ?.copyWith(fontWeight: FontWeight.w900),
+  Widget build(BuildContext context) => const GlassPage(
+        body: SafeArea(
+          child: Center(
+            // Scrolls so a short landscape screen never clips the lockup.
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppIcon(size: 96),
+                  SizedBox(height: AppSpacing.md),
+                  Wordmark(size: 32),
+                  StateMessage(
+                    kind: StateKind.loading,
+                    title: 'Opening Sprichst',
+                    message: 'Getting your lessons ready.',
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.xs),
-              const SizedBox(width: 120, child: FlagStripe(height: 8)),
-              const SizedBox(height: AppSpacing.md),
-              const Text(
-                'Deutsch lernen.\nDeutsch sprechen.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 28),
-              const SizedBox(
-                width: 28,
-                height: 28,
-                child: CircularProgressIndicator(strokeWidth: 3),
-              ),
-            ],
+            ),
           ),
         ),
       );
@@ -224,16 +215,9 @@ class _LearningShell extends StatelessWidget {
       labelType: layout == NavigationLayout.extendedRail
           ? null
           : NavigationRailLabelType.all,
-      leading: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-        child: Text(
-          'S',
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
+      leading: const Padding(
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
+        child: _RailMark(),
       ),
       destinations: [
         for (final item in _destinations)
@@ -319,6 +303,38 @@ class _LearningShell extends StatelessWidget {
   }
 }
 
+/// The brand's initial in the navigation rail: an S with the coral dot.
+class _RailMark extends StatelessWidget {
+  const _RailMark();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return ExcludeSemantics(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Text('S',
+              style: TextStyle(
+                  fontFamily: SprichstTheme.fontFamily,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: t.ink)),
+          Positioned(
+            right: -6,
+            top: 4,
+            child: Container(
+                width: 7,
+                height: 7,
+                decoration:
+                    BoxDecoration(color: t.coral, shape: BoxShape.circle)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// The phone-only overflow destination: opens the screens that do not fit in
 /// the bottom bar.
 class _MoreView extends StatelessWidget {
@@ -371,7 +387,7 @@ class _MoreTile extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
-              builder: (_) => GlassPage(appBar: AppBar(), body: page),
+              builder: (_) => GlassPage(body: page),
             ),
           ),
         ),

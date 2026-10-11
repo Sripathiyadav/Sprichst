@@ -67,7 +67,7 @@ void main() {
     final h = Harness();
     await _pumpVoiceMode(tester, h);
     expect(find.text('Listening…'), findsOneWidget);
-    expect(find.text('Voice mode'), findsOneWidget);
+    expect(find.text('VOICE MODE'), findsOneWidget);
 
     await _say(tester, h);
     expect(find.text('Your tutor is speaking'), findsOneWidget);

@@ -11,6 +11,7 @@ import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/ai_exceptions.dart';
 import '../../shared/input_rules.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../account/account_view.dart' show AIAndVoicePage;
 import '../account/on_device_ai_page.dart';
 import 'services/audio_player_service.dart';
 import 'services/audio_recorder_service.dart';
@@ -26,6 +27,8 @@ class AICoachView extends ConsumerStatefulWidget {
 
 class _AICoachViewState extends ConsumerState<AICoachView> {
   final _text = TextEditingController();
+  final _scroll = ScrollController();
+  var _shown = 0;
 
   final List<_Message> _messages = [];
 
@@ -48,6 +51,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   @override
   void dispose() {
     _text.dispose();
+    _scroll.dispose();
     _audioRecorder.dispose();
     _audioPlayer.dispose();
     super.dispose();
@@ -57,29 +61,56 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   Widget build(BuildContext context) {
     final app = ref.watch(appControllerProvider);
     final profile = app.profile!;
+    if (_messages.length != _shown) {
+      _shown = _messages.length;
+      _scrollToEnd();
+    }
 
     return PageFrame(
       scrollsUnderNav: false,
-      title: 'AI Coach',
-      subtitle:
-          'Practice German with your personal tutor through text or voice.',
+      title: 'Practise talking',
+      compactHeading: true,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            tooltip: 'Voice mode: talk hands-free',
+            onPressed:
+                _sending || _recording || _transcribing ? null : _openVoiceMode,
+            icon: const Icon(Icons.graphic_eq),
+          ),
+          IconButton(
+            tooltip: 'Coach settings',
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => const AIAndVoicePage())),
+            icon: const Icon(Icons.tune),
+          ),
+        ],
+      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          final t = context.tokens;
           final conversation = Column(
             children: [
-              const _OfflineSetupBanner(),
+              // The chip, the setup banner and the messages scroll together,
+              // so a large text size or a short screen never pushes the
+              // composer out of view.
               Expanded(
-                child: _messages.isEmpty
-                    ? _CoachEmptyState(onVoiceMode: _openVoiceMode)
-                    : ListView.separated(
-                        itemCount: _messages.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (_, index) {
-                          final message = _messages[index];
-
-                          return _MessageBubble(
+                child: ListView(
+                  controller: _scroll,
+                  children: [
+                    const _ProviderChip(),
+                    const SizedBox(height: AppSpacing.sm),
+                    const _OfflineSetupBanner(),
+                    if (_messages.isEmpty)
+                      _CoachEmptyState(onVoiceMode: _openVoiceMode)
+                    else
+                      for (final message in _messages)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                          child: _MessageBubble(
                             message: message,
-                            onSpeak: message.fromUser
+                            onSpeak: message.kind != _Kind.tutor
                                 ? null
                                 : () => _speakMessage(message),
                             onResendOnPhone: message.resendOnPhone == null ||
@@ -87,62 +118,66 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                                 ? null
                                 : () =>
                                     _send(resendOnPhone: message.resendOnPhone),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _text,
-                      minLines: 1,
-                      maxLines: 3,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(InputLimits.message),
-                      ],
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _send(),
-                      decoration: const InputDecoration(
-                        hintText: 'Write in German…',
+              const SizedBox(height: AppSpacing.sm),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                    border: Border(top: BorderSide(color: t.line))),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      IconButton.outlined(
+                        tooltip:
+                            _recording ? 'Stop recording' : 'Record German',
+                        onPressed:
+                            _sending || _transcribing ? null : _toggleRecording,
+                        icon: _recording
+                            ? const Icon(Icons.stop)
+                            : const Icon(Icons.mic_none),
                       ),
-                    ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(
+                        child: TextField(
+                          controller: _text,
+                          minLines: 1,
+                          maxLines: 3,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(
+                                InputLimits.message),
+                          ],
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: (_) => _send(),
+                          decoration: const InputDecoration(
+                            hintText: 'Write in German…',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      IconButton.filledTonal(
+                        tooltip: 'Send message',
+                        onPressed: _sending || _recording || _transcribing
+                            ? null
+                            : _send,
+                        icon: _sending || _transcribing
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: t.ink,
+                                ),
+                              )
+                            : const Icon(Icons.send),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  IconButton.filledTonal(
-                    tooltip: 'Voice mode: talk hands-free',
-                    onPressed: _sending || _recording || _transcribing
-                        ? null
-                        : _openVoiceMode,
-                    icon: const Icon(Icons.graphic_eq),
-                  ),
-                  const SizedBox(width: 4),
-                  IconButton.filled(
-                    tooltip: _recording ? 'Stop recording' : 'Record German',
-                    onPressed:
-                        _sending || _transcribing ? null : _toggleRecording,
-                    icon: _recording
-                        ? const Icon(Icons.stop)
-                        : const Icon(Icons.mic),
-                  ),
-                  const SizedBox(width: 4),
-                  IconButton.filled(
-                    tooltip: 'Send message',
-                    onPressed:
-                        _sending || _recording || _transcribing ? null : _send,
-                    icon: _sending || _transcribing
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          )
-                        : const Icon(Icons.send),
-                  ),
-                ],
+                ),
               ),
             ],
           );
@@ -205,7 +240,10 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                   padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                   child: Text(
                     '${profile.currentLevel.label} · ${app.currentLesson?.title ?? 'Not started'}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: context.tokens.inkMuted),
                   ),
                 ),
               ),
@@ -217,6 +255,18 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     );
   }
 
+  /// Shows the newest message once the list has laid it out.
+  void _scrollToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scroll.hasClients) return;
+      _scroll.animateTo(
+        _scroll.position.maxScrollExtent,
+        duration: AppMotion.standard(context),
+        curve: AppMotion.curve,
+      );
+    });
+  }
+
   /// Opens the hands-free conversation and keeps what was said in the chat.
   Future<void> _openVoiceMode() async {
     final turns = await Navigator.of(context).push<List<VoiceTurn>>(
@@ -226,10 +276,10 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     setState(() {
       for (final turn in turns) {
         _messages
-          ..add(_Message(text: turn.user, fromUser: true))
+          ..add(_Message(text: turn.user, kind: _Kind.learner))
           ..add(_Message(
             text: turn.tutor,
-            fromUser: false,
+            kind: _Kind.tutor,
             speechText: turn.speech,
           ));
       }
@@ -367,12 +417,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 
     setState(() {
       if (resendOnPhone == null) {
-        _messages.add(
-          _Message(
-            text: text,
-            fromUser: true,
-          ),
-        );
+        _messages.add(_Message(text: text, kind: _Kind.learner));
         _text.clear(); // the message is on screen now; leave the box empty
       }
       _sending = true;
@@ -384,16 +429,13 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
           ? await app.chat(text)
           : await app.onThePhone(() => app.chat(text));
 
-      final displayParts = <String>[
+      final hasCorrection =
+          reply.correction != null && reply.correction!.trim().isNotEmpty;
+      // The tutor's words: the reply, then the question that goes on.
+      final tutorMessage = [
         if (reply.reply.trim().isNotEmpty) reply.reply,
-        if (reply.correction != null && reply.correction!.trim().isNotEmpty)
-          'Correction: ${reply.correction}',
-        if (reply.explanation != null && reply.explanation!.trim().isNotEmpty)
-          reply.explanation!,
         if (reply.followUp.trim().isNotEmpty) reply.followUp,
-      ];
-
-      final tutorMessage = displayParts.join('\n\n');
+      ].join('\n\n');
 
       final speechParts = <String>[
         if (reply.reply.trim().isNotEmpty) reply.reply,
@@ -409,13 +451,23 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       }
 
       setState(() {
-        _messages.add(
-          _Message(
+        // A correction is only shown when the provider returned one, with the
+        // fields it returned.
+        if (hasCorrection) {
+          _messages.add(_Message(
+            kind: _Kind.correction,
+            text: text,
+            corrected: reply.correction!.trim(),
+            explanation: reply.explanation?.trim(),
+          ));
+        }
+        if (tutorMessage.isNotEmpty) {
+          _messages.add(_Message(
             text: tutorMessage,
             speechText: speechText,
-            fromUser: false,
-          ),
-        );
+            kind: _Kind.tutor,
+          ));
+        }
       });
 
       if (speakResponse && speechText.isNotEmpty) {
@@ -439,8 +491,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
             _Message(
               text: explained
                   ? error.toString()
-                  : 'I could not reach the coach. Check your connection, then try again.',
-              fromUser: false,
+                  : 'Couldn’t reach the coach. Lessons and reviews still work offline.',
+              kind: _Kind.notice,
               resendOnPhone: phoneReady ? text : null,
             ),
           );
@@ -488,6 +540,47 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   }
 }
 
+/// Says where the learner's words go, as the provider labels do: "This phone
+/// only · nothing leaves your phone" or "Groq (my own key) · sends your messages
+/// to Groq".
+class _ProviderChip extends ConsumerWidget {
+  const _ProviderChip();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(appControllerProvider).profile!;
+    final models = ref.watch(modelManagerProvider);
+    final hasKey = ref.watch(groqSettingsProvider).hasKey;
+    final onPhone = models.isSupported && models.activeTutor != null;
+
+    final (label, icon) = switch (profile.aiProviderPreference) {
+      AIProviderPreference.local => (
+          '${profile.aiProviderPreference.label} · nothing leaves your phone',
+          Icons.phone_android
+        ),
+      AIProviderPreference.groq => (
+          '${profile.aiProviderPreference.label} · sends your messages to Groq',
+          Icons.cloud_outlined
+        ),
+      AIProviderPreference.automatic => onPhone
+          ? ('Automatic · answers on this phone', Icons.phone_android)
+          : hasKey
+              ? (
+                  'Automatic · sends your messages to Groq until a model is downloaded',
+                  Icons.cloud_outlined
+                )
+              : (
+                  'Automatic · download a model or add a Groq key to start',
+                  Icons.info_outline
+                ),
+    };
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: DsChip(label, icon: icon),
+    );
+  }
+}
+
 /// Shown until a tutor model is on the phone: the coach then works offline.
 class _OfflineSetupBanner extends ConsumerWidget {
   const _OfflineSetupBanner();
@@ -503,47 +596,28 @@ class _OfflineSetupBanner extends ConsumerWidget {
     final downloading = models.progressOf(tutor.id);
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: SoftCard(
-        color: context.softSurface,
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 2),
-                  child: Icon(Icons.offline_bolt_outlined),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: downloading != null
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Downloading ${tutor.label}…'),
-                            const SizedBox(height: AppSpacing.xs),
-                            LinearProgressIndicator(value: downloading),
-                          ],
-                        )
-                      : Text(
-                          'Use the coach without internet: download ${tutor.label} (${formatBytes(tutor.downloadBytes)}), recommended for this phone.'),
-                ),
-              ],
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                        builder: (_) => const OnDeviceAIPage())),
-                child: const Text('Set up'),
+      child: downloading != null
+          ? SoftCard(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Downloading ${tutor.label}…'),
+                  const SizedBox(height: AppSpacing.xs),
+                  LinearProgressIndicator(value: downloading),
+                ],
               ),
+            )
+          : FeedbackBanner(
+              tone: BannerTone.info,
+              title: 'Use the coach without internet',
+              message:
+                  'Download ${tutor.label} (${formatBytes(tutor.downloadBytes)}), recommended for this phone.',
+              actionLabel: 'Set up',
+              onAction: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                      builder: (_) => const OnDeviceAIPage())),
             ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -554,57 +628,44 @@ class _CoachEmptyState extends StatelessWidget {
   final VoidCallback onVoiceMode;
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: SoftCard(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.forum_outlined,
-                size: 44,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Start a German conversation',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Write a sentence, or just talk: voice mode listens, answers aloud and listens again, with no buttons in between.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: onVoiceMode,
-                icon: const Icon(Icons.graphic_eq),
-                label: const Text('Start voice conversation'),
-              ),
-            ],
+  Widget build(BuildContext context) => Center(
+        child: SingleChildScrollView(
+          child: StateMessage(
+            kind: StateKind.empty,
+            title: 'Start a German conversation',
+            message:
+                'Write a sentence, or just talk. Voice mode listens, answers aloud and listens again.',
+            actionLabel: 'Start voice conversation',
+            onAction: onVoiceMode,
           ),
         ),
-      ),
-    );
-  }
+      );
 }
+
+enum _Kind { learner, tutor, correction, notice }
 
 class _Message {
   const _Message({
     required this.text,
-    required this.fromUser,
+    required this.kind,
     this.speechText,
     this.resendOnPhone,
+    this.corrected,
+    this.explanation,
   });
 
+  /// What was said. For a correction, the learner's original sentence.
   final String text;
-  final bool fromUser;
+  final _Kind kind;
   final String? speechText;
 
   /// The learner's message, when the cloud could not answer it and this phone
   /// can: shown with an "Answer on this phone" button.
   final String? resendOnPhone;
+
+  /// A correction's corrected sentence and why (only what the provider sent).
+  final String? corrected;
+  final String? explanation;
 }
 
 class _MessageBubble extends StatelessWidget {
@@ -620,57 +681,118 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
+    switch (message.kind) {
+      case _Kind.notice:
+        return FeedbackBanner(
+          tone: message.resendOnPhone != null
+              ? BannerTone.warning
+              : BannerTone.offline,
+          title: 'The coach could not answer',
+          message: message.text,
+          actionLabel:
+              message.resendOnPhone != null ? 'Answer on this phone' : null,
+          onAction: onResendOnPhone,
+        );
+      case _Kind.correction:
+        return _CorrectionCard(message: message);
+      case _Kind.learner:
+      case _Kind.tutor:
+        final mine = message.kind == _Kind.learner;
+        return Align(
+          alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+          child: ConstrainedBox(
+            constraints:
+                const BoxConstraints(maxWidth: Breakpoints.messageMaxWidth),
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                color: mine ? t.panel : t.surface,
+                shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.card),
+                  side: mine ? BorderSide.none : BorderSide(color: t.line),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.text,
+                      locale: const Locale('de'),
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: mine ? t.onPanel : t.ink),
+                    ),
+                    if (onSpeak != null) ...[
+                      const SizedBox(height: AppSpacing.xxs),
+                      IconButton(
+                        tooltip: 'Listen',
+                        onPressed: onSpeak,
+                        icon: const Icon(Icons.volume_up_outlined),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+    }
+  }
+}
+
+/// What the learner wrote, the corrected sentence, and why. The original
+/// carries a wavy underline as well as its "You wrote" label.
+class _CorrectionCard extends StatelessWidget {
+  const _CorrectionCard({required this.message});
+
+  final _Message message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
     return Align(
-      alignment:
-          message.fromUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: Alignment.centerLeft,
       child: ConstrainedBox(
         constraints:
             const BoxConstraints(maxWidth: Breakpoints.messageMaxWidth),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: message.fromUser
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(18),
-            border: message.fromUser
-                ? null
-                : Border.all(
-                    color: Theme.of(context).colorScheme.outlineVariant),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  message.text,
-                  style: TextStyle(
-                    color: message.fromUser
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onSurface,
-                    height: 1.45,
-                  ),
+        child: SoftCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                Icon(Icons.edit_note, color: t.ink, size: 20),
+                const SizedBox(width: AppSpacing.xs),
+                Text('CORRECTION', style: theme.textTheme.labelSmall),
+              ]),
+              const SizedBox(height: AppSpacing.sm),
+              Text('You wrote',
+                  style:
+                      theme.textTheme.bodySmall?.copyWith(color: t.inkMuted)),
+              Text(
+                message.text,
+                locale: const Locale('de'),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.wavy,
+                  decorationColor: t.danger,
                 ),
-                if (message.resendOnPhone != null) ...[
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: onResendOnPhone,
-                    icon: const Icon(Icons.phone_android_outlined),
-                    label: const Text('Answer on this phone'),
-                  ),
-                ],
-                if (onSpeak != null) ...[
-                  const SizedBox(height: 8),
-                  IconButton(
-                    tooltip: 'Listen',
-                    onPressed: onSpeak,
-                    icon: const Icon(
-                      Icons.volume_up_outlined,
-                    ),
-                  ),
-                ],
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text('Better',
+                  style:
+                      theme.textTheme.bodySmall?.copyWith(color: t.inkMuted)),
+              Text(message.corrected ?? '',
+                  locale: const Locale('de'),
+                  style: theme.textTheme.headlineSmall),
+              if (message.explanation != null &&
+                  message.explanation!.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text(message.explanation!, style: theme.textTheme.bodyLarge),
               ],
-            ),
+            ],
           ),
         ),
       ),

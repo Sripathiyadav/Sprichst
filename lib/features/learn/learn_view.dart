@@ -20,7 +20,7 @@ class LearnView extends ConsumerWidget {
 
     return PageFrame(
       title: 'German roadmap',
-      subtitle: 'A curriculum-led path from your first words to C1.',
+      subtitle: 'A path from your first words to C1.',
       child: ListView(
         padding: pageListPadding(context),
         children: [
@@ -33,6 +33,9 @@ class LearnView extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                 child: _LessonTile(
+                  number:
+                      curriculum.lessons.indexWhere((l) => l.id == lesson.id) +
+                          1,
                   lesson: lesson,
                   status: profile.lessonProgress[lesson.id]?.status ??
                       LessonStatus.notStarted,
@@ -63,12 +66,14 @@ class LearnView extends ConsumerWidget {
 
 class _LessonTile extends StatelessWidget {
   const _LessonTile({
+    required this.number,
     required this.lesson,
     required this.status,
     required this.isCurrent,
     this.reason,
   });
 
+  final int number;
   final Lesson lesson;
   final LessonStatus status;
   final bool isCurrent;
@@ -78,22 +83,24 @@ class _LessonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final t = context.tokens;
     final done = status == LessonStatus.completed;
-    final highlighted = isCurrent && !done;
-    final background = done
-        ? scheme.tertiary
-        : highlighted
-            ? scheme.primary
-            : context.softSurface;
-    final foreground = done
-        ? scheme.onTertiary
-        : highlighted
-            ? scheme.onPrimary
-            : scheme.onSurface;
-    final label = '${lesson.title}, ${lesson.durationMinutes} minutes, '
-        '${_statusLabel()}${lesson.exam == null ? '' : ', ${_examName(lesson.exam!)} exam practice'}'
+    final meta = '${lesson.level.label} · ${lesson.durationMinutes} min'
+        '${lesson.exam == null ? '' : ' · ${_examName(lesson.exam!)} exam practice'}';
+    final label = '${lesson.title}, lesson $number, $meta, ${_statusLabel()}'
         '${reason == null ? '' : '. $reason'}';
+
+    final chip = switch (status) {
+      LessonStatus.completed => const DsChip('Completed',
+          icon: Icons.check_circle, tone: ChipTone.success),
+      LessonStatus.inProgress => const DsChip('In progress',
+          icon: Icons.timelapse, tone: ChipTone.accent),
+      LessonStatus.notStarted => isCurrent
+          ? const DsChip('Up next',
+              icon: Icons.arrow_forward, tone: ChipTone.accent)
+          : null,
+    };
 
     return Semantics(
       button: true,
@@ -103,42 +110,45 @@ class _LessonTile extends StatelessWidget {
       child: PressableScale(
         child: SoftCard(
           padding: EdgeInsets.zero,
+          color: isCurrent && !done ? t.accentSoft : null,
           child: InkWell(
             borderRadius: BorderRadius.circular(AppRadius.card),
             onTap: () => _open(context),
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
-              child: Row(children: [
-                CircleAvatar(
-                  backgroundColor: background,
-                  foregroundColor: foreground,
-                  child: Icon(switch (status) {
-                    LessonStatus.completed => Icons.check,
-                    LessonStatus.inProgress => Icons.timelapse,
-                    LessonStatus.notStarted => Icons.play_arrow_rounded,
-                  }),
+              child:
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                SizedBox(
+                  width: 56,
+                  child: Text(number.toString().padLeft(2, '0'),
+                      style: theme.textTheme.headlineLarge?.copyWith(
+                          fontSize: 36, color: done ? t.inkMuted : t.ink)),
                 ),
-                const SizedBox(width: AppSpacing.md),
+                const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(lesson.title,
-                          style: Theme.of(context).textTheme.titleMedium),
-                      Text(
-                          '${lesson.durationMinutes} min · ${_statusLabel()}'
-                          '${lesson.exam == null ? '' : ' · ${_examName(lesson.exam!)} exam practice'}',
-                          style: Theme.of(context).textTheme.bodyMedium),
-                      if (reason != null)
-                        Text(reason!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(color: context.accent)),
+                      Text(lesson.title, style: theme.textTheme.titleMedium),
+                      const SizedBox(height: 2),
+                      Text(meta,
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: t.inkMuted)),
+                      if (chip != null) ...[
+                        const SizedBox(height: AppSpacing.xs),
+                        chip,
+                      ],
+                      if (reason != null) ...[
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(reason!, style: theme.textTheme.bodyMedium),
+                      ],
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right),
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.xs),
+                  child: Icon(Icons.chevron_right, color: t.inkMuted),
+                ),
               ]),
             ),
           ),
@@ -170,7 +180,7 @@ class _LevelRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SoftCard(
-        color: active ? context.softSurface : null,
+        color: active ? context.tokens.accentSoft : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -180,11 +190,8 @@ class _LevelRow extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium),
               ),
               if (active)
-                const Chip(
-                  avatar: Icon(Icons.flag_outlined, size: 18),
-                  label: Text('Your level'),
-                  visualDensity: VisualDensity.compact,
-                ),
+                const DsChip('Your level',
+                    icon: Icons.flag_outlined, tone: ChipTone.outline),
             ]),
             const SizedBox(height: AppSpacing.xs),
             SkillMeter(

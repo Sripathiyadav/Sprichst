@@ -34,7 +34,7 @@ class _MockExamViewState extends ConsumerState<MockExamView> {
   Widget build(BuildContext context) {
     final goal = ref.watch(appControllerProvider).profile!.goal;
     return GlassPage(
-      appBar: AppBar(title: Text('${goal.label} mock exam')),
+      appBar: MastheadBar(eyebrow: '${goal.label} mock exam'),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(

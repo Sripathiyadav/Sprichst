@@ -436,7 +436,7 @@ class LearningProfile {
         preferredTopics: const ['Everyday life'],
         focusSkills: const ['Vocabulary', 'Speaking'],
         appearancePreference: AppearancePreference.system,
-        surfaceStyle: SurfaceStyle.glass,
+        surfaceStyle: SurfaceStyle.standard,
         glassIntensity: defaultGlassIntensity,
         aiProviderPreference: AIProviderPreference.automatic,
         aiModel: 'Qwen',

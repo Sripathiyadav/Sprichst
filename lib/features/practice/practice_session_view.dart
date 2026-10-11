@@ -33,7 +33,7 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
   Widget build(BuildContext context) {
     final results = _results;
     return GlassPage(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: MastheadBar(eyebrow: widget.title),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(

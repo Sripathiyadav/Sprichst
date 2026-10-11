@@ -28,28 +28,34 @@ class PracticeView extends ConsumerWidget {
 
     return PageFrame(
       title: 'Practice',
-      subtitle: 'Sprichst picks what to practise from your own answers.',
+      subtitle: 'Picked from your own answers.',
       child: ListView(
         padding: pageListPadding(context),
         children: [
-          if (plan != null) PlanCard(plan: plan),
-          const SizedBox(height: AppSpacing.md),
+          if (plan != null) ...[
+            const SectionTitle('Next up'),
+            const SizedBox(height: AppSpacing.sm),
+            PlanCard(plan: plan),
+            const SizedBox(height: AppSpacing.xxl),
+          ],
+          const SectionTitle('Daily quests'),
+          const SizedBox(height: AppSpacing.sm),
           QuestsCard(profile: app.profile!, now: now),
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.xxl),
           const SectionTitle('Flashcards'),
           const SizedBox(height: AppSpacing.sm),
           const _FlashcardsCard(),
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.xxl),
           const SectionTitle('Games'),
           const SizedBox(height: AppSpacing.sm),
           const _GamesGrid(),
           if (app.profile!.goal.isExam) ...[
-            const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.xxl),
             const SectionTitle('Exam training'),
             const SizedBox(height: AppSpacing.sm),
             const _ExamCard(),
           ],
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.xxl),
           const SectionTitle('Review queue'),
           const SizedBox(height: AppSpacing.sm),
           if (reviews.isEmpty)
@@ -69,7 +75,7 @@ class PracticeView extends ConsumerWidget {
                 ],
               ),
             ),
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.xxl),
           const SectionTitle('Practise a skill'),
           const SizedBox(height: AppSpacing.sm),
           if (skills.isEmpty)
@@ -110,8 +116,10 @@ class _ReviewRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final due = !item.dueAt.isAfter(now);
+    final t = context.tokens;
     return ListTile(
-      leading: Icon(due ? Icons.notifications_active_outlined : Icons.schedule),
+      leading: Icon(due ? Icons.notifications_active_outlined : Icons.schedule,
+          color: due ? t.warning : t.ink),
       title: Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis),
       subtitle: Text('${item.kind} · ${_when(item.dueAt, now)}'),
     );
@@ -159,10 +167,10 @@ class _FlashcardsCard extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: AppSpacing.md),
-          FilledButton.icon(
+          OutlinedButton.icon(
             onPressed:
                 summary.total == 0 ? null : () => openFlashcards(context, ref),
-            icon: const Icon(Icons.style_rounded),
+            icon: const Icon(Icons.style_outlined),
             label: Text(ready == 0 ? 'Nothing due' : 'Review $ready cards'),
           ),
         ],
@@ -175,11 +183,11 @@ class _GamesGrid extends ConsumerWidget {
   const _GamesGrid();
 
   static IconData _icon(GameId game) => switch (game) {
-        GameId.articleSwipe => Icons.swipe_rounded,
-        GameId.memoryMatch => Icons.grid_view_rounded,
-        GameId.wordScramble => Icons.shuffle_rounded,
-        GameId.wortle => Icons.spellcheck_rounded,
-        GameId.dialogue => Icons.forum_rounded,
+        GameId.articleSwipe => Icons.swipe_outlined,
+        GameId.memoryMatch => Icons.grid_view_outlined,
+        GameId.wordScramble => Icons.shuffle,
+        GameId.wortle => Icons.spellcheck,
+        GameId.dialogue => Icons.forum_outlined,
       };
 
   @override
@@ -240,11 +248,7 @@ class _GameTile extends StatelessWidget {
         child: SoftCard(
           child: Row(
             children: [
-              CircleAvatar(
-                backgroundColor: context.softSurface,
-                foregroundColor: theme.colorScheme.onSurface,
-                child: Icon(icon),
-              ),
+              Icon(icon, color: context.tokens.ink, size: 28),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
@@ -293,7 +297,7 @@ class _ExamCard extends ConsumerWidget {
               const SizedBox(height: AppSpacing.xs),
             ],
           const SizedBox(height: AppSpacing.xs),
-          FilledButton.icon(
+          OutlinedButton.icon(
             onPressed: () => openMockExam(context, ref),
             icon: const Icon(Icons.assignment_turned_in_outlined),
             label: const Text('Take a mock exam'),

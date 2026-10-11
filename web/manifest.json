@@ -3,9 +3,9 @@
     "short_name": "sprichst",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#f2eae1",
+    "theme_color": "#f2eae1",
+    "description": "Learn German with a curriculum, a conversation coach and spaced review.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

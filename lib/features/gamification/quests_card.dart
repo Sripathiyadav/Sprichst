@@ -13,29 +13,21 @@ class QuestsCard extends StatelessWidget {
   final DateTime now;
 
   static IconData _icon(QuestKind kind) => switch (kind) {
-        QuestKind.lesson => Icons.menu_book_rounded,
-        QuestKind.cards => Icons.style_rounded,
-        QuestKind.games => Icons.sports_esports_rounded,
-        QuestKind.correct => Icons.check_circle_outline_rounded,
+        QuestKind.lesson => Icons.menu_book_outlined,
+        QuestKind.cards => Icons.style_outlined,
+        QuestKind.games => Icons.sports_esports_outlined,
+        QuestKind.correct => Icons.check_circle_outline,
       };
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final quests = Achievements.todaysQuests(now);
     final state = profile.gamification;
-    final done = quests.where((q) => Achievements.isDone(state, q, now)).length;
     return SoftCard(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.xs),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Expanded(
-                child: Text('Daily quests', style: theme.textTheme.titleLarge)),
-            Text('$done / ${quests.length}',
-                style: theme.textTheme.titleMedium),
-          ]),
-          const SizedBox(height: AppSpacing.sm),
           for (final quest in quests)
             _QuestRow(
               quest: quest,
@@ -74,27 +66,22 @@ class _QuestRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
         child: Row(
           children: [
-            Icon(done ? Icons.check_circle_rounded : icon,
-                color:
-                    done ? context.accent : theme.colorScheme.onSurfaceVariant),
+            Icon(done ? Icons.check_circle : icon,
+                color: done ? context.tokens.success : context.tokens.ink),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(quest.title,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        decoration: done ? TextDecoration.lineThrough : null,
-                      )),
+                  Text(quest.title, style: theme.textTheme.bodyMedium),
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(99),
                     child: LinearProgressIndicator(
                       value: shown / quest.target,
                       minHeight: 8,
-                      backgroundColor:
-                          theme.colorScheme.surfaceContainerHighest,
-                      color: context.accent,
+                      backgroundColor: context.tokens.surfaceSunken,
+                      color: done ? context.tokens.success : context.accent,
                     ),
                   ),
                 ],
@@ -102,7 +89,8 @@ class _QuestRow extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.sm),
             Text(done ? 'Done' : '+${quest.xp} XP',
-                style: theme.textTheme.labelLarge),
+                style: theme.textTheme.labelLarge
+                    ?.copyWith(color: done ? context.tokens.success : null)),
           ],
         ),
       ),

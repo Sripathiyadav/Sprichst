@@ -56,7 +56,7 @@ void main() {
     await tester.tap(check);
     await tester.pump();
     expect(find.textContaining('Correct answer: der'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next question'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
     await tester.pumpAndSettle();
 
     // Typed answer.
@@ -64,7 +64,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.widgetWithText(FilledButton, 'Check answer'));
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilledButton, 'Next question'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
     await tester.pumpAndSettle();
 
     // Word order stays disabled until every word is placed.

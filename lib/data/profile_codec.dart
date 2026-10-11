@@ -224,7 +224,7 @@ abstract final class ProfileCodec {
       surfaceStyle: _enum(
         SurfaceStyle.values,
         data['surfaceStyle'],
-        SurfaceStyle.glass,
+        SurfaceStyle.standard,
       ),
       glassIntensity: _int(
         data['glassIntensity'],
