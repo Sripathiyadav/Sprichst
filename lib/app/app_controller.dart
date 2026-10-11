@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/ai/ai_server_settings.dart';
+import '../data/ai/groq_ai_repository.dart';
+import '../data/ai/groq_settings.dart';
 import '../data/ai/http_ai_repository.dart';
 import '../data/ai/hybrid_ai_repository.dart';
 import '../data/on_device/model_manager.dart';
@@ -44,17 +46,28 @@ final onDeviceRuntimeProvider =
 final modelManagerProvider = ChangeNotifierProvider<ModelManager>(
     (ref) => ModelManager(ref.watch(onDeviceRuntimeProvider)));
 
-/// The tutor runs on the phone; the AI server is optional (see
-/// [HybridAIRepository] for how the learner's preference picks between them).
+/// The learner's own Groq key and model. Stored on this device only.
+final groqSettingsProvider =
+    ChangeNotifierProvider<GroqSettings>((ref) => GroqSettings()..load());
+
+/// The tutor runs on the phone or on the learner's own Groq account, as they
+/// choose (see [HybridAIRepository]). There is no Sprichst AI server in the
+/// shipped path; the developer gateway is only used by debug builds and by
+/// anyone who typed an address for it.
 final Provider<AIRepository> aiRepositoryProvider =
     Provider<AIRepository>((ref) {
   final models = ref.read(modelManagerProvider);
+  final groqSettings = ref.read(groqSettingsProvider);
   return HybridAIRepository(
     onDevice: OnDeviceAIRepository(models),
     server: HttpAIRepository.dynamic(
       baseUrl: () => ref.read(aiServerSettingsProvider).url,
       authToken: () => ref.read(authRepositoryProvider).idToken(),
     ),
+    groq: GroqAIRepository(settings: groqSettings),
+    groqAvailable: () => ref.read(groqSettingsProvider).hasKey,
+    serverEnabled: () => HybridAIRepository.defaultServerEnabled(
+        hasCustomAddress: ref.read(aiServerSettingsProvider).isCustom),
     models: models,
   );
 });
@@ -399,11 +412,24 @@ class AppController extends ChangeNotifier {
   Future<CoachReply> correctGerman(String text) =>
       _aiRepository.correctGerman(_nonEmpty(text), tutorContext);
 
+  /// Sends profile changes that are still waiting to the cloud (they are
+  /// gathered for a few seconds to save writes). Never throws: whatever cannot
+  /// be sent stays on the device and is pushed next time.
+  Future<void> flushPendingChanges() async {
+    try {
+      await _learningRepository.flush();
+    } catch (_) {}
+  }
+
   /// The recent turns of the coach conversation, shared by text and voice
   /// mode, so the tutor builds on what was said instead of starting over.
   final List<ConversationTurn> _conversation = [];
 
   List<ConversationTurn> get conversation => List.unmodifiable(_conversation);
+
+  /// Runs [action] with every AI request answered on the phone. Offered to the
+  /// learner after the cloud could not answer; never done on its own.
+  Future<T> onThePhone<T>(Future<T> Function() action) => runOnPhone(action);
 
   /// Forgets the conversation so far; the next message starts a new one.
   void startNewConversation() => _conversation.clear();

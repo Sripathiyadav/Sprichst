@@ -19,4 +19,4 @@ Please report security problems privately to **[[SECURITY_EMAIL]]** (or through 
 
 - The Firebase web/mobile configuration (project ID, web API key, app ID) is an identifier, not a secret. Protect the project with the rules above, App Check if you enable it, API key restrictions in Google Cloud, and authorised domains in Firebase Authentication.
 - Never put `GROQ_API_KEY`, service-account JSON, or `.env` files in the app or in Git.
-- Serve everything over HTTPS. The hosting headers in `firebase/firebase.json` set a Content-Security-Policy, HSTS and related headers; replace `__AI_GATEWAY_ORIGIN__` with your gateway's origin before deploying.
+- Serve everything over HTTPS. The hosting headers in `firebase/firebase.json` set a Content-Security-Policy, HSTS and related headers; it allows the web app to call `https://api.groq.com` (the learner's own Groq key) and no other AI host; add your own origin only if you run the developer gateway.

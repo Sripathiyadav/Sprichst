@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -96,12 +99,23 @@ class SyncedProfileStore {
     required this.loadRemote,
     required this.saveRemote,
     required this.isUnreachable,
+    this.delay = Duration.zero,
   });
 
   final ProfileCache cache;
   final Future<LearningProfile?> Function() loadRemote;
   final Future<void> Function(LearningProfile profile) saveRemote;
   final bool Function(Object error) isUnreachable;
+
+  /// How long to wait for more changes before writing to the cloud. A learner
+  /// finishing exercises changes the profile many times a minute; writing once
+  /// after the burst keeps the free Firestore quota (20,000 writes a day for
+  /// the whole project) for more learners. Nothing is lost by waiting: every
+  /// change is on the device at once and flagged pending until it is pushed.
+  final Duration delay;
+
+  Timer? _timer;
+  LearningProfile? _latest;
 
   Future<LearningProfile?> load() async {
     if (await cache.hasPendingChanges()) {
@@ -134,14 +148,50 @@ class SyncedProfileStore {
 
   Future<void> save(LearningProfile profile) async {
     await cache.save(profile);
+    _latest = profile;
+    if (delay == Duration.zero) return _push(rethrow_: true);
+
+    // Flagged first, so a crash or a killed app still pushes it next time.
+    await cache.setPendingChanges(true);
+    _timer?.cancel();
+    _timer = Timer(delay, () => unawaited(_push(rethrow_: false)));
+  }
+
+  /// Writes any change that is still waiting. Call when the app goes to the
+  /// background and before signing out.
+  Future<void> flush() {
+    _timer?.cancel();
+    _timer = null;
+    return _latest == null ? Future.value() : _push(rethrow_: false);
+  }
+
+  Future<void> _push({required bool rethrow_}) async {
+    final profile = _latest;
+    if (profile == null) return;
     try {
       await saveRemote(profile);
-      await cache.setPendingChanges(false);
+      if (identical(profile, _latest)) {
+        _latest = null;
+        await cache.setPendingChanges(false);
+      }
     } catch (error) {
-      if (!isUnreachable(error)) rethrow;
-      await cache.setPendingChanges(true);
+      if (isUnreachable(error)) {
+        await cache.setPendingChanges(true);
+      } else if (rethrow_) {
+        rethrow;
+      } else {
+        // Nobody is waiting on a background write; it stays pending and is
+        // tried again on the next save or load.
+        debugPrint('Profile sync was rejected: ${error.runtimeType}');
+        await cache.setPendingChanges(true);
+      }
     }
   }
 
-  Future<void> clear() => cache.clear();
+  Future<void> clear() {
+    _timer?.cancel();
+    _timer = null;
+    _latest = null;
+    return cache.clear();
+  }
 }

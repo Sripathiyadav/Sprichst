@@ -164,7 +164,7 @@ void main() {
           .first,
     );
     await tester.pumpAndSettle();
-    expect(find.text('AI server'), findsOneWidget);
+    expect(find.text('Developer AI server (advanced)'), findsOneWidget);
     expect(find.textContaining('Using the default address'), findsOneWidget);
 
     await tester.enterText(

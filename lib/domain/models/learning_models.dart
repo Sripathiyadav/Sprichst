@@ -47,16 +47,16 @@ enum AIProviderPreference { automatic, groq, local }
 extension AIProviderPreferenceLabel on AIProviderPreference {
   String get label => switch (this) {
         AIProviderPreference.automatic => 'Automatic',
-        AIProviderPreference.groq => 'AI server first',
+        AIProviderPreference.groq => 'Groq (my own key)',
         AIProviderPreference.local => 'This phone only',
       };
 
   // `groq` and `local` keep their stored names so saved profiles still load.
   String get description => switch (this) {
         AIProviderPreference.automatic =>
-          'Use the models on this phone; use the AI server only for anything not downloaded yet.',
+          'Answers on this phone. Only for what is not downloaded yet does it use your own Groq key, if you added one.',
         AIProviderPreference.groq =>
-          'Use the AI server when it can be reached (better answers), and this phone when offline.',
+          'Uses your free Groq account while its daily limit lasts. When it runs out or you are offline, you choose whether to continue on this phone.',
         AIProviderPreference.local =>
           'Never send anything off the phone. Needs the models downloaded.',
       };

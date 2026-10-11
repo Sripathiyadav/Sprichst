@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sprichst/app/app.dart';
 import 'package:sprichst/app/app_controller.dart';
+import 'package:sprichst/data/ai/groq_settings.dart';
 import 'package:sprichst/data/ai/mock_ai_repository.dart';
 import 'package:sprichst/data/curriculum_parser.dart';
 import 'package:sprichst/domain/models/dialogue_models.dart';
@@ -86,6 +87,9 @@ class InMemoryLearningRepository implements LearningRepository {
   Future<void> deleteLearningData() async => profile = null;
 
   @override
+  Future<void> flush() async {}
+
+  @override
   Future<List<Lesson>> loadLessons() async => loadCourse();
 
   @override
@@ -93,14 +97,39 @@ class InMemoryLearningRepository implements LearningRepository {
 }
 
 List<Override> testOverrides(InMemoryLearningRepository learning,
-        {bool signedIn = true, FakeAuthRepository? auth}) =>
+        {bool signedIn = true,
+        FakeAuthRepository? auth,
+        List<Override> extra = const []}) =>
     [
       authRepositoryProvider
           .overrideWithValue(auth ?? FakeAuthRepository(signedIn: signedIn)),
       learningRepositoryProvider.overrideWithValue(learning),
       aiRepositoryProvider.overrideWithValue(MockAIRepository()),
       onDeviceRuntimeProvider.overrideWithValue(FakeRuntime()),
+      groqSettingsProvider
+          .overrideWith((ref) => GroqSettings(store: MemorySecretStore())),
+      ...extra,
     ];
+
+/// A secret store that lives in memory, so no platform plugin is needed.
+class MemorySecretStore implements SecretStore {
+  MemorySecretStore([Map<String, String>? initial]) : values = {...?initial};
+
+  final Map<String, String> values;
+  var failWrites = false;
+
+  @override
+  Future<String?> read(String name) async => values[name];
+
+  @override
+  Future<void> write(String name, String value) async {
+    if (failWrites) throw StateError('locked');
+    values[name] = value;
+  }
+
+  @override
+  Future<void> delete(String name) async => values.remove(name);
+}
 
 /// Pumps the whole app at [size] with the platform in [brightness].
 Future<void> pumpSprichst(
@@ -111,6 +140,7 @@ Future<void> pumpSprichst(
   bool signedIn = true,
   FakeAuthRepository? auth,
   double textScale = 1,
+  List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -131,7 +161,8 @@ Future<void> pumpSprichst(
     tester.platformDispatcher.clearAllTestValues();
   });
   await tester.pumpWidget(ProviderScope(
-    overrides: testOverrides(repository, signedIn: signedIn, auth: auth),
+    overrides: testOverrides(repository,
+        signedIn: signedIn, auth: auth, extra: extraOverrides),
     child: const SprichstApp(),
   ));
   await tester.pumpAndSettle();

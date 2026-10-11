@@ -27,7 +27,8 @@ android {
         applicationId = "com.example.sprichst"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // The secure key storage (Android Keystore) and the on-device models need Android 7+.
+        minSdk = Math.max(24, flutter.minSdkVersion)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
