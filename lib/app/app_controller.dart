@@ -47,8 +47,8 @@ final modelManagerProvider = ChangeNotifierProvider<ModelManager>(
     (ref) => ModelManager(ref.watch(onDeviceRuntimeProvider)));
 
 /// The learner's own AI provider, keys and models. Stored on this device only.
-final cloudAISettingsProvider = ChangeNotifierProvider<CloudAISettings>(
-    (ref) => CloudAISettings()..load());
+final cloudAISettingsProvider =
+    ChangeNotifierProvider<CloudAISettings>((ref) => CloudAISettings()..load());
 
 /// The tutor runs on the phone or on the learner's own AI account (Groq,
 /// Gemini, OpenAI, Claude, Grok…), as they

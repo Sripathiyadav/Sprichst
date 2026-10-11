@@ -83,15 +83,15 @@ class CloudAIRepository implements AIRepository {
     if (model == null) {
       throw UnsupportedError('${t.provider.name} has no speech recognition.');
     }
-    final request =
-        http.MultipartRequest('POST', Uri.parse('${t.base}/audio/transcriptions'))
-          ..headers.addAll(_headers(t.provider, t.key, json: false))
-          ..fields['model'] = model
-          ..fields['language'] = 'de'
-          ..fields['response_format'] = 'json'
-          ..fields['temperature'] = '0'
-          ..files.add(http.MultipartFile.fromBytes('file', audio.bytes,
-              filename: audio.filename));
+    final request = http.MultipartRequest(
+        'POST', Uri.parse('${t.base}/audio/transcriptions'))
+      ..headers.addAll(_headers(t.provider, t.key, json: false))
+      ..fields['model'] = model
+      ..fields['language'] = 'de'
+      ..fields['response_format'] = 'json'
+      ..fields['temperature'] = '0'
+      ..files.add(http.MultipartFile.fromBytes('file', audio.bytes,
+          filename: audio.filename));
 
     final response = await _guard(
         t.provider,
@@ -198,8 +198,8 @@ class CloudAIRepository implements AIRepository {
             .where((block) => block['type'] == 'text')
             .map((block) => block['text'])
             .join(),
-        CloudApi.openAi =>
-          ((data['choices'] as List).first as Map)['message']['content'],
+        CloudApi.openAi => ((data['choices'] as List).first as Map)['message']
+            ['content'],
       };
       if (content is String && content.trim().isNotEmpty) return content;
     } catch (_) {}

@@ -302,7 +302,8 @@ class _CloudProviderSectionState extends ConsumerState<CloudProviderSection> {
                   labelText: provider.models.isEmpty
                       ? 'Model id (required)'
                       : 'Or type another model id',
-                  hintText: 'e.g. ${provider.models.isEmpty ? 'gpt-4.1-mini' : provider.models.last.id}',
+                  hintText:
+                      'e.g. ${provider.models.isEmpty ? 'gpt-4.1-mini' : provider.models.last.id}',
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),

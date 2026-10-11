@@ -58,6 +58,8 @@ void main() {
         size: _phone, brightness: Brightness.light, repository: repository);
     await tester.tap(find.text('Start'));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('tour-skip')));
+    await tester.pumpAndSettle();
     for (var step = 0; step < 2; step++) {
       await tester.ensureVisible(find.text('Continue'));
       await tester.tap(find.text('Continue'));

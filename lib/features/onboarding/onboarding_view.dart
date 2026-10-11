@@ -5,6 +5,8 @@ import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../../shared/widgets/lottie_view.dart';
+import 'intro_tour.dart';
 
 class OnboardingView extends ConsumerStatefulWidget {
   const OnboardingView({super.key});
@@ -29,20 +31,24 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
             0 => _Welcome(
                 key: const ValueKey(0),
                 onStart: () => setState(() => _step = 1)),
-            1 => _LanguageStep(
+            1 => IntroTour(
                 key: const ValueKey(1),
+                onDone: () => setState(() => _step = 2),
+              ),
+            2 => _LanguageStep(
+                key: const ValueKey(2),
                 selected: _language,
                 onSelect: (value) => setState(() => _language = value),
-                onNext: () => setState(() => _step = 2),
-              ),
-            2 => _LevelStep(
-                key: const ValueKey(2),
-                selected: _level,
-                onSelect: (value) => setState(() => _level = value),
                 onNext: () => setState(() => _step = 3),
               ),
-            _ => _GoalStep(
+            3 => _LevelStep(
                 key: const ValueKey(3),
+                selected: _level,
+                onSelect: (value) => setState(() => _level = value),
+                onNext: () => setState(() => _step = 4),
+              ),
+            _ => _GoalStep(
+                key: const ValueKey(4),
                 selected: _goal,
                 onSelect: (value) => setState(() => _goal = value),
                 onFinish: _finish,
@@ -78,7 +84,11 @@ class _Welcome extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Wordmark(size: 32),
-          const SizedBox(height: AppSpacing.xxxl),
+          const SizedBox(height: AppSpacing.lg),
+          const Center(
+            child: SprichstLottie('welcome_intro', width: 200, height: 200),
+          ),
+          const SizedBox(height: AppSpacing.lg),
           Text('Willkommen bei\nSprichst.',
               locale: const Locale('de'),
               style: Theme.of(context).textTheme.displaySmall),
@@ -87,6 +97,12 @@ class _Welcome extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: AppSpacing.xxl),
           PrimaryButton(label: 'Start', onPressed: onStart),
+          const SizedBox(height: AppSpacing.xs),
+          Text('A quick tour of how it works, then three questions.',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: context.tokens.inkMuted)),
         ],
       );
 }

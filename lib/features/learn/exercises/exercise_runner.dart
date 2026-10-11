@@ -6,6 +6,7 @@ import '../../../domain/learning/exercise_session.dart';
 import '../../../domain/models/learning_models.dart';
 import '../../../shared/haptics.dart';
 import '../../../shared/widgets/app_widgets.dart';
+import '../../../shared/widgets/lottie_view.dart';
 import 'exam_inputs.dart';
 import 'exercise_widgets.dart';
 
@@ -179,14 +180,17 @@ class SessionSummary extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.zero,
-              child: EditorialNumber(
-                value: correct,
-                label: 'Correct',
-                unit: 'of $total',
-                disc: true,
-              ),
+            Row(
+              children: [
+                EditorialNumber(
+                  value: correct,
+                  label: 'Correct',
+                  unit: 'of $total',
+                  disc: true,
+                ),
+                const Spacer(),
+                const SprichstLottie('lesson_complete', width: 88, height: 88),
+              ],
             ),
             const SizedBox(height: AppSpacing.xl),
             Semantics(

@@ -62,7 +62,8 @@ def ellipse(d, c=(0, 0)):
     return {'ty': 'el', 'd': 1, 'p': val(list(c)), 's': prop(d if isinstance(d, dict) else [d, d]), 'nm': 'Ellipse'}
 
 def rect(w, h, r=0, c=(0, 0)):
-    return {'ty': 'rc', 'd': 1, 'p': val(list(c)), 's': val([w, h]), 'r': val(r), 'nm': 'Rect'}
+    size = w if isinstance(w, dict) else val([w, h])   # a dict is an animated [w, h]
+    return {'ty': 'rc', 'd': 1, 'p': val(list(c)), 's': size, 'r': val(r), 'nm': 'Rect'}
 
 def shape(v, i=None, o=None, closed=False):
     n = len(v)
@@ -269,9 +270,126 @@ def loading(c):
         layer(0, 'ring', [group('ring', [ellipse(84), stroke(c['line'], 1)])], op, {'p': [44, 44, 0]}),
     ])
 
+# ---------------------------------------------------------------- tour illustrations (240 x 180, 3 s, play once and hold)
+TOUR_W, TOUR_H, TOUR_OP = 240, 180, 180
+
+def _loop(fade_in=6):
+    """Layer opacity: fades in, then holds. The tour pictures play once and stay on their last frame."""
+    return anim([(0, 0, 'linear'), (fade_in, 100, 'linear'), (TOUR_OP, 100)])
+
+def tour_lessons(c):
+    """Three lesson cards slide in one after another; the first gets its check. One next step at a time."""
+    L = []
+    for j in range(3):
+        y = 40 + 42 * j
+        t0 = 8 + 14 * j
+        slide = anim([(t0, [150, y]), (t0 + 18, [120, y])])
+        fade = anim([(0, 0, 'linear'), (t0, 0, 'linear'), (t0 + 10, 100, 'linear'), (TOUR_OP, 100)])
+        items = [group('card', [rect(176, 36, 12), fill(c['surface']), stroke(c['line'], 1.5)]),
+                 group('bar', [rect(86, 8, 4, (-14, -5)), fill(c['line'])]),
+                 group('bar2', [rect(54, 8, 4, (-30, 9)), fill(c['tint'] if j else c['soft'])])]
+        if j == 0:
+            items.append(group('check', [ellipse(22, (-66, 0)), fill(c['success_soft'])]))
+            items.append(group('tick', [shape([[-72, 0], [-67, 5], [-59, -4]]), trim(anim([(56, 0), (72, 100)])), stroke(c['success'], 3)]))
+        else:
+            items.append(group('dot', [ellipse(22, (-66, 0)), fill(c['coral'] if j == 1 else c['soft'])]))
+        # Lottie draws the first shape on top, so the card (the base) goes last.
+        L.append(layer(0, f'card {j}', items[::-1], TOUR_OP, {'p': slide, 'o': fade}))
+    # the one primary action
+    L.append(layer(0, 'next', [group('next', [rect(70, 22, 11), fill(c['coral'])],
+                                     tr(s=anim([(70, [0, 0]), (84, [108, 108]), (92, [100, 100])]))),
+                               group('arrow', [shape([[-10, 0], [10, 0]]), shape([[4, -6], [10, 0], [4, 6]]), stroke(c['canvas'], 2.5)],
+                                     tr(s=anim([(74, [0, 0]), (86, [100, 100])])))],
+                   TOUR_OP, {'p': [120, 166, 0], 'o': anim([(0, 0, 'linear'), (70, 0, 'linear'), (76, 100, 'linear'), (TOUR_OP, 100)])}))
+    return comp('Sprichst — tour: lessons', TOUR_W, TOUR_H, TOUR_OP, L)
+
+def tour_coach(c):
+    """A conversation: the coach asks, the learner answers, the coach is typing."""
+    def bubble(name, cx, cy, w, h, fill_hex, line_hex, t0, tail_left, bars, bar_hex):
+        tail = [[-w / 2 + 12, h / 2 - 2], [-w / 2 + 4, h / 2 + 10], [-w / 2 + 26, h / 2 - 2]] if tail_left else \
+               [[w / 2 - 12, h / 2 - 2], [w / 2 - 4, h / 2 + 10], [w / 2 - 26, h / 2 - 2]]
+        items = [group('body', [rect(w, h, 16), shape(tail, closed=True), fill(fill_hex)] + ([stroke(line_hex, 1.5)] if line_hex else []))]
+        for k, bw in enumerate(bars):
+            items.append(group('line', [rect(bw, 8, 4, (-w / 2 + 16 + bw / 2, -6 + 14 * k)), fill(bar_hex)]))
+        pop = tr(p=(cx, cy), s=anim([(t0, [0, 0]), (t0 + 12, [106, 106]), (t0 + 18, [100, 100])]))
+        return layer(0, name, [group(name, items[::-1], pop)], TOUR_OP, {'o': _loop()})
+    L = []
+    L.append(bubble('coach asks', 98, 40, 150, 44, c['surface'], c['line'], 6, True, [96, 60], c['line']))
+    L.append(bubble('learner', 148, 98, 132, 36, c['coral'], None, 34, False, [88], c['canvas']))
+    # typing bubble with three bouncing dots
+    typing = [group('body', [rect(64, 32, 16), shape([[-20, 14], [-28, 26], [-6, 14]], closed=True), fill(c['surface']), stroke(c['line'], 1.5)])]
+    for k in range(3):
+        x = -16 + 16 * k
+        typing.append(group('dot', [ellipse(8, (x, 0)), fill(c['muted'])],
+                            tr(p=anim([(70 + 5 * k, [0, 0], 'in_out'), (78 + 5 * k, [0, -6], 'in_out'), (86 + 5 * k, [0, 0], 'in_out'),
+                                       (110 + 5 * k, [0, 0], 'in_out'), (118 + 5 * k, [0, -6], 'in_out'), (126 + 5 * k, [0, 0], 'in_out')]))))
+    L.append(layer(0, 'typing', [group('typing', typing[::-1], tr(p=(78, 148), s=anim([(64, [0, 0]), (76, [106, 106]), (82, [100, 100])])))], TOUR_OP, {'o': _loop()}))
+    return comp('Sprichst — tour: coach', TOUR_W, TOUR_H, TOUR_OP, L)
+
+def tour_review(c):
+    """Spaced review: each return comes later than the last, so the arcs grow."""
+    xs = [32, 66, 112, 168, 212]
+    y = 112
+    L = []
+    for j in range(4):
+        r = (xs[j + 1] - xs[j]) / 2
+        v, i, o = arc((xs[j] + xs[j + 1]) / 2, y, r, 180, 360)
+        t0 = 14 + 24 * j
+        L.append(layer(0, f'gap {j}', [group('gap', [shape(v, i, o), trim(anim([(t0, 0), (t0 + 22, 100)])), stroke(c['coral'] if j == 3 else c['line'], 2.5)])],
+                       TOUR_OP, {'o': _loop()}))
+    L.append(layer(0, 'baseline', [group('baseline', [shape([[xs[0], y], [xs[-1], y]]), trim(anim([(0, 0), (100, 100)], 'in_out')), stroke(c['line'], 1.5)])],
+                   TOUR_OP, {'o': _loop()}))
+    dots = []
+    for j, x in enumerate(xs):
+        t0 = 4 + 24 * j
+        last = j == len(xs) - 1
+        dots.append(group(f'dot{j}', [ellipse(14 + 2 * j, (x, y)), fill(c['coral'] if last else c['mark'])],
+                          tr(p=(x, y), a=(x, y), s=anim([(t0, [0, 0]), (t0 + 10, [118, 118]), (t0 + 16, [100, 100])]))))
+    L.append(layer(0, 'dots', dots, TOUR_OP, {'o': _loop()}))
+    return comp('Sprichst — tour: spaced review', TOUR_W, TOUR_H, TOUR_OP, L)
+
+def tour_private(c):
+    """The phone with its lock: what you type stays on the phone unless you choose otherwise."""
+    L = []
+    for j, t0 in enumerate((34, 76)):
+        L.append(layer(0, f'pulse {j}', [group('pulse', [rect(anim([(t0, [84, 136]), (t0 + 50, [132, 184])]), 0, 18),
+                                                          stroke(c['success'], 2, o=anim([(0, 0, 'linear'), (t0 - 1, 0, 'linear'), (t0, 80, 'linear'), (t0 + 50, 0)]))])],
+                       TOUR_OP, {'p': [120, 90, 0]}))
+    v, i, o = arc(0, -12, 13, 180, 360)
+    L.append(layer(0, 'lock', [group('keyhole', [ellipse(7, (0, 2)), fill(c['canvas'])]),
+                               group('body', [rect(38, 30, 8, (0, 4)), fill(c['coral'])]),
+                               group('shackle', [shape(v, i, o), stroke(c['ink'], 4.5)])],
+                   TOUR_OP, {'p': [120, 96, 0], 'o': _loop(), 's': anim([(10, [0, 0, 100]), (24, [108, 108, 100]), (32, [100, 100, 100])])}))
+    L.append(layer(0, 'phone', [group('speaker', [rect(22, 5, 2.5, (0, -56)), fill(c['line'])]),
+                                group('phone', [rect(84, 136, 18), fill(c['surface']), stroke(c['ink'], 4)])],
+                   TOUR_OP, {'p': [120, 90, 0], 'o': _loop(), 's': anim([(0, [92, 92, 100]), (16, [100, 100, 100])])}))
+    return comp('Sprichst — tour: private', TOUR_W, TOUR_H, TOUR_OP, L)
+
+def tour_design(c):
+    """The design: a few plain shapes, one coral accent, settling into place."""
+    L = []
+    spec = [('square', [-70, 100], [96, 98], 'ink'), ('circle', [310, 84], [138, 86], 'coral'), ('triangle', [120, -40], [180, 108], 'success')]
+    for k, (kind, p0, p1, col) in enumerate(spec):
+        t0 = 6 + 12 * k
+        if kind == 'square':
+            geo = [rect(58, 58, 10)]
+        elif kind == 'circle':
+            geo = [ellipse(62)]
+        else:
+            geo = [shape([[0, -30], [30, 24], [-30, 24]], closed=True)]
+        L.append(layer(0, kind, [group(kind, geo + [fill(c[col])])], TOUR_OP,
+                       {'p': anim([(t0, p0 + [0]), (t0 + 30, p1 + [0])]), 'r': anim([(t0, -120 if k != 1 else 0), (t0 + 30, 0)]), 'o': _loop(4)}))
+    L.append(layer(0, 'ring', [group('ring', [ellipse(anim([(48, [60, 60]), (110, [120, 120])])), stroke(c['coral'], 1.5, o=anim([(0, 0, 'linear'), (47, 0, 'linear'), (48, 80, 'linear'), (110, 0)]))])],
+                   TOUR_OP, {'p': [138, 86, 0]}))
+    L.append(layer(0, 'baseline', [group('baseline', [shape([[40, 150], [200, 150]]), trim(anim([(30, 0), (90, 100)], 'in_out')), stroke(c['line'], 1.5)])],
+                   TOUR_OP, {'o': _loop()}))
+    return comp('Sprichst — tour: design', TOUR_W, TOUR_H, TOUR_OP, L)
+
 ANIMS = {'welcome_intro': welcome_intro, 'nav_indicator': nav_indicator, 'lesson_complete': lesson_complete,
          'achievement_unlocked': achievement_unlocked, 'streak_kept': streak_kept, 'answer_correct': answer_correct,
-         'answer_incorrect': answer_incorrect, 'loading': loading}
+         'answer_incorrect': answer_incorrect, 'loading': loading,
+         'tour_lessons': tour_lessons, 'tour_coach': tour_coach, 'tour_review': tour_review,
+         'tour_private': tour_private, 'tour_design': tour_design}
 
 os.makedirs(OUT, exist_ok=True)
 for name, fn in ANIMS.items():
