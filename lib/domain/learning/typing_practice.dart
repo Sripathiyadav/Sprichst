@@ -54,7 +54,11 @@ class TypingPractice {
         // Short enough to type in one go, long enough to be a sentence.
         if (sentence != null &&
             sentence.german.length >= 8 &&
-            sentence.german.length <= 70) {
+            sentence.german.length <= 70 &&
+            // Templates ("Liebe Lena, … Viele Grüße") are not sentences to copy.
+            !sentence.german.contains('…') &&
+            !sentence.german.contains('...') &&
+            sentence.english.split(' ').length >= 2) {
           all.add(sentence);
         }
       }

@@ -198,8 +198,6 @@ class _WritingPracticeViewState extends State<WritingPracticeView> {
                   decoration: const InputDecoration(labelText: 'Your typing'),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _GermanKeys(onKey: _insert, highlight: next),
-                const SizedBox(height: AppSpacing.sm),
                 Semantics(
                   liveRegion: true,
                   child: Text(
@@ -228,7 +226,10 @@ class _WritingPracticeViewState extends State<WritingPracticeView> {
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.sm),
+        // Out of the scroll area, so the keys stay in reach above the keyboard.
+        _GermanKeys(onKey: _insert, highlight: next),
+        const SizedBox(height: AppSpacing.sm),
         PrimaryButton(
           key: const ValueKey('typing-next'),
           label: _index == widget.sentences.length - 1
@@ -319,32 +320,35 @@ class _GermanKeys extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.tokens;
     final theme = Theme.of(context);
-    return Wrap(
-      spacing: AppSpacing.xs,
-      runSpacing: AppSpacing.xs,
+    return Row(
       children: [
         for (final key in TypingPractice.keys)
-          Semantics(
-            button: true,
-            label: 'Insert $key',
-            excludeSemantics: true,
-            child: SizedBox(
-              width: 48,
-              height: 48,
-              child: FilledButton.tonal(
-                key: ValueKey('key-$key'),
-                style: FilledButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  backgroundColor:
-                      highlight == key ? t.accentSoft : t.surfaceSunken,
-                  side: BorderSide(
-                      color: highlight == key ? t.accent : t.lineStrong,
-                      width: highlight == key ? 2 : 1),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: Semantics(
+                button: true,
+                label: 'Insert $key',
+                excludeSemantics: true,
+                child: SizedBox(
+                  height: 48,
+                  child: FilledButton.tonal(
+                    key: ValueKey('key-$key'),
+                    style: FilledButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 48),
+                      backgroundColor:
+                          highlight == key ? t.accentSoft : t.surfaceSunken,
+                      side: BorderSide(
+                          color: highlight == key ? t.accent : t.lineStrong,
+                          width: highlight == key ? 2 : 1),
+                    ),
+                    onPressed: () => onKey(key),
+                    child: Text(key,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                            color: t.ink, fontWeight: FontWeight.w700)),
+                  ),
                 ),
-                onPressed: () => onKey(key),
-                child: Text(key,
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(color: t.ink, fontWeight: FontWeight.w700)),
               ),
             ),
           ),
