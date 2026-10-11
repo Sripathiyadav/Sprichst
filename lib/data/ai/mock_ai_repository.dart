@@ -62,6 +62,7 @@ class MockAIRepository implements AIRepository {
     return const TutorReply(
       reply: 'Sehr gut! Erzähl mir mehr auf Deutsch.',
       followUp: 'Was hast du heute gemacht?',
+      followUpTranslation: 'What did you do today?',
     );
   }
 

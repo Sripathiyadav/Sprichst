@@ -13,6 +13,7 @@ export 'geometry.dart';
 export 'glass.dart';
 export 'masthead.dart';
 export 'option_tile.dart';
+export 'summary_block.dart';
 export 'wordmark.dart';
 
 class PageFrame extends StatefulWidget {

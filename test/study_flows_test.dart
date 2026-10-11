@@ -78,6 +78,7 @@ void main() {
     testWidgets('offers quests, flashcards and all five games', (tester) async {
       await _app(tester);
       await _open(tester, 'Practice');
+      await _reveal(tester, find.text('DAILY QUESTS'));
       expect(find.text('DAILY QUESTS'), findsOneWidget);
       await _reveal(tester, find.text('FLASHCARDS'));
       expect(find.text('FLASHCARDS'), findsOneWidget);

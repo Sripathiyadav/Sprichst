@@ -28,26 +28,30 @@ class ProgressView extends ConsumerWidget {
       subtitle:
           'Signals that help Sprichst choose what to teach next. Not a CEFR certificate.',
       child: ListView(padding: pageListPadding(context), children: [
-        Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.md),
-          child: Wrap(
-            spacing: AppSpacing.xl,
-            runSpacing: AppSpacing.md,
-            crossAxisAlignment: WrapCrossAlignment.end,
-            children: [
-              EditorialNumber(
-                value: completed,
-                label: 'Lessons completed',
-                unit: completed == 1 ? 'lesson' : 'lessons',
-                disc: completed > 0,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-                child: LevelBadge(
-                    level: profile.currentLevel, caption: 'Your level'),
-              ),
-            ],
+        SummaryBlock(
+          lead: EditorialNumber(
+            value: completed,
+            label: 'Lessons completed',
+            unit: completed == 1 ? 'lesson' : 'lessons',
+            size: EditorialSize.numeral,
+            disc: completed > 0,
           ),
+          level: profile.currentLevel,
+          levelProgress: app.curriculum
+              .levelProgress(profile.currentLevel, profile.isLessonCompleted),
+          meterLabel: '${profile.currentLevel.label} lessons',
+          meterValue: app.curriculum
+              .levelProgress(profile.currentLevel, profile.isLessonCompleted),
+          action: next == null
+              ? null
+              : PrimaryButton(
+                  key: const ValueKey('progress-continue'),
+                  label: 'Continue: ${next.title}',
+                  block: true,
+                  onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                          builder: (_) => LessonView(lesson: next))),
+                ),
         ),
         const SizedBox(height: AppSpacing.xl),
         Row(

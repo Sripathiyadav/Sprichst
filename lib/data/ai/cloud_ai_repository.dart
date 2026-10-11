@@ -51,9 +51,9 @@ class CloudAIRepository implements AIRepository {
   }
 
   static const _jsonShapeChat =
-      'Answer with one JSON object whose string fields are "corrected", "explanation", "reply" and "followUp". Answer with the JSON object only.';
+      'Answer with one JSON object whose string fields are "corrected", "explanation", "reply", "followUp" and "followUpTranslation" (the followUp question in simple English). Answer with the JSON object only.';
   static const _jsonShapeCorrection =
-      'Answer with one JSON object with the boolean "correct" and the string fields "corrected", "explanation" and "followUp". Answer with the JSON object only.';
+      'Answer with one JSON object with the boolean "correct" and the string fields "corrected", "explanation", "followUp" and "followUpTranslation" (the followUp question in simple English). Answer with the JSON object only.';
 
   @override
   Future<TutorReply> chat(String message, TutorContext context) async {

@@ -427,6 +427,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
 
       final hasCorrection =
           reply.correction != null && reply.correction!.trim().isNotEmpty;
+      final translation = reply.followUpTranslation.trim();
       // The tutor's words: the reply, then the question that goes on.
       final tutorMessage = [
         if (reply.reply.trim().isNotEmpty) reply.reply,
@@ -462,6 +463,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
             text: tutorMessage,
             speechText: speechText,
             kind: _Kind.tutor,
+            translation: translation.isEmpty ? null : translation,
           ));
         }
       });
@@ -651,6 +653,7 @@ class _Message {
     this.resendOnPhone,
     this.corrected,
     this.explanation,
+    this.translation,
   });
 
   /// What was said. For a correction, the learner's original sentence.
@@ -665,6 +668,9 @@ class _Message {
   /// A correction's corrected sentence and why (only what the provider sent).
   final String? corrected;
   final String? explanation;
+
+  /// The tutor's question in English, so new words come with their meaning.
+  final String? translation;
 }
 
 class _MessageBubble extends StatelessWidget {
@@ -723,6 +729,26 @@ class _MessageBubble extends StatelessWidget {
                       style: theme.textTheme.bodyLarge
                           ?.copyWith(color: mine ? t.onPanel : t.ink),
                     ),
+                    if (!mine && message.translation != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.translate, size: 18, color: t.inkMuted),
+                          const SizedBox(width: AppSpacing.xs),
+                          Expanded(
+                            child: Text(
+                              message.translation!,
+                              key: const ValueKey('coach-translation'),
+                              locale: const Locale('en'),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: t.inkMuted,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     if (onSpeak != null) ...[
                       const SizedBox(height: AppSpacing.xxs),
                       IconButton(

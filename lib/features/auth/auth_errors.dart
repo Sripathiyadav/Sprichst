@@ -7,9 +7,11 @@ String describeAuthError(Object error) {
   return switch (error) {
     GoogleSignInException(:final code) => switch (code) {
         GoogleSignInExceptionCode.clientConfigurationError =>
-          'Google sign-in is not configured for this build. Check the iOS GoogleService-Info.plist and URL scheme.',
+          'Google sign-in is not configured for this build. On iOS check GoogleService-Info.plist and the URL scheme; on Android add this build\'s SHA-1 to the Firebase app and download google-services.json again.',
         GoogleSignInExceptionCode.providerConfigurationError =>
           'Google sign-in could not start on this device. Check your internet connection and that Keychain access is allowed, then try again.',
+        GoogleSignInExceptionCode.unknownError =>
+          'Google sign-in did not complete. Check your connection and that a Google account is added on this device (on an emulator: Settings → Passwords & accounts), then try again.',
         GoogleSignInExceptionCode.interrupted =>
           'Sign-in was interrupted. Please try again.',
         GoogleSignInExceptionCode.uiUnavailable =>
