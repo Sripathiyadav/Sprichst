@@ -83,8 +83,7 @@ void main() {
 
         await tester.tap(find.text('Learn').last);
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Greetings').first);
-        await tester.pumpAndSettle();
+        await openLessonTitled(tester, 'Greetings');
         await tester.tap(find.text('Start practice'));
         await tester.pumpAndSettle();
 
@@ -131,8 +130,7 @@ void main() {
 
       await tester.tap(find.text('Learn').last);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Greetings').first);
-      await tester.pumpAndSettle();
+      await openLessonTitled(tester, 'Greetings');
       expect(tester.takeException(), isNull);
       await tester.tap(find.text('Start practice'));
       await tester.pumpAndSettle();

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart' show ListView, Offset;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -165,5 +166,19 @@ Future<void> pumpSprichst(
         signedIn: signedIn, auth: auth, extra: extraOverrides),
     child: const SprichstApp(),
   ));
+  await tester.pumpAndSettle();
+}
+
+/// Scrolls the Learn list until [title] is on screen and opens that lesson.
+Future<void> openLessonTitled(WidgetTester tester, String title) async {
+  final lesson = find.text(title);
+  final list = find.byType(ListView).first;
+  for (var i = 0; i < 30 && lesson.evaluate().isEmpty; i++) {
+    await tester.drag(list, const Offset(0, -200));
+    await tester.pumpAndSettle();
+  }
+  await tester.ensureVisible(lesson.first);
+  await tester.pumpAndSettle();
+  await tester.tap(lesson.first);
   await tester.pumpAndSettle();
 }

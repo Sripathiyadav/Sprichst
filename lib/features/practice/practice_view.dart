@@ -6,13 +6,16 @@ import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../../domain/games/game_models.dart';
+import '../../domain/learning/achievements.dart';
 import '../../domain/learning/exam_readiness.dart';
 import '../flashcards/flashcard_session_view.dart';
+import '../gamification/open_quest.dart';
 import '../gamification/quests_card.dart';
 import '../games/open_game.dart';
 import '../home/plan_card.dart';
 import 'mock_exam_view.dart';
 import 'practice_session_view.dart';
+import 'writing_practice_view.dart';
 
 class PracticeView extends ConsumerWidget {
   const PracticeView({super.key});
@@ -32,6 +35,31 @@ class PracticeView extends ConsumerWidget {
       child: ListView(
         padding: pageListPadding(context),
         children: [
+          SummaryBlock(
+            lead: EditorialNumber(
+              value: app.dueReviews,
+              label: app.dueReviews == 1 ? 'Review due' : 'Reviews due',
+              unit: app.dueReviews == 0 ? 'all caught up' : 'before they fade',
+              size: EditorialSize.numeral,
+              disc: app.dueReviews > 0,
+            ),
+            level: app.profile!.currentLevel,
+            levelProgress: app.curriculum.levelProgress(
+                app.profile!.currentLevel, app.profile!.isLessonCompleted),
+            meterLabel: 'Today’s quests',
+            meterValue: _questShare(app.profile!, now),
+            meterValueLabel: _questText(app.profile!, now),
+            action: _nextQuest(app.profile!, now) == null
+                ? null
+                : PrimaryButton(
+                    key: const ValueKey('practice-start-quests'),
+                    label: 'Start today’s quests',
+                    block: true,
+                    onPressed: () =>
+                        openQuest(context, ref, _nextQuest(app.profile!, now)!),
+                  ),
+          ),
+          const SizedBox(height: AppSpacing.xxl),
           if (plan != null) ...[
             const SectionTitle('Next up'),
             const SizedBox(height: AppSpacing.sm),
@@ -40,11 +68,19 @@ class PracticeView extends ConsumerWidget {
           ],
           const SectionTitle('Daily quests'),
           const SizedBox(height: AppSpacing.sm),
-          QuestsCard(profile: app.profile!, now: now),
+          QuestsCard(
+            profile: app.profile!,
+            now: now,
+            onStart: (quest) => openQuest(context, ref, quest),
+          ),
           const SizedBox(height: AppSpacing.xxl),
           const SectionTitle('Flashcards'),
           const SizedBox(height: AppSpacing.sm),
           const _FlashcardsCard(),
+          const SizedBox(height: AppSpacing.xxl),
+          const SectionTitle('Writing practice'),
+          const SizedBox(height: AppSpacing.sm),
+          const _WritingCard(),
           const SizedBox(height: AppSpacing.xxl),
           const SectionTitle('Games'),
           const SizedBox(height: AppSpacing.sm),
@@ -105,6 +141,28 @@ class PracticeView extends ConsumerWidget {
       ),
     );
   }
+}
+
+Quest? _nextQuest(LearningProfile profile, DateTime now) =>
+    Achievements.todaysQuests(now)
+        .where((q) => !Achievements.isDone(profile.gamification, q, now))
+        .firstOrNull;
+
+double _questShare(LearningProfile profile, DateTime now) {
+  final quests = Achievements.todaysQuests(now);
+  if (quests.isEmpty) return 0;
+  return quests
+          .where((q) => Achievements.isDone(profile.gamification, q, now))
+          .length /
+      quests.length;
+}
+
+String _questText(LearningProfile profile, DateTime now) {
+  final quests = Achievements.todaysQuests(now);
+  final done = quests
+      .where((q) => Achievements.isDone(profile.gamification, q, now))
+      .length;
+  return '$done / ${quests.length}';
 }
 
 class _ReviewRow extends StatelessWidget {
@@ -172,6 +230,36 @@ class _FlashcardsCard extends ConsumerWidget {
                 summary.total == 0 ? null : () => openFlashcards(context, ref),
             icon: const Icon(Icons.style_outlined),
             label: Text(ready == 0 ? 'Nothing due' : 'Review $ready cards'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Type German sentences with ä ö ü ß, to get fast at the keys.
+class _WritingCard extends ConsumerWidget {
+  const _WritingCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    return SoftCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Type German faster', style: theme.textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            'Copy sentences from your lessons with the German keys (ä ö ü ß) at hand, and see your speed and accuracy.',
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          OutlinedButton.icon(
+            key: const ValueKey('open-writing'),
+            onPressed: () => openWritingPractice(context, ref),
+            icon: const Icon(Icons.keyboard_alt_outlined),
+            label: const Text('Start writing practice'),
           ),
         ],
       ),

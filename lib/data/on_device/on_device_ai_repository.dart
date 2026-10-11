@@ -141,6 +141,7 @@ Check this German sentence: "$text"
 If it is correct: correct=true, corrected = the same sentence, explanation = "".
 If not: correct=false, corrected = the sentence with only the mistakes fixed, explanation = one short English sentence naming each mistake and its fix.
 followUp = one short, simple German question to keep practising.
+followUpTranslation = that question in simple English.
 Example: "Ich habe ein Hund." → corrected "Ich habe einen Hund.", explanation "Hund is masculine and the object of haben, so it is accusative: ein → einen."''';
 
 /// The recent turns as plain text for the prompt, oldest first.
@@ -160,6 +161,7 @@ corrected = the learner's sentence with only real mistakes fixed (exactly the sa
 explanation = if you changed something, one short English sentence saying what and why; otherwise "".
 reply = one or two short, friendly sentences in simple German that react to what the learner just said, using their details (their name, what they told you). The reply must not contain a question.
 followUp = exactly one simple German question that builds on what the learner just said, or moves to a new everyday topic. Never ask something already asked or already answered above, and never ask their name again once they have given it or you have asked it. Do not just repeat the earlier question in other words.
+followUpTranslation = the followUp question translated into simple English, so the learner learns its words.
 Example: "Ich gehen morgen zur Arbeit." → corrected "Ich gehe morgen zur Arbeit.", explanation "With 'ich', gehen becomes gehe."''';
 
 const correctionSchema = <String, dynamic>{
@@ -169,8 +171,15 @@ const correctionSchema = <String, dynamic>{
     'corrected': {'type': 'string'},
     'explanation': {'type': 'string'},
     'followUp': {'type': 'string'},
+    'followUpTranslation': {'type': 'string'},
   },
-  'required': ['correct', 'corrected', 'explanation', 'followUp'],
+  'required': [
+    'correct',
+    'corrected',
+    'explanation',
+    'followUp',
+    'followUpTranslation'
+  ],
 };
 
 // Property order is generation order: the model settles the corrected
@@ -183,8 +192,15 @@ const chatSchema = <String, dynamic>{
     'explanation': {'type': 'string'},
     'reply': {'type': 'string'},
     'followUp': {'type': 'string'},
+    'followUpTranslation': {'type': 'string'},
   },
-  'required': ['corrected', 'explanation', 'reply', 'followUp'],
+  'required': [
+    'corrected',
+    'explanation',
+    'reply',
+    'followUp',
+    'followUpTranslation'
+  ],
 };
 
 Map<String, dynamic> _decode(String raw) {
@@ -230,6 +246,7 @@ CoachReply parseCoachReply(String raw, String original) {
     corrected: unchanged ? original : fixed,
     explanation: explanation,
     followUp: (data['followUp'] as String? ?? '').trim(),
+    followUpTranslation: (data['followUpTranslation'] as String? ?? '').trim(),
     wasCorrect: unchanged,
   );
 }
@@ -273,6 +290,7 @@ TutorReply parseTutorReply(String raw, String message) {
         ? explainChange(message, corrected, data['explanation'] as String?)
         : null,
     followUp: (data['followUp'] as String? ?? '').trim(),
+    followUpTranslation: (data['followUpTranslation'] as String? ?? '').trim(),
   );
 }
 

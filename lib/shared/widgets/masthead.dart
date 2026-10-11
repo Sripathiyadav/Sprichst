@@ -24,7 +24,6 @@ class Masthead extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(height: 1.5, color: t.ink),
         SizedBox(
           height: 56,
           child: Row(
@@ -80,14 +79,13 @@ class MastheadBar extends StatelessWidget implements PreferredSizeWidget {
   /// Context in capitals under the hairline, e.g. "LESSON 08 · A1 · DAILY LIFE".
   final String? eyebrow;
 
-  static const _rule = 1.5;
   static const _row = 56.0;
   static const _hairline = 1.0;
   static const _eyebrowRow = 32.0;
 
   @override
-  Size get preferredSize => Size.fromHeight(
-      _rule + _row + _hairline + (eyebrow == null ? 0 : _eyebrowRow));
+  Size get preferredSize =>
+      Size.fromHeight(_row + _hairline + (eyebrow == null ? 0 : _eyebrowRow));
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +99,6 @@ class MastheadBar extends StatelessWidget implements PreferredSizeWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(height: _rule, color: t.ink),
             SizedBox(
               height: _row,
               child: Row(

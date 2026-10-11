@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,6 +13,8 @@ import '../../shared/widgets/app_widgets.dart';
 import '../account/account_view.dart';
 import '../learn/lesson_view.dart';
 import '../practice/practice_session_view.dart';
+import '../practice/writing_practice_view.dart';
+import '../gamification/open_quest.dart';
 import '../gamification/quests_card.dart';
 import 'plan_card.dart';
 
@@ -21,15 +25,51 @@ import 'plan_card.dart';
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
+  /// The greeting for the device's local [hour].
+  static String greeting(int hour) => _HomeViewState.greeting(hour);
+
   @override
   ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends ConsumerState<HomeView> {
+class _HomeViewState extends ConsumerState<HomeView>
+    with WidgetsBindingObserver {
   final _scroll = ScrollController();
+
+  /// Bumped on every refresh so the level gauge sweeps up from zero again.
+  var _refreshes = 0;
+
+  /// Rebuilds when the hour (or the device's time zone) changes, so the
+  /// greeting and date follow the device clock without a restart.
+  Timer? _clock;
+  late int _hour = DateTime.now().hour;
+  late String _zone = DateTime.now().timeZoneName;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _clock = Timer.periodic(const Duration(seconds: 30), (_) => _tick());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _tick();
+  }
+
+  void _tick() {
+    final now = DateTime.now();
+    if (!mounted || (now.hour == _hour && now.timeZoneName == _zone)) return;
+    setState(() {
+      _hour = now.hour;
+      _zone = now.timeZoneName;
+    });
+  }
 
   @override
   void dispose() {
+    _clock?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _scroll.dispose();
     super.dispose();
   }
@@ -37,7 +77,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
   /// Pull-to-refresh and the logo both end up here.
   Future<void> _refresh() async {
     final ok = await ref.read(appControllerProvider).refresh();
-    if (!mounted || ok) return;
+    if (!mounted) return;
+    setState(() => _refreshes++);
+    if (ok) return;
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Could not refresh. Check your connection.')));
   }
@@ -63,7 +105,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
     return PageFrame(
       eyebrow: dateEyebrow(now),
-      title: '${_greeting(now.hour)}, ${profile.name}',
+      title: '${greeting(now.hour)}, ${profile.name}',
       titleLocale: const Locale('de'),
       subtitle: 'Ready for today’s practice?',
       onLogoTap: _logoTapped,
@@ -92,8 +134,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
               now: now,
               levelProgress: app.curriculum.levelProgress(
                   profile.currentLevel, profile.isLessonCompleted),
-              onStartQuests: () =>
-                  _startQuests(context, ref, app, profile, now),
+              replay: _refreshes,
+              onStartQuests: () {
+                final next = Achievements.todaysQuests(now)
+                    .where((q) =>
+                        !Achievements.isDone(profile.gamification, q, now))
+                    .firstOrNull;
+                if (next != null) openQuest(context, ref, next);
+              },
             ),
             const SizedBox(height: AppSpacing.xxl),
             if (plan != null) ...[
@@ -109,6 +157,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
             const SectionTitle('Your daily practice'),
             const SizedBox(height: AppSpacing.sm),
             _PracticeCards(due: app.dueReviews),
+            const SizedBox(height: AppSpacing.sm),
+            const _WritingTile(),
             const SizedBox(height: AppSpacing.xxl),
             SectionTitle(
               'Daily quests',
@@ -117,7 +167,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   style: Theme.of(context).textTheme.labelLarge),
             ),
             const SizedBox(height: AppSpacing.sm),
-            QuestsCard(profile: profile, now: now),
+            QuestsCard(
+              profile: profile,
+              now: now,
+              onStart: (quest) => openQuest(context, ref, quest),
+            ),
             const SizedBox(height: AppSpacing.xxl),
             const SectionTitle('Your progress'),
             const SizedBox(height: AppSpacing.sm),
@@ -187,34 +241,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
     );
   }
 
-  /// Opens the first of today's quests that is not done yet.
-  static void _startQuests(BuildContext context, WidgetRef ref,
-      AppController app, LearningProfile profile, DateTime now) {
-    final state = profile.gamification;
-    final next = Achievements.todaysQuests(now)
-        .where((q) => !Achievements.isDone(state, q, now))
-        .firstOrNull;
-    if (next == null) return;
-    switch (next.kind) {
-      case QuestKind.lesson:
-        final plan = app.plan;
-        final lesson = app.currentLesson;
-        if (plan != null) {
-          startPlan(context, ref, plan);
-        } else if (lesson != null) {
-          Navigator.of(context).push(MaterialPageRoute<void>(
-              builder: (_) => LessonView(lesson: lesson)));
-        } else {
-          ref.read(shellTabRequestProvider.notifier).state = 1;
-        }
-      case QuestKind.cards:
-      case QuestKind.games:
-        ref.read(shellTabRequestProvider.notifier).state = 2;
-      case QuestKind.correct:
-        openPractice(context, ref, title: 'Practice');
-    }
-  }
-
   static int _questsDone(LearningProfile profile, DateTime now) {
     final state = profile.gamification;
     return Achievements.todaysQuests(now)
@@ -222,10 +248,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
         .length;
   }
 
-  static String _greeting(int hour) {
-    if (hour < 11) return 'Guten Morgen';
-    if (hour < 18) return 'Guten Tag';
-    return 'Guten Abend';
+  /// The greeting for the device's local hour (the device clock and time zone
+  /// decide it, not a server).
+  static String greeting(int hour) {
+    if (hour >= 5 && hour < 11) return 'Guten Morgen';
+    if (hour >= 11 && hour < 18) return 'Guten Tag';
+    if (hour >= 18 && hour < 22) return 'Guten Abend';
+    return 'Gute Nacht';
   }
 
   /// "FRIDAY, 9 OCTOBER" (capitals come from the eyebrow style).
@@ -266,6 +295,7 @@ class _Today extends StatelessWidget {
     required this.streak,
     required this.now,
     required this.levelProgress,
+    required this.replay,
     required this.onStartQuests,
   });
 
@@ -273,6 +303,7 @@ class _Today extends StatelessWidget {
   final int streak;
   final DateTime now;
   final double levelProgress;
+  final int replay;
   final VoidCallback onStartQuests;
 
   @override
@@ -294,62 +325,28 @@ class _Today extends StatelessWidget {
             size: EditorialSize.numeral,
             disc: true,
           );
-    // A little air on the right so the stroke is never trimmed by the list.
-    final ring = Padding(
-      padding: const EdgeInsets.all(AppSpacing.xxs),
-      child: LevelRing(
-          level: profile.currentLevel, progress: levelProgress, size: 92),
-    );
-
-    final enlarged = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-    final top = enlarged
-        ? Wrap(
-            spacing: AppSpacing.xl,
-            runSpacing: AppSpacing.lg,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [streakPart, ring],
-          )
-        : Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: Align(
-                      alignment: Alignment.centerLeft, child: streakPart)),
-              const SizedBox(width: AppSpacing.md),
-              ring,
-            ],
-          );
-
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          top,
-          const SizedBox(height: AppSpacing.xl),
-          SkillMeter(
-            label: 'Today’s quests',
-            value: total == 0 ? 0 : done / total,
-            valueLabel: '$done / $total',
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (allDone)
-            Row(children: [
+    return SummaryBlock(
+      lead: streakPart,
+      level: profile.currentLevel,
+      levelProgress: levelProgress,
+      replay: replay,
+      meterLabel: 'Today’s quests',
+      meterValue: total == 0 ? 0 : done / total,
+      meterValueLabel: '$done / $total',
+      action: allDone
+          ? Row(children: [
               Icon(Icons.check_circle, color: context.tokens.success),
               const SizedBox(width: AppSpacing.xs),
               Expanded(
                   child: Text('All of today’s quests are done.',
                       style: theme.textTheme.titleSmall)),
             ])
-          else
-            PrimaryButton(
+          : PrimaryButton(
               key: const ValueKey('start-quests'),
               label: 'Start today’s quests',
               block: true,
               onPressed: onStartQuests,
             ),
-        ],
-      ),
     );
   }
 }
@@ -425,6 +422,49 @@ class _PracticeCards extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A way in to writing practice, from Home.
+class _WritingTile extends ConsumerWidget {
+  const _WritingTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final t = context.tokens;
+    return Semantics(
+      button: true,
+      label: 'Writing practice. Type German sentences with ä ö ü ß.',
+      excludeSemantics: true,
+      onTap: () => openWritingPractice(context, ref),
+      child: InkWell(
+        key: const ValueKey('home-writing'),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        onTap: () => openWritingPractice(context, ref),
+        child: SoftCard(
+          child: Row(
+            children: [
+              Icon(Icons.keyboard_alt_outlined, color: t.ink, size: 28),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Writing practice',
+                        style: theme.textTheme.titleMedium),
+                    Text('Type German with ä ö ü ß, faster.',
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: t.inkMuted)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward),
+            ],
+          ),
+        ),
       ),
     );
   }

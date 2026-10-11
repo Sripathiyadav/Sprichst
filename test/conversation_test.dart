@@ -249,6 +249,56 @@ void main() {
       expect(chatPrompt('Hallo.'), isNot(contains('Conversation so far')));
     });
   });
+
+  group('the question comes with its English', () {
+    test('a model that translates its question keeps its translation', () {
+      final fresh = _guard.freshen(
+        const TutorReply(
+            reply: 'Schön!',
+            followUp: 'Was machst du heute Abend?',
+            followUpTranslation: 'What are you doing this evening?'),
+        const [],
+        level: 'A1',
+      );
+      expect(fresh.followUp, 'Was machst du heute Abend?');
+      expect(fresh.followUpTranslation, 'What are you doing this evening?');
+    });
+
+    test('a replacement question from our list brings its own English', () {
+      final fresh = _guard.freshen(
+        const TutorReply(
+            reply: 'Okay.',
+            followUp: 'Wie ist dein Name?',
+            followUpTranslation: 'What is your name?'),
+        _history(['Ich heiße Mord.', 'Hallo!']),
+        level: 'A1',
+      );
+      expect(fresh.followUp, isNot('Wie ist dein Name?'));
+      expect(fresh.followUpTranslation, isNotEmpty);
+      expect(ConversationGuard.translationOf(fresh.followUp),
+          fresh.followUpTranslation);
+    });
+
+    test('every starter question has an English translation', () {
+      for (final s in conversationStarters) {
+        expect(s.english.trim(), isNotEmpty, reason: s.text);
+        expect(s.english, endsWith('?'), reason: s.text);
+      }
+    });
+
+    test('the prompts ask for the translation and it is parsed', () {
+      expect(chatPrompt('Hallo.'), contains('followUpTranslation'));
+      expect(correctionPrompt('Ich bin gut.'), contains('followUpTranslation'));
+      final reply = parseTutorReply(
+          '{"corrected":"","explanation":"","reply":"Hi","followUp":"Wie geht es dir?","followUpTranslation":" How are you? "}',
+          'Hallo');
+      expect(reply.followUpTranslation, 'How are you?');
+      final coach = parseCoachReply(
+          '{"correct":true,"corrected":"Ich bin gut.","explanation":"","followUp":"Wo wohnst du?","followUpTranslation":"Where do you live?"}',
+          'Ich bin gut.');
+      expect(coach.followUpTranslation, 'Where do you live?');
+    });
+  });
 }
 
 /// An AI that always says hello and asks for the learner's name, like the

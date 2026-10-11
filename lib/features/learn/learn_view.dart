@@ -24,6 +24,33 @@ class LearnView extends ConsumerWidget {
       child: ListView(
         padding: pageListPadding(context),
         children: [
+          SummaryBlock(
+            lead: EditorialNumber(
+              value: profile.completedLessonCount,
+              label: 'Lessons completed',
+              unit: profile.completedLessonCount == 1 ? 'lesson' : 'lessons',
+              size: EditorialSize.numeral,
+              disc: profile.completedLessonCount > 0,
+            ),
+            level: profile.currentLevel,
+            levelProgress: curriculum.levelProgress(
+                profile.currentLevel, profile.isLessonCompleted),
+            meterLabel: '${profile.currentLevel.label} lessons',
+            meterValue: curriculum.levelProgress(
+                profile.currentLevel, profile.isLessonCompleted),
+            action: app.currentLesson == null
+                ? null
+                : PrimaryButton(
+                    key: const ValueKey('learn-continue'),
+                    label: 'Continue: ${app.currentLesson!.title}',
+                    block: true,
+                    onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (_) =>
+                                LessonView(lesson: app.currentLesson!))),
+                  ),
+          ),
+          const SizedBox(height: AppSpacing.xxl),
           for (final unit in curriculum.units) ...[
             if (unit != curriculum.units.first)
               const SizedBox(height: AppSpacing.xl),

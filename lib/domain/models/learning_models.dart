@@ -689,6 +689,7 @@ class CoachReply {
     required this.corrected,
     required this.explanation,
     required this.followUp,
+    this.followUpTranslation = '',
     required this.wasCorrect,
   });
 
@@ -696,6 +697,9 @@ class CoachReply {
   final String corrected;
   final String explanation;
   final String followUp;
+
+  /// [followUp] in English, so the learner meets new words with their meaning.
+  final String followUpTranslation;
   final bool wasCorrect;
 }
 
@@ -705,12 +709,16 @@ class TutorReply {
     this.correction,
     this.explanation,
     required this.followUp,
+    this.followUpTranslation = '',
   });
 
   final String reply;
   final String? correction;
   final String? explanation;
   final String followUp;
+
+  /// [followUp] in English, so the learner meets new words with their meaning.
+  final String followUpTranslation;
 }
 
 class AudioCapture {

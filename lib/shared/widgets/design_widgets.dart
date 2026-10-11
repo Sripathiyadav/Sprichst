@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../app/theme/app_theme.dart';
@@ -330,67 +332,153 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
-/// Progress through the current CEFR level as a ring, with the level in the
-/// middle ("A1"). The words are in the semantics label, so the ring is never
-/// the only way to read it.
-class LevelRing extends StatelessWidget {
-  const LevelRing(
-      {super.key, required this.level, required this.progress, this.size = 96});
+/// Progress through the current CEFR level as a speedometer: a 240 degree dial
+/// with ticks, a coral arc and a needle, the level in the gap beneath. The
+/// needle sweeps from zero to [progress] when the gauge is built, and again
+/// whenever [replay] changes (Home bumps it on every refresh). Under reduced
+/// motion it simply shows the value. The words are in the semantics label, so
+/// the dial is never the only way to read it.
+class LevelGauge extends StatelessWidget {
+  const LevelGauge({
+    super.key,
+    required this.level,
+    required this.progress,
+    this.replay = 0,
+  });
 
   final CefrLevel level;
 
   /// 0 to 1: the share of this level's lessons that are done.
   final double progress;
-  final double size;
+
+  /// Changing this plays the sweep again from zero.
+  final int replay;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final t = context.tokens;
     final short = level == CefrLevel.preA1 ? 'A0' : level.label;
-    final percent = (progress.clamp(0, 1) * 100).round();
+    final value = progress.clamp(0.0, 1.0).toDouble();
+    final percent = (value * 100).round();
+    final still = MediaQuery.disableAnimationsOf(context);
     return Semantics(
       label: 'Level $short, $percent percent of its lessons done',
       excludeSemantics: true,
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox.expand(
-              child: CircularProgressIndicator(
-                key: const ValueKey('level-ring'),
-                value: progress.clamp(0, 1).toDouble(),
-                strokeWidth: 8,
-                strokeCap: StrokeCap.round,
-                backgroundColor: t.surfaceSunken,
-                color: t.coral,
+      child: AspectRatio(
+        aspectRatio: .95,
+        child: TweenAnimationBuilder<double>(
+          key: ValueKey('gauge-$replay'),
+          tween: Tween(begin: still ? value : 0, end: value),
+          duration: still ? Duration.zero : const Duration(milliseconds: 1100),
+          curve: Curves.easeOutCubic,
+          builder: (context, shown, _) => LayoutBuilder(
+            builder: (context, box) => CustomPaint(
+              key: const ValueKey('level-gauge'),
+              painter: _GaugePainter(
+                value: shown,
+                track: t.surfaceSunken,
+                tick: t.lineStrong,
+                arc: t.coral,
+                needle: t.ink,
               ),
-            ),
-            // Scales down with the ring, so enlarged text never spills out of it.
-            Padding(
-              padding: EdgeInsets.all(size * .2),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(short,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w700, color: t.ink)),
-                    Text('$percent%',
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(color: t.inkMuted)),
-                  ],
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                // Scales down with the gauge, so enlarged text stays inside.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(short,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700, color: t.ink)),
+                      Text('${(shown * 100).round()}%',
+                          style: theme.textTheme.labelSmall
+                              ?.copyWith(color: t.inkMuted)),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
+
+class _GaugePainter extends CustomPainter {
+  _GaugePainter({
+    required this.value,
+    required this.track,
+    required this.tick,
+    required this.arc,
+    required this.needle,
+  });
+
+  final double value;
+  final Color track;
+  final Color tick;
+  final Color arc;
+  final Color needle;
+
+  static const _start = 150 * math.pi / 180;
+  static const _sweep = 240 * math.pi / 180;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stroke = size.width * .09;
+    final center = Offset(size.width / 2, size.height * .46);
+    final radius = size.width / 2 - stroke;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    final base = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeCap = StrokeCap.round;
+    canvas.drawArc(rect, _start, _sweep, false, base..color = track);
+    if (value > 0) {
+      canvas.drawArc(rect, _start, _sweep * value, false, base..color = arc);
+    }
+
+    // Eleven ticks just inside the dial, like a speedometer's scale.
+    final ticks = Paint()
+      ..color = tick
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+    for (var i = 0; i <= 10; i++) {
+      final a = _start + _sweep * i / 10;
+      final inner = radius - stroke * 1.1;
+      final outer = radius - stroke * (i % 5 == 0 ? 1.9 : 1.6);
+      canvas.drawLine(
+        center + Offset(math.cos(a), math.sin(a)) * inner,
+        center + Offset(math.cos(a), math.sin(a)) * outer,
+        ticks,
+      );
+    }
+
+    // The needle and its hub.
+    final angle = _start + _sweep * value;
+    final tip = center +
+        Offset(math.cos(angle), math.sin(angle)) * (radius - stroke * 2.3);
+    canvas.drawLine(
+        center,
+        tip,
+        Paint()
+          ..color = needle
+          ..strokeWidth = stroke * .3
+          ..strokeCap = StrokeCap.round);
+    canvas.drawCircle(center, stroke * .55, Paint()..color = needle);
+  }
+
+  @override
+  bool shouldRepaint(_GaugePainter old) =>
+      old.value != value ||
+      old.track != track ||
+      old.arc != arc ||
+      old.needle != needle ||
+      old.tick != tick;
 }
 
 /// A small label for status, category or provider, with an optional icon.

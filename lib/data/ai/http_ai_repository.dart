@@ -84,6 +84,7 @@ class HttpAIRepository implements AIRepository {
       corrected: data['corrected'] as String? ?? text,
       explanation: data['explanation'] as String? ?? '',
       followUp: data['followUp'] as String? ?? '',
+      followUpTranslation: data['followUpTranslation'] as String? ?? '',
       wasCorrect: data['correct'] as bool? ?? false,
     );
   }
@@ -118,6 +119,7 @@ class HttpAIRepository implements AIRepository {
       correction: data['correction'] as String?,
       explanation: data['explanation'] as String?,
       followUp: data['followUp'] as String? ?? '',
+      followUpTranslation: data['followUpTranslation'] as String? ?? '',
     );
   }
 

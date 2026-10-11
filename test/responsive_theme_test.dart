@@ -91,8 +91,7 @@ void main() {
       // Lesson: intro then first exercise.
       await tester.tap(find.text('Learn').last);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Greetings').first);
-      await tester.pumpAndSettle();
+      await openLessonTitled(tester, 'Greetings');
       await _tapVisible(tester, find.text('Start practice'));
       expect(find.text('Exercise 1 of 3'), findsOneWidget);
       expect(tester.takeException(), isNull);
