@@ -1,131 +1,273 @@
-# Sprichst
+<div align="center">
 
-Sprichst is a Flutter German-learning MVP built around a curriculum and learning engine—not a generic chatbot. Learners sign in with Google; their profile lives in Firestore with an on-device copy so they can keep studying offline, and the AI tutor runs on the phone or, optionally, on an AI account the learner brings (Groq, Gemini, OpenAI, Claude, Grok, Mistral, DeepSeek, OpenRouter or any OpenAI-compatible server). There is no Sprichst AI server.
+# 🇩🇪 Sprichst
 
-## What is already working
+**Learn German by speaking it: lessons, an AI coach that explains why, and practice that comes back when you need it.**
 
-- Responsive Flutter interface for mobile and desktop
-- Responsive app shell: bottom navigation on phones, navigation rail on tablets, and an expanded desktop rail
-- Light, dark, and system appearance modes, saved with the learner profile
-- Central Account area for profile, learning preferences, AI/voice preferences, reminder preferences, privacy, support, and licenses
-- On-device AI: the AI Coach (chat, corrections, speech recognition and voice) runs on the phone after a one-time model download, and works with no internet. The app recommends a model for the phone's memory; the learner can pick any. See [docs/on-device-ai.md](docs/on-device-ai.md)
-- Onboarding (explanation language + starting CEFR level)
-- Home, roadmap (units, per-lesson status, real level progress), lesson runner, XP, progress matrix, and AI Coach screens
-- Adaptive learning: a deterministic planner picks the next review, weak-skill practice, or lesson from your own answers; practice is limited to lessons you have started, difficulty follows your accuracy per skill, missed exercises are retried and respaced, and finishing a level well moves you up
-- Personalised curriculum: choose a goal (everyday, travel, work, Goethe-Zertifikat or TestDaF) and the path, vocabulary and practice follow it, with the reason for each recommendation shown on the roadmap
-- Exam-style tasks modelled on the Goethe-Zertifikat and TestDaF modules: reading over a passage, listening (read aloud by the tutor, transcript always available), Lückentext, writing against content points (Leitpunkte) with a live checklist, speaking (record, transcribe, compare), a graph description task, and a mock exam (Modelltest) with a per-module report
-- Flashcards with spaced repetition (a deterministic SM-2 variant): nouns are shown without their article so the article is recalled too, and a card flips to meaning → German once it is well known
-- Five games: Artikel-Rausch (swipe der/die/das), Memory, Buchstabensalat (word scramble), Wortle (five-letter German word), and Gespräch (conversation fill-ups), with combos, stars, daily quests and badges
-- Insights drawn from how you answer (recognition vs. recall, weakest and strongest mode). Sprichst deliberately does not use "learning styles" such as VARK, which research has not supported; see `docs/learning-design.md`
-- Learning engine: eight exercise types with deterministic evaluation, per-skill accuracy, weak-skill tracking, mistake reviews, and targeted practice
-- 48 lessons from Pre-A1 to B2 in `curriculum/course.json`, with 308 vocabulary words, 13 dialogues, Goethe A1–B2 task lessons and a four-part TestDaF track (reading, listening, written argument, speaking)
-- Deterministic spaced repetition for reviews and flashcards (Again → 10 minutes; successful recalls grow the gap)
-- Offline-tolerant sync: the profile is saved to Firestore and mirrored per account on the device. Changes are gathered for a few seconds into one write (to stay inside Firestore's free quota) and pushed when the app goes to the background; offline changes are kept and pushed on the next load (the policy is documented in `lib/data/profile_sync.dart`: the cloud is the source of truth, pending local changes win, last writer wins)
-- Separate reset-learning-progress and reauthenticated delete-account flows
-- Developer-only FastAPI gateway (`ai-server/`, not in the released app): `GET /health`, `GET /health/ready` (provider reachable?), `POST /v1/correct`, `POST /v1/chat`, `POST /v1/transcribe`, `POST /v1/speak`, `GET /v1/voices`. Model answers are validated before they reach the app, concurrent jobs are capped, and an optional fallback provider is supported
-- Versioned curriculum JSON, validated by both a script and the app's parser
-- Firebase Firestore and Storage security rules ready to deploy
+Flutter · Firebase · on-device AI · bring-your-own-key AI · no tracking, no ads
 
-## Project map
+[Overview](#-overview) · [Screens](#-screens) · [How it works](#-how-it-works) · [Prerequisites](#-prerequisites) · [Install](#-installation) · [Testing](#-testing) · [Next steps](#-next-steps) · [Contact](#-contact)
+
+</div>
+
+---
+
+## ✨ Overview
+
+Sprichst is a German-learning app built around a **curriculum and a learning engine**, not a generic chatbot. A learner signs in with Google, picks a goal and a starting level, and is then shown **one clear next step** every day.
+
+| 🎯 | What you get |
+| --- | --- |
+| 📚 **Lessons** | 48 lessons from Pre-A1 to B2, 308 words, 13 dialogues, Goethe and TestDaF exam tracks |
+| 🤖 **AI coach** | Chat and voice practice with corrections, reasons, and an **English translation of every question** so new words come with meanings |
+| 🧠 **Smart practice** | A deterministic planner picks the next review, weak-skill drill or lesson from *your own answers*; spaced repetition brings things back |
+| ⌨️ **Writing practice** | Type German sentences with **ä ö ü ß** keys at hand, with live feedback, speed and accuracy |
+| 🃏 **Flashcards & games** | Spaced-repetition cards and five games (Artikel-Rausch, Memory, Buchstabensalat, Wortle, Gespräch) |
+| 🔒 **Private by design** | AI runs **on the phone**, or with the learner's **own key** from Groq, Gemini, OpenAI, Claude, Grok, Mistral, DeepSeek, OpenRouter or any OpenAI-compatible server. There is **no Sprichst AI server**, no analytics, no ads |
+| 🎨 **Calm design** | Paper-and-ink look, one action per screen, light and dark, reduced-motion friendly, Lottie animations |
+
+Runs on **Android, iOS, web, macOS** (and has Windows/Linux folders for later).
+
+---
+
+## 📱 Screens
+
+These are rendered from the real app (`tool/screenshots_test.dart`), not drawings.
+
+### First run
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/sign-in.png" width="190" alt="Sign in"><br><sub><b>1 · Sign in</b><br>Google, no tracking</sub></td>
+    <td align="center"><img src="docs/screenshots/welcome.png" width="190" alt="Welcome"><br><sub><b>2 · Welcome</b><br>animated mark</sub></td>
+    <td align="center"><img src="docs/screenshots/tour-lessons.png" width="190" alt="Tour"><br><sub><b>3 · Tour</b><br>5 short pages</sub></td>
+    <td align="center"><img src="docs/screenshots/goal.png" width="190" alt="Goal"><br><sub><b>4 · Your goal</b><br>language, level, goal</sub></td>
+  </tr>
+</table>
+
+### Every day
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/home.png" width="190" alt="Home"><br><sub><b>🏠 Home</b><br>streak, level gauge, quests</sub></td>
+    <td align="center"><img src="docs/screenshots/learn.png" width="190" alt="Learn"><br><sub><b>📖 Learn</b><br>roadmap A0 → C1</sub></td>
+    <td align="center"><img src="docs/screenshots/practice.png" width="190" alt="Practice"><br><sub><b>⚡ Practice</b><br>reviews, cards, games</sub></td>
+    <td align="center"><img src="docs/screenshots/writing.png" width="190" alt="Writing practice"><br><sub><b>⌨️ Writing</b><br>type with ä ö ü ß</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/coach.png" width="190" alt="Coach"><br><sub><b>💬 Coach</b><br>chat or talk</sub></td>
+    <td align="center"><img src="docs/screenshots/progress.png" width="190" alt="Progress"><br><sub><b>📈 Progress</b><br>skills, badges</sub></td>
+    <td align="center"><img src="docs/screenshots/account.png" width="190" alt="Account"><br><sub><b>👤 Account</b><br>AI key, voice, privacy</sub></td>
+    <td align="center"><img src="docs/screenshots/home-dark.png" width="190" alt="Home, dark"><br><sub><b>🌙 Dark mode</b><br>designed on its own</sub></td>
+  </tr>
+</table>
+
+---
+
+## 🔄 How it works
+
+### The learner's journey
+
+```mermaid
+flowchart LR
+    A[🔑 Sign in with Google] --> B[👋 Welcome + 5-page tour]
+    B --> C[🎯 Pick language, level, goal]
+    C --> D[🏠 Home: one next step]
+    D --> E{What's next?}
+    E -->|lesson| F[📖 Lesson + exercises]
+    E -->|review due| G[🔁 Spaced review]
+    E -->|weak skill| H[⚡ Targeted practice]
+    E -->|talk| I[💬 AI coach]
+    E -->|type| W[⌨️ Writing practice]
+    F --> J[⭐ XP, streak, level gauge]
+    G --> J
+    H --> J
+    I --> J
+    W --> J
+    J --> D
+```
+
+1. **Onboarding** sets the explanation language, the starting CEFR level and a goal (everyday, travel, work, Goethe-Zertifikat or TestDaF). The path, vocabulary and practice follow the goal.
+2. **Home** shows the streak, a level gauge that sweeps up from 0 on every refresh, today's three quests (each with its own *Start* button) and the single recommended step.
+3. **Every answer feeds the planner.** Accuracy per skill decides what comes back, when, and how hard it is. Missed exercises are retried and re-spaced. Finishing a level well moves you up.
+4. **The coach** corrects only real mistakes, explains why in English, remembers the last few messages so it doesn't repeat questions, and translates its follow-up question.
+
+### Where the AI runs (you choose)
+
+```mermaid
+flowchart TD
+    Q[Learner writes or speaks] --> P{Setting in Account → AI & voice}
+    P -->|Automatic| Phone[📱 On this phone, offline]
+    P -->|My own AI key| Cloud[☁️ Your provider, called straight from the app]
+    P -->|This phone only| Phone
+    Phone -.->|model not downloaded & key saved| Cloud
+    Cloud -.->|limit, no credit, offline, bad key| Ask[Coach asks: answer on this phone?]
+    Ask --> Phone
+```
+
+Nothing switches silently, and keys never leave the device's secure storage. Details: [docs/zero-cost-architecture.md](docs/zero-cost-architecture.md), [docs/on-device-ai.md](docs/on-device-ai.md).
+
+### How the code is organised
 
 ```text
-lib/                 Flutter application (MVVM-inspired layers)
-ai-server/           Private FastAPI gateway for Ollama
-curriculum/          Version-controlled, canonical course content
-firebase/             Firestore and Storage security configuration
-scripts/              Curriculum validation
-docs/                 Architecture and handoff instructions
+lib/
+├── app/          app shell, navigation, theme, controller (state)
+├── domain/       pure Dart: planner, progress tracker, quests, typing practice, exercise evaluator
+├── data/         repositories: Firebase auth/Firestore, on-device AI, cloud AI, sync, curriculum parser
+├── features/     one folder per screen: home, learn, practice, ai_coach, onboarding, account, ...
+└── shared/       design-system widgets, Lottie player, masthead
+curriculum/       course.json: the version-controlled course (validated by a script and the app)
+assets/lottie/    animations, generated by tool/lottie/gen_lottie.py
+firebase/         Firestore and Storage rules (+ rules tests)
+ai-server/        optional developer-only FastAPI gateway (not in the released app)
+docs/             architecture, setup, deployment, AI, voice
+legal/            privacy policy, terms, AI transparency, ... (templates)
+test/             ~540 unit and widget tests; tool/ has previews and screenshot rendering
 ```
 
-## Run it locally
+Layers depend downward only: `features → domain ← data`. An LLM never controls review dates or touches the database; the learning engine is deterministic and tested.
+
+---
+
+## ✅ Prerequisites
+
+| Tool | For | Notes |
+| --- | --- | --- |
+| **Flutter** (stable, 3.47+) with Dart 3.5+ | everything | `flutter doctor` should be green for your target |
+| **Android Studio** + Android SDK 35 | Android | accept licences: `flutter doctor --android-licenses` |
+| **Xcode** + CocoaPods | iOS and macOS | a free Apple ID is enough for simulators; a paid team for devices and release |
+| **Chrome** | web | |
+| **Firebase CLI** (`npm i -g firebase-tools`) and a Firebase project | real sign-in and sync | not needed for the preview mode below |
+| **Python 3.10+** | scripts (course validation, legal checks, icons, Lottie) | Pillow for icons |
+| **Node 18+** | Firestore rules tests only | |
+| *Optional:* Ollama | the developer AI gateway | |
+
+---
+
+## 🛠 Installation
 
 ```bash
+git clone https://github.com/Sripathiyadav/Sprichst.git
+cd Sprichst
 flutter pub get
-flutter run -d chrome
 ```
 
-The real app signs in with Google, so it needs your Firebase project's `lib/firebase_options.dart` (git-ignored; create it with `flutterfire configure`, see [docs/SETUP.md](docs/SETUP.md)). If Firebase cannot start, the app says so instead of showing a blank screen. To try every screen with no Firebase and no AI server, use the preview below.
+### Fastest: preview with no Firebase, no AI
 
-## AI: the phone, or your own AI key (no server)
-
-Sprichst has no AI server of its own and needs none. The tutor either runs on the phone (see [docs/on-device-ai.md](docs/on-device-ai.md)) or, if the learner adds their own API key from any supported platform in Account → AI & voice (Groq, Google Gemini, OpenAI, Anthropic Claude, xAI Grok, Mistral, DeepSeek, OpenRouter, or any server that speaks the OpenAI chat API), calls that provider directly from the app. Each provider keeps its own key and model, and the learner can type any model id. When the provider's allowance runs out, the key is rejected or the app is offline, the learner is asked whether to continue on the phone; nothing switches silently. The key lives in the device's secure storage and is never synced. The full reasoning and quotas are in [docs/zero-cost-architecture.md](docs/zero-cost-architecture.md).
-
-## Developer gateway (optional, not part of the released app)
-
-`ai-server/` is a FastAPI gateway kept for development and experiments (for example trying Ollama models on a Mac). Debug builds, and anyone who types an address in Account → AI & voice, can use it; released builds ignore it.
+`tool/preview_main.dart` runs the real app with a fake signed-in learner and seeded progress.
 
 ```bash
-ollama pull qwen2.5:0.5b-instruct
-ollama serve
-cd ai-server
-python3 -m venv .venv
-source .venv/bin/activate
+flutter run -t tool/preview_main.dart -d chrome
+```
+
+### The real app (Google sign-in + sync)
+
+1. Create a Firebase project, enable **Google** sign-in and **Firestore**.
+2. `dart pub global activate flutterfire_cli && flutterfire configure` writes `lib/firebase_options.dart` (git-ignored, on purpose).
+3. **Android:** register your debug SHA-1 (`firebase apps:android:sha:create <appId> <sha1>`) and download `google-services.json` into `android/app/`.
+4. **iOS:** put `GoogleService-Info.plist` in `ios/Runner/`; the URL scheme in `Info.plist` must match its `REVERSED_CLIENT_ID`. Keychain Sharing is already set in `Runner.entitlements`.
+5. Deploy the rules: `cd firebase && firebase deploy --only firestore:rules,storage`.
+6. Run: `flutter run` (pick a device), or `flutter run -d chrome`.
+
+Full click-by-click guide: [docs/SETUP.md](docs/SETUP.md).
+
+### Use an AI coach
+
+* **On the phone:** Account → AI & voice → *Models on this phone* → download once (use Wi-Fi), then it works offline.
+* **Your own key:** Account → AI & voice → *My own AI key* → choose a provider, paste the key, *Save and test*. Free tiers exist at Groq, Gemini and OpenRouter.
+
+### Build
+
+```bash
+flutter build web --release            # then: firebase deploy --only hosting
+flutter build appbundle --release      # Android (see docs/DEPLOYMENT.md for signing)
+flutter build ipa --release            # iOS
+flutter build macos --release          # macOS (needs an Apple team for sign-in)
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+flutter analyze                                   # static analysis, must be clean
+flutter test                                      # ~540 unit + widget tests
+python3 scripts/validate_curriculum.py            # course content
+python3 scripts/check_legal_placeholders.py       # open [[PLACEHOLDER]] fields in legal/
+python3 scripts/generate_third_party_notices.py --check
+cd firebase && npm install && npm test            # Firestore security rules (emulator)
+SHOT_DIR=build/shots flutter test tool/screenshots_test.dart   # render screens to PNG
+```
+
+What the tests cover: the planner and spaced repetition, exercise evaluation, typing practice, every screen at five sizes and up to 2× text, accessibility (contrast, targets, screen-reader labels), security (no secrets or tracking hosts in the repo, `security_audit_test`, `privacy_audit_test`), cloud-AI request shapes for every provider, and the sign-in and refresh flows.
+
+**CI:** every pull request runs analyze, tests, notices, course validation, a web build and an Android release build ([.github/workflows/ci.yml](.github/workflows/ci.yml)). The real Firebase files are not in Git, so CI writes placeholders with `scripts/ci_firebase_stub.py`.
+
+Last verified on web, Android, iOS (simulator) and macOS: see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+---
+
+## 🚀 Next steps
+
+The full plan is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**. In short:
+
+1. 🏷 **Replace the placeholder app id** (`com.example.sprichst`): both stores reject it.
+2. ⚖️ **Fill the legal fields** (`[[SUPPORT_EMAIL]]`, supervisory authority, VAT id, …) and have the terms reviewed.
+3. 🔑 **Create signing keys** (Android upload key; Apple Developer account for iOS and macOS).
+4. 🌐 **Ship the web build** to Firebase Hosting for friends-and-family testing.
+5. 🤖 **Android closed test** (12 testers, 14 days) and **TestFlight**, then public launch.
+6. 💡 **Ideas after launch:** XP and a daily quest for writing practice, typing speed over time, more B1/B2 lessons, a Windows build, a translated app interface.
+
+---
+
+## 🔐 Privacy, security and legal
+
+* No analytics, no ads, no third-party requests from the web app (fonts and SDKs are bundled).
+* API keys live only in the device's secure storage and are never synced, logged or put in the profile.
+* Firestore rules let a signed-in user touch only their own documents and validate every field.
+* The [legal/](legal/README.md) folder holds the privacy policy, terms, AI transparency, cookies, your rights, impressum and more. They are **templates, not legal advice**.
+
+Report a vulnerability: see [SECURITY.md](SECURITY.md).
+
+---
+
+## 🧩 More documentation
+
+| Doc | About |
+| --- | --- |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | test results, blockers, release steps, running costs, next moves |
+| [docs/SETUP.md](docs/SETUP.md) | Firebase and platform setup, click by click |
+| [docs/architecture.md](docs/architecture.md) | layers and data flow |
+| [docs/learning-design.md](docs/learning-design.md) | why the learning engine works the way it does |
+| [docs/on-device-ai.md](docs/on-device-ai.md) | local models, sizes, offline behaviour |
+| [docs/zero-cost-architecture.md](docs/zero-cost-architecture.md) | bring-your-own-key AI, free quotas |
+| [docs/voice.md](docs/voice.md) | voice mode and speech |
+| [assets/lottie/README.md](assets/lottie/README.md) | the animations |
+
+<details>
+<summary><b>Developer AI gateway (optional, not part of the released app)</b></summary>
+
+`ai-server/` is a FastAPI gateway kept for experiments (for example trying Ollama models on a Mac). Debug builds, and anyone who types an address in Account → AI & voice, can use it; released builds ignore it.
+
+```bash
+ollama pull qwen2.5:0.5b-instruct && ollama serve
+cd ai-server && python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000     # check http://127.0.0.1:8000/health
 ```
 
-Check `http://127.0.0.1:8000/health`. To use the gateway from a real phone, start it with `./run.sh` instead and enter the address it prints in Account → AI & voice → Developer AI server.
+Voices (Piper, open source): `pip install -r requirements-voices.txt && python3 scripts/download_voices.py`. See [docs/voice.md](docs/voice.md). Keep the gateway behind authentication and HTTPS if you ever expose it.
 
-### Voices (open-source, optional)
+</details>
 
-The tutor speaks with [Piper](https://github.com/OHF-Voice/piper1-gpl) voices that run on your own machine. Without them the gateway uses the macOS voice, so voice features still work.
+---
 
-```bash
-cd ai-server
-pip install -r requirements-voices.txt            # the Piper engine
-python3 scripts/download_voices.py                # Thorsten (recommended, CC0)
-python3 scripts/download_voices.py --all          # every voice in the catalogue
-```
+## 📬 Contact
 
-Voices are saved to `~/.sprichst/voices` (set `PIPER_VOICES_DIR` to change it). Learners pick a voice, hear a preview and set the speed under Account → AI & voice; a voice that is not installed falls back to the best one that is. See [docs/voice.md](docs/voice.md) for the catalogue, licences and how hands-free voice mode works. Before connecting a mobile device or exposing the service, read [docs/SETUP.md](docs/SETUP.md): the gateway must remain behind authentication and HTTPS.
+**Sripathi** · maker of Sprichst
 
-## Preview the app without signing in
+* 🐙 GitHub: [@Sripathiyadav](https://github.com/Sripathiyadav)
+* ✉️ Email: [sripathiyadav66@gmail.com](mailto:sripathiyadav66@gmail.com)
+* 🐞 Bugs and ideas: [open an issue](https://github.com/Sripathiyadav/Sprichst/issues)
 
-`tool/preview_main.dart` runs the real app with a fake signed-in learner and seeded progress, so you can inspect every screen (and light/dark mode) without Google sign-in or Firebase:
-
-```bash
-flutter run -t tool/preview_main.dart
-# or preview a look:
-flutter run -t tool/preview_main.dart \
-  --dart-define=PREVIEW_APPEARANCE=dark --dart-define=PREVIEW_STYLE=glass --dart-define=PREVIEW_INTENSITY=80
-```
-
-To review the design without a device, render the main screens (light and dark, phone and wide) to PNG files: `SHOT_DIR=build/shots flutter test tool/screenshots_test.dart`.
-
-## Design
-
-The look is the Sprichst design system (a published design-system artifact: brand book, tokens, components). The interface borrows from a well-set e-reader: warm paper, charcoal panels, one coral shape and large, quiet numbers. Each screen has one next step, and the one number that matters is set large.
-
-- **Tokens** are in `lib/app/theme/color_system.dart` (`SprichstTokens`, light and dark, read with `context.tokens`) and `lib/app/theme/app_theme.dart` (the type scale, spacing, radii, component themes). Dark is designed on its own: the canvas is never pure black, coral is muted a step, and the primary action turns coral. `test/theme_contrast_test.dart` holds every documented text and control pair to WCAG AA in both themes.
-- **Type** is Figtree, bundled (SIL OFL) so no font is fetched from a CDN; Roboto is the fallback. Light numerals and medium headings carry the look; nothing is smaller than 13px and the system text size always applies.
-- **Components** (`lib/shared/widgets/`): `Masthead`/`MastheadBar` (ink rule, wordmark row, hairline), `FeaturePanel` (the one charcoal panel per screen), `EditorialNumber` (the hero number on its coral disc), `PrimaryButton` (charcoal with a coral arrow; coral in dark), `OptionTile` (answers and choices: icon and word for correct and incorrect), `FeedbackBanner`, `StateMessage` (loading, empty, error, offline), `WeekActivity`, `LevelBadge`, `DsChip`, `Geometry` (decoration only, hidden from screen readers) and the `Wordmark`/`AppIcon` brand marks.
-- **Rules the code keeps**: one primary action or one panel per screen; status never by colour alone; interface in English, German text marked as German for screen readers; no exclamation marks in interface copy; honest data only (no placeholder numbers, empty states instead of zeros); every control at least 48px; reduced motion makes durations zero and stops the loading arc.
-- **Liquid Glass is retired.** It belonged to the previous look; every learner now gets the flat paper-and-panel surfaces. The old glass code remains in `lib/app/theme/glass_theme.dart` and `lib/shared/widgets/glass.dart`, switched off.
-- **Icons**: the orbit mark from the design system is in `assets/brand/`; `python3 scripts/make_app_icons.py` writes the iOS (light and dark), macOS, Android (adaptive and themed), web and Windows icons from it.
-- **Review the design** without a device: `SHOT_DIR=build/shots flutter test tool/screenshots_test.dart` renders the main screens in light and dark.
-
-## Important implementation boundary
-
-Firebase/Google sign-in is intentionally not silently enabled in this ZIP because it needs your Firebase project identifiers, platform bundle IDs, Google OAuth consent configuration, and the generated `firebase_options.dart` file. The complete click-by-click finishing guide is in [docs/SETUP.md](docs/SETUP.md).
-
-Course content belongs in `curriculum/course.json`; user progress belongs under `users/{uid}/...`; an LLM never controls review dates or has unrestricted database access.
-
-## Legal, privacy and security
-
-The [legal/](legal/README.md) folder holds the Privacy Policy, Terms, Disclaimer, AI Transparency notice, Cookies and Storage notice, Your Rights, Copyright and Takedown (with the DMCA agent details), Impressum, Accessibility statement, Security summary and generated Third-Party Notices, plus internal compliance records. They are templates, not legal advice: fill the `[[PLACEHOLDER]]` fields (`python3 scripts/check_legal_placeholders.py`) and have a lawyer review them before launch. The user-facing documents are bundled and shown in the app under Account → Legal.
-
-What the build guarantees (each is enforced by tests):
-
-- **No third-party requests from the web app.** Fonts (Roboto), the renderer and the Firebase SDK are bundled; no Google Fonts, CDN, analytics or session replay. See `legal/internal/privacy-audit.md`.
-- **No secrets in the frontend.** AI-provider keys live only in `ai-server/.env`.
-- **Row-level security.** Firestore rules let a signed-in user touch only their own documents and validate every field. `cd firebase && npm install && npm test`.
-- **Validated inputs** in the app and in the AI server, with rate limiting and optional Firebase sign-in checks.
-- **No raw SQL.** There is no SQL database; tests fail if one is introduced.
-
-See [SECURITY.md](SECURITY.md) to report a vulnerability.
-
-## Account and privacy controls
-
-Account preferences are stored with the learner profile. The AI and voice controls are preferences only: they choose where the tutor answers (this phone, or the learner's own AI account). The API key is never part of the profile; it stays in the device's secure storage. The privacy screen describes the real data paths.
-
-Reset learning progress removes completed lessons, reviews, XP, and streaks while retaining the account and preferences. Delete account asks the user to reauthenticate, removes the current Firestore learning documents, then deletes the Firebase Authentication account.
+Viel Spaß beim Lernen! 🎉

@@ -123,6 +123,23 @@ void main() {
       await _shot(tester, '$mode-onboarding-goal');
     });
 
+    testWidgets('writing practice, $mode', (tester) async {
+      await pumpSprichst(tester,
+          size: const Size(390, 844),
+          brightness: brightness,
+          repository: InMemoryLearningRepository(_learner()));
+      await tester.dragUntilVisible(find.byKey(const ValueKey('home-writing')),
+          find.byType(ListView).first, const Offset(0, -200));
+      await tester.ensureVisible(find.byKey(const ValueKey('home-writing')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('home-writing')));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+          find.byKey(const ValueKey('typing-field')), 'Ich bi');
+      await tester.pump();
+      await _shot(tester, '$mode-writing');
+    });
+
     testWidgets('study screens, $mode', (tester) async {
       await pumpSprichst(tester,
           size: const Size(390, 844),
