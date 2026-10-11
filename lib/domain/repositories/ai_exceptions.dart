@@ -9,6 +9,12 @@ enum ProviderProblem {
   /// The account's limit was reached; trying again later works.
   rateLimited,
 
+  /// The account has no credit left (a paid provider); waiting will not help.
+  noCredit,
+
+  /// The provider does not offer the chosen model (renamed or retired).
+  unknownModel,
+
   /// The device could not reach the provider.
   offline,
 
@@ -16,7 +22,8 @@ enum ProviderProblem {
   unavailable,
 }
 
-/// A cloud AI provider (Groq, with the learner's own key) could not answer.
+/// A cloud AI provider (Groq, Gemini, OpenAI…, with the learner's own key)
+/// could not answer.
 ///
 /// The app never answers from somewhere else instead without asking: text
 /// leaving the device, or staying on it, is the learner's choice. The message
@@ -37,16 +44,22 @@ class ProviderUnavailableException implements Exception {
   /// Whether answering on the phone instead is a sensible offer: the problem
   /// is the provider's, not something the learner has to fix first.
   bool get canOfferPhone =>
-      problem != ProviderProblem.noKey && problem != ProviderProblem.invalidKey;
+      problem != ProviderProblem.noKey &&
+      problem != ProviderProblem.invalidKey &&
+      problem != ProviderProblem.unknownModel;
 
   String get userMessage => switch (problem) {
         ProviderProblem.noKey =>
-          'Add your free $provider key in Account → AI & voice to use $provider, or choose "This phone only".',
+          'Add your $provider key in Account → AI & voice to use $provider, or choose "This phone only".',
         ProviderProblem.invalidKey =>
           '$provider did not accept your key. Check it in Account → AI & voice, or create a new one.',
         ProviderProblem.rateLimited => retryAfter == null
             ? 'You have reached your $provider limit for now. It resets on its own; you can wait or answer on this phone.'
             : 'You have reached your $provider limit for now. Try again in ${_wait(retryAfter!)}, or answer on this phone.',
+        ProviderProblem.noCredit =>
+          'Your $provider account has no credit left. Add credit with $provider, choose another provider in Account → AI & voice, or answer on this phone.',
+        ProviderProblem.unknownModel =>
+          '$provider does not offer the model you chose. Pick another one in Account → AI & voice.',
         ProviderProblem.offline =>
           'Could not reach $provider. Check your internet connection, or answer on this phone.',
         ProviderProblem.unavailable =>
@@ -61,6 +74,18 @@ class ProviderUnavailableException implements Exception {
 
   @override
   String toString() => userMessage;
+}
+
+/// The learner's provider has no speech recognition, and this device cannot
+/// run Whisper itself (a browser).
+class HearingUnavailableException implements Exception {
+  const HearingUnavailableException(this.provider);
+
+  final String provider;
+
+  @override
+  String toString() =>
+      '$provider cannot listen to recordings. Type your message, choose Groq or OpenAI in Account → AI & voice, or use the Sprichst phone app.';
 }
 
 /// Speaking needs the phone's voices (or a developer server); a browser has

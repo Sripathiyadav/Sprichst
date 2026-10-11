@@ -23,25 +23,30 @@ Future<T> runOnPhone<T>(Future<T> Function() body) =>
 /// [AIProviderPreference]:
 ///
 /// * automatic: the phone first. Only for what is not downloaded does it use
-///   the learner's own Groq key (or, for developers, the AI server).
-/// * groq: Groq first. If Groq cannot answer (limit reached, offline, bad key)
-///   the learner is told and offered the phone; nothing is sent anywhere else
-///   without their say-so.
+///   the learner's own cloud key (or, for developers, the AI server).
+/// * cloud: the learner's provider (Groq, Gemini, OpenAI…) first. If it cannot
+///   answer (limit reached, offline, bad key) the learner is told and offered
+///   the phone; nothing is sent anywhere else without their say-so.
 /// * local: the phone only. Nothing leaves the device.
 ///
-/// Groq has no German voice, so speaking is always the phone's (or the
+/// Speech recognition goes to the provider only if it has one; otherwise the
+/// phone's Whisper hears the learner. Speaking is always the phone's (or the
 /// developer server's, in a browser where models cannot run).
 class HybridAIRepository implements AIRepository {
   HybridAIRepository({
     required this.onDevice,
     required this.server,
     required this.models,
-    this.groq,
-    bool Function()? groqAvailable,
+    this.cloud,
+    bool Function()? cloudAvailable,
+    bool Function()? cloudCanTranscribe,
+    String Function()? providerName,
     bool Function()? serverEnabled,
     AIProviderPreference Function()? preference,
   })  : preference = preference ?? _automatic,
-        _groqAvailable = groqAvailable ?? (() => groq != null),
+        _cloudAvailable = cloudAvailable ?? (() => cloud != null),
+        _cloudCanTranscribe = cloudCanTranscribe ?? (() => true),
+        _providerName = providerName ?? (() => 'your AI provider'),
         _serverEnabled = serverEnabled ?? (() => true);
 
   static AIProviderPreference _automatic() => AIProviderPreference.automatic;
@@ -51,10 +56,11 @@ class HybridAIRepository implements AIRepository {
   /// The developer AI server (`ai-server/`). Not part of the shipped path.
   final AIRepository server;
 
-  /// The learner's own Groq account, when there is a key.
-  final AIRepository? groq;
+  /// The learner's own cloud account, when there is a key.
+  final AIRepository? cloud;
   final ModelManager models;
-  final bool Function() _groqAvailable;
+  final bool Function() _cloudAvailable;
+  final bool Function() _cloudCanTranscribe;
   final bool Function() _serverEnabled;
 
   /// The learner's choice. Set by the app once the profile is available; a
@@ -62,32 +68,43 @@ class HybridAIRepository implements AIRepository {
   /// on this repository.
   AIProviderPreference Function() preference;
 
-  static const _noKey =
-      ProviderUnavailableException('Groq', ProviderProblem.noKey);
+  /// The chosen provider's name, for "add your key" messages.
+  final String Function() _providerName;
 
-  bool get _hasGroq => groq != null && _groqAvailable();
+  ProviderUnavailableException get _noKey =>
+      ProviderUnavailableException(_providerName(), ProviderProblem.noKey);
 
-  /// Text, corrections and speech recognition.
-  Future<T> _text<T>(Future<T> Function(AIRepository repo) call) async {
+  bool get _hasCloud => cloud != null && _cloudAvailable();
+
+  /// Text, corrections and speech recognition. [hearing] marks speech
+  /// recognition, which stays on the phone when the provider cannot do it.
+  Future<T> _text<T>(Future<T> Function(AIRepository repo) call,
+      {bool hearing = false}) async {
     await models.ensureLoaded();
     if (Zone.current[_routeKey] == AiRoute.phone) return call(onDevice);
 
     final pref = preference();
 
     // A browser cannot run models: the cloud is the only place to answer.
-    if (!models.isSupported) return _cloud(call);
+    if (!models.isSupported) return _cloud(call, hearing: hearing);
+
+    // The provider cannot hear: the phone's Whisper does, whatever the mode.
+    if (hearing && pref != AIProviderPreference.local && _hasCloud &&
+        !_cloudCanTranscribe()) {
+      return call(onDevice);
+    }
 
     switch (pref) {
       case AIProviderPreference.local:
         return call(onDevice);
-      case AIProviderPreference.groq:
-        if (!_hasGroq) throw _noKey;
-        return call(groq!); // a failure reaches the learner; no silent switch
+      case AIProviderPreference.cloud:
+        if (!_hasCloud) throw _noKey;
+        return call(cloud!); // a failure reaches the learner; no silent switch
       case AIProviderPreference.automatic:
         try {
           return await call(onDevice);
         } on ModelNotInstalledException {
-          if (_hasGroq) return call(groq!);
+          if (_hasCloud) return call(cloud!);
           if (_serverEnabled()) {
             try {
               return await call(server);
@@ -100,9 +117,12 @@ class HybridAIRepository implements AIRepository {
     }
   }
 
-  Future<T> _cloud<T>(Future<T> Function(AIRepository repo) call) {
-    if (_hasGroq) return call(groq!);
+  Future<T> _cloud<T>(Future<T> Function(AIRepository repo) call,
+      {bool hearing = false}) {
+    final cloudCanHear = !hearing || _cloudCanTranscribe();
+    if (_hasCloud && cloudCanHear) return call(cloud!);
     if (_serverEnabled()) return call(server);
+    if (_hasCloud) throw HearingUnavailableException(_providerName());
     throw _noKey;
   }
 
@@ -137,7 +157,7 @@ class HybridAIRepository implements AIRepository {
   @override
   Future<TranscriptionResult> transcribeAudio(
           AudioCapture audio, TutorContext context) =>
-      _text((r) => r.transcribeAudio(audio, context));
+      _text((r) => r.transcribeAudio(audio, context), hearing: true);
 
   @override
   Future<SpeechAudio> synthesizeSpeech(String text, TutorContext context,

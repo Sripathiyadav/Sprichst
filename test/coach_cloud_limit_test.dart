@@ -36,7 +36,7 @@ void main() {
     final repository = InMemoryLearningRepository(
       LearningProfile.newLearner(
               nativeLanguage: 'English', currentLevel: CefrLevel.a1)
-          .copyWith(aiProviderPreference: AIProviderPreference.groq),
+          .copyWith(aiProviderPreference: AIProviderPreference.cloud),
     );
 
     await pumpSprichst(
@@ -51,8 +51,8 @@ void main() {
           return HybridAIRepository(
             onDevice: OnDeviceAIRepository(models),
             server: MockAIRepository(),
-            groq: groq,
-            groqAvailable: () => true,
+            cloud: groq,
+            cloudAvailable: () => true,
             serverEnabled: () => false,
             models: models,
           );

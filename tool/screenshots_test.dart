@@ -184,7 +184,7 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
 
-      // AI & voice, with the Groq section.
+      // AI & voice, with the AI provider section.
       await tester.tap(find.text('More').last);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Account').first);

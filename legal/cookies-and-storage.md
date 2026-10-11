@@ -10,8 +10,8 @@ We follow the ePrivacy rules (in Germany § 25 TDDDG) and equivalents elsewhere.
 |---|---|---|---|
 | Sign-in session (Firebase Authentication) | Browser IndexedDB or the phone's secure storage | Keeps you signed in | Until you sign out |
 | Learning profile cache and settings | Browser local storage / app storage | Lets the app work offline and fast | Until you reset, sign out and clear, or uninstall |
-| Groq API key (only if you add one) | Secure storage (Keychain / Android Keystore; the browser's protected storage on the web) | Lets the app call Groq as you | Until you remove it |
-| Groq model choice | Local storage | Remembers which model you picked | Until you change it |
+| AI provider API key, one per provider (only if you add one) | Secure storage (Keychain / Android Keystore; the browser's protected storage on the web) | Lets the app call your chosen AI provider as you | Until you remove it |
+| AI provider, model and custom server address (not secret) | Local storage | Remembers which provider and model you picked | Until you change it |
 | Downloaded AI models and voices (phone app) | App storage | Offline tutor and speech | Until you delete them |
 | Service worker and its cache (web) | Browser cache | Loads the web app faster and offline | Until updated or cleared |
 

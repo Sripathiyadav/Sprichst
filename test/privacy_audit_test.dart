@@ -156,7 +156,11 @@ void main() {
     const allowedHosts = {
       'huggingface.co', // on-device model downloads the learner asks for
       'github.com', // on-device speech model downloads the learner asks for
-      'api.groq.com', // the learner's own Groq account, with their own key
+      // The AI accounts the learner can bring their own key for; the app calls
+      // one of them only when the learner has saved a key for it.
+      'api.groq.com', 'generativelanguage.googleapis.com', 'api.openai.com',
+      'api.anthropic.com', 'api.x.ai', 'api.mistral.ai', 'api.deepseek.com',
+      'openrouter.ai',
       '127.0.0.1', 'localhost', '10.0.2.2', '192.168.1.20', // development
       'developer.android.com', // comments
     };
