@@ -694,28 +694,12 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
     return SettingsPage(
       title: 'AI & voice',
       subtitle:
-          'The coach runs on this phone once its models are downloaded, so it works without internet. You can also connect your own free Groq account for faster, more accurate answers.',
+          'Choose where your tutor answers: on this phone, or on your own free Groq account.',
       children: [
-        SettingsSection(
-          title: 'On-device AI',
-          children: [
-            SettingsTile(
-              icon: Icons.offline_bolt_outlined,
-              title: 'Models on this phone',
-              subtitle: _onDeviceSummary(ref),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (_) => const OnDeviceAIPage())),
-            ),
-          ],
-        ),
-        const GroqKeySection(),
-        // Only for developers: a debug build, or someone who set an address.
-        if (kDebugMode || ref.watch(aiServerSettingsProvider).isCustom)
-          const AiServerSection(),
         SettingsSection(
           title: 'Where the tutor runs',
           description:
-              'Automatic is recommended: private and offline, with your own Groq key filling in for anything not downloaded. Nothing is ever sent to Groq unless you added a key.',
+              'Automatic is recommended: private and offline. Nothing is sent to Groq unless you added a key.',
           children: [
             for (final provider in AIProviderPreference.values)
               RadioListTile<AIProviderPreference>(
@@ -731,6 +715,19 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
               ),
           ],
         ),
+        SettingsSection(
+          title: 'On-device AI',
+          children: [
+            SettingsTile(
+              icon: Icons.offline_bolt_outlined,
+              title: 'Models on this phone',
+              subtitle: _onDeviceSummary(ref),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => const OnDeviceAIPage())),
+            ),
+          ],
+        ),
+        const GroqKeySection(),
         SettingsSection(
           title: 'Voice',
           children: [
@@ -807,6 +804,9 @@ class _AIAndVoicePageState extends ConsumerState<_AIAndVoicePage> {
               ),
           ],
         ),
+        // Only for developers: a debug build, or someone who set an address.
+        if (kDebugMode || ref.watch(aiServerSettingsProvider).isCustom)
+          const AiServerSection(),
       ],
     );
   }

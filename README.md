@@ -90,6 +90,8 @@ flutter run -t tool/preview_main.dart \
   --dart-define=PREVIEW_APPEARANCE=dark --dart-define=PREVIEW_STYLE=glass --dart-define=PREVIEW_INTENSITY=80
 ```
 
+To review the design without a device, render the main screens (light and dark, phone and wide) to PNG files: `SHOT_DIR=build/shots flutter test tool/screenshots_test.dart`.
+
 ## Design
 
 **Colour.** The brand is the German flag: black `#000000`, red `#DD0000`, gold `#FFCE00`. The palette is built from colour theory in HCT (hue, chroma, tone) in `lib/app/theme/color_system.dart`: neutrals are tinted with the gold hue so greys feel warm, foreground tones are derived from their background to hit WCAG contrast instead of being hand-picked, and roughly 60% of a screen is neutral surface, 30% ink and containers, 10% accent. Light mode is white with a black primary action and red accent; dark mode is flag-black with a gold primary action. Gold marks correct answers and achievements, red marks mistakes, and every state also carries an icon and a word. Tests enforce AA contrast, tone derivation, brand fidelity, and colour-blind safety (protan, deutan, tritan simulation).
