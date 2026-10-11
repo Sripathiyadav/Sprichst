@@ -11,6 +11,7 @@ import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/ai_exceptions.dart';
 import '../../shared/input_rules.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../../shared/widgets/lottie_view.dart';
 import '../account/account_view.dart' show AIAndVoicePage;
 import '../account/on_device_ai_page.dart';
 import 'services/audio_player_service.dart';
@@ -165,14 +166,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                             ? null
                             : _send,
                         icon: _sending || _transcribing
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: t.ink,
-                                ),
-                              )
+                            ? const SprichstLottie('coach_thinking',
+                                width: 28, height: 14, repeat: true)
                             : const Icon(Icons.send),
                       ),
                     ],

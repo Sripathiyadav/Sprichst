@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
 import 'geometry.dart';
+import 'lottie_view.dart';
 
 /// Duration for [AppMotion.quick], [AppMotion.standard] and
 /// [AppMotion.emphasis] that respects the system's reduce-motion setting.
@@ -473,6 +474,14 @@ class StateMessage extends StatelessWidget {
         StateKind.loading => Icons.hourglass_empty,
       };
 
+  /// The drawn, animated version of the state; loading keeps the progress arc.
+  String? get _animation => switch (kind) {
+        StateKind.empty => 'empty_state',
+        StateKind.error => 'error_state',
+        StateKind.offline => 'offline_state',
+        StateKind.loading => null,
+      };
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -486,38 +495,41 @@ class StateMessage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 96,
-              height: 96,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Geometry(shape: GeometryShape.ring, size: 96),
-                  const Positioned(
-                      right: 6,
-                      top: 6,
-                      child: Geometry(
-                          shape: GeometryShape.disc,
-                          size: 28,
-                          tone: GeometryTone.coral)),
-                  if (kind == StateKind.loading)
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: CircularProgressIndicator(
-                        // Under reduced motion the arc stays still; the words
-                        // beside it say what is happening.
-                        value: still ? .3 : null,
-                        strokeWidth: 3,
-                        color: t.accent,
-                        backgroundColor: t.surfaceSunken,
-                      ),
-                    )
-                  else
-                    Icon(_icon, size: 32, color: t.ink),
-                ],
+            if (_animation != null)
+              SprichstLottie(_animation!, width: 96, height: 96)
+            else
+              SizedBox(
+                width: 96,
+                height: 96,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Geometry(shape: GeometryShape.ring, size: 96),
+                    const Positioned(
+                        right: 6,
+                        top: 6,
+                        child: Geometry(
+                            shape: GeometryShape.disc,
+                            size: 28,
+                            tone: GeometryTone.coral)),
+                    if (kind == StateKind.loading)
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          // Under reduced motion the arc stays still; the words
+                          // beside it say what is happening.
+                          value: still ? .3 : null,
+                          strokeWidth: 3,
+                          color: t.accent,
+                          backgroundColor: t.surfaceSunken,
+                        ),
+                      )
+                    else
+                      Icon(_icon, size: 32, color: t.ink),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: AppSpacing.lg),
             Text(title,
                 textAlign: TextAlign.center, style: theme.textTheme.titleLarge),

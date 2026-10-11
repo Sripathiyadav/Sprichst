@@ -28,6 +28,7 @@ class PracticeSessionView extends ConsumerStatefulWidget {
 class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
   List<ExerciseResult>? _results;
   var _xpEarned = 0;
+  var _streakDays = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +59,7 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
                                 .length,
                             total: results.where((r) => !r.isRetry).length,
                             xpEarned: _xpEarned,
+                            streakDays: _streakDays,
                           ),
                         ),
                         FilledButton(
@@ -75,10 +77,13 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
 
   Future<void> _finish(List<ExerciseResult> results) async {
     try {
-      final outcome =
-          await ref.read(appControllerProvider).completePractice(results);
+      final app = ref.read(appControllerProvider);
+      final streakBefore = app.profile?.streakAt(DateTime.now()) ?? 0;
+      final outcome = await app.completePractice(results);
       if (!mounted) return;
+      final streakAfter = app.profile?.streakAt(DateTime.now()) ?? 0;
       setState(() {
+        _streakDays = streakAfter > streakBefore ? streakAfter : 0;
         _results = results;
         _xpEarned = outcome.xpEarned;
       });

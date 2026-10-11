@@ -3,7 +3,7 @@
 usage: gen_lottie.py <out dir>
 Writes <name>_light.json and <name>_dark.json for every animation. Backgrounds are transparent.
 """
-import json, math, os, sys
+import json, math, os, re, sys
 
 OUT = sys.argv[1]
 FPS = 60
@@ -146,47 +146,35 @@ def star(cx, cy, r_out, r_in, n=5):
     return shape(pts, closed=True)
 
 # ---------------------------------------------------------------- animations
+# The orbit mark (same geometry as the design system's AppIcon): the S body, three hairline orbit segments, the disc.
+ORBIT_S = 'M725 327l-5-9-4-8-4-8-5-7-4-7-4-6-5-6-5-6-4-5-5-5-5-5-5-5-6-4-5-5-6-4-6-4-6-4-7-3-6-3-7-4-6-3-7-3-7-3-8-2-7-2-8-2-8-1-8-1-8-1-8 0-8 0-8 0-8 1-9 1-8 1-8 2-8 2-8 3-8 2-8 4-8 3-8 4-8 4-8 5-7 4-8 5-7 6-8 5-7 6-6 6-7 7-8 5-7 6-7 6-8 6-7 7-6 7-7 7-6 7-6 8-6 8-6 8-4 9-5 9-3 10-3 10-2 11 0 11 1 11 3 11 3 11 6 10 7 9 7 9 8 8 8 7 10 6 9 6 10 5 10 6 10 4 10 5 11 5 11 4 11 4 11 4 11 4 11 5 11 3 11 4 11 4 11 4 11 4 10 4 10 4 10 4 9 5 9 4 8 4 8 4 7 5 7 4 5 4 5 4 4 4 4 3 2 4 3 3 2 2 1 2 2 2 2 3 2 3 1 3 2 4 1 5 0 6-1 5-1 7-2 6-3 7-3 6-3 7-5 7-4 7-5 6-5 7-5 6-6 6-7 4-7 5-7 4-6 4-8 4-6 3-7 3-7 4-7 3-7 2-7 3-7 2-7 2-6 2-7 2-7 2-6 1-7 1-7 1-6 1-7 0-6 1-7 0-6 0-6 0-7-1-6 0-6-1-7-1-6-1-7-2-6-1-6-2-6-2-6-2-6-2-6-3-5-2-6-4-5-3-5-3-5-4-5-4-6-5-4-5-5-5-5-5-4-7-5-7-5-8-4-8-8 4 4 9 5 8 4 8 4 7 4 7 5 6 4 6 5 6 5 5 5 5 5 5 5 5 5 4 6 5 6 4 5 4 7 4 6 3 7 3 6 4 6 3 7 3 8 3 7 2 8 2 7 2 8 1 8 1 8 1 8 0 8 0 8 0 9-1 8-1 8-1 9-2 8-2 8-3 8-2 8-4 8-3 8-4 8-4 7-5 8-4 7-5 8-6 7-5 7-6 7-6 7-7 7-5 8-6 7-6 7-6 7-7 7-7 7-7 6-7 6-8 6-8 5-8 5-9 4-9 4-10 3-10 1-11 1-11-1-11-3-11-4-11-5-10-7-9-7-9-8-8-9-7-9-6-9-6-10-5-10-6-11-4-10-5-11-5-11-4-10-4-11-4-12-4-11-5-11-3-11-4-11-4-11-4-10-4-11-4-10-4-9-4-9-5-10-4-8-4-8-4-7-5-6-4-6-4-5-4-4-4-3-3-3-4-2-3-2-2-2-2-2-2-2-3-1-3-2-3-1-4-1-5 0-6 0-5 2-7 2-6 2-7 3-6 4-7 4-7 4-7 5-6 5-7 6-6 6-6 6-4 7-5 7-4 7-4 7-4 7-3 7-3 7-4 7-3 6-2 8-3 6-2 7-2 7-2 7-2 7-2 6-1 7-1 6-1 7-1 6 0 7-1 6 0 7 0 6 0 6 1 6 0 7 1 6 1 6 1 7 2 6 1 7 2 5 2 6 2 6 2 6 3 5 2 6 4 5 3 6 3 5 4 5 4 5 5 5 5 5 5 4 5 5 7 4 7 5 8 4 8z'
+ORBIT_SEGMENTS = ['M725 327l3 8 3 8 3 8 2 8 2 9 3 9 2 8 1 9 1 9 1 9 1 9-9 1-1-9-1-9-1-9-2-8-1-9-2-8-2-8-3-8-2-8-3-8-4-7z', 'M736 536l-3 10-2 10-4 9-3 9-4 10-3 9-5 10-4 9-4 9-4 10-4 9-4 10-4 9-4 9-4 10-5 9-6 8-24-18 6-7 7-7 7-8 6-7 7-7 6-8 6-8 5-8 5-9 4-9 4-9 4-9 3-9 3-10 4-9 2-10 3-9z', 'M266 697l-4-8-2-8-3-8-3-8-2-9-2-9-2-8-1-9-2-9-1-9-1-9 0-10 0-9 0-10 0-9 1-10 0-9 1-10 2-10 1-9 2-10 2-10 2-9 3-10 3-10 3-9 4-9 3-10 4-9 4-10 4-9 4-9 5-10 3-9 5-10 3-9 4-9 5-10 5-9 6-8 23 18-6 7-7 7-6 8-7 7-7 7-6 8-5 8-6 8-4 9-5 9-3 9-4 9-4 9-3 10-3 9-3 10-2 9-3 9-2 10-2 9-1 10-2 9 0 10-1 9-1 9 0 9 0 10 0 9 0 9 1 9 1 9 1 9 2 8 2 9 2 8 2 8 2 8 3 8 3 8 3 7z']
+ORBIT_DISC = (741, 481, 39.8)
+
+def parse_poly(d):
+    """'M x y l dx dy ... z' (absolute move, relative lines) -> absolute vertices."""
+    nums = [float(n) for n in re.findall(r'-?\d+(?:\.\d+)?', d)]
+    x, y = nums[0], nums[1]
+    pts = [[x, y]]
+    for k in range(2, len(nums) - 1, 2):
+        x += nums[k]; y += nums[k + 1]
+        pts.append([x, y])
+    return pts
+
 def welcome_intro(c):
-    """The app mark assembles: sun, orbit, the S, the speech bubble, the book pages, the gate. 2.2 s."""
-    op = 132
-    KS = {'a': [570, 504, 0], 'p': [256, 260, 0], 's': [53, 53, 100]}   # icon space -> 512 canvas
-    S = join(arc(430, 392, 128, -14, -270), arc(430, 648, 128, -90, 118))
+    """The orbit mark assembles: the orbit swings in, the S is revealed from its centre, the disc lands on the orbit. 1.8 s."""
+    op = 108
+    KS = {'a': [512, 512, 0], 'p': [256, 256, 0], 's': [50, 50, 100]}   # icon space (1024) -> 512 canvas
+    cx, cy, r = ORBIT_DISC
     layers = []
-    # satellite ring
-    layers.append(layer(0, 'satellite', [group('sat', [ellipse(68, (834.7, 233.6)), fill(c['canvas']), stroke(c['coral'], 7)],
-                                                tr(p=(834.7, 233.6), a=(834.7, 233.6), s=anim([(96, [0, 0]), (110, [115, 115]), (118, [100, 100])])))], op, KS))
-    # bubble + dots
-    dots = [group(f'dot{j}', [ellipse(30, (x, 379)), fill(c['ink'])], tr(o=anim([(72 + 5 * j, 0), (80 + 5 * j, 100)]))) for j, x in enumerate((384, 430, 476))]
-    bubble = group('bubble', [rect(188, 130, 42, (430, 379)), shape([[436, 444], [372, 482], [392, 444]], closed=True), fill(c['canvas'])])
-    layers.append(layer(0, 'bubble', [group('bubble all', dots + [bubble], tr(p=(430, 390), a=(430, 390), s=anim([(54, [0, 0]), (68, [108, 108]), (74, [100, 100])])))], op, KS))
-    # pages fan out from the spine
-    spine = (392, 806)
-    leaves = [((196, 706), (208, 650), (214, 840), (300, 736), 'ink'), ((210, 642), (234, 592), (228, 796), (318, 694), 'coral'),
-              ((254, 594), (290, 560), (266, 764), (350, 668), 'surface'), ((318, 574), (358, 562), (318, 734), (382, 664), 'coral')]
-    items = []
-    for j, (t1, t2, ou, inn, col) in reversed(list(enumerate(leaves))):
-        st = 58 + 6 * j
-        items.append(group(f'leaf{j}', [quad_leaf(spine, t1, t2, ou, inn), stroke(c['ink'], 10), fill(c[col])],
-                           tr(p=spine, a=spine, r=anim([(st, -55), (st + 22, 0)]), o=anim([(st, 0), (st + 6, 100)]))))
-    layers.append(layer(0, 'pages', items, op, KS))
-    # the S: paper halo then ink stroke, drawn on
-    draw = anim([(18, 0), (62, 100)], 'in_out')
-    layers.append(layer(0, 'S', [group('S ink', [S, trim(draw), stroke(c['ink'], 124, cap=1)]),
-                                 group('S halo', [S, trim(draw), stroke(c['canvas'], 176, cap=1)])], op, KS))
-    # gate, clipped to the sun
-    gate_rects = [(590, 668, 300, 14), (614, 564, 20, 104), (648, 564, 20, 104), (682, 564, 20, 104), (746, 564, 20, 104),
-                  (780, 564, 20, 104), (814, 564, 20, 104), (600, 540, 262, 26), (658, 514, 146, 28), (691, 498, 80, 16),
-                  (694, 482, 9, 18), (712, 482, 9, 18), (742, 482, 9, 18), (760, 482, 9, 18), (727, 460, 8, 40)]
-    g_items = [rect(w, h, 0, (x + w / 2, y + h / 2)) for (x, y, w, h) in gate_rects]
-    g_items += [shape([[707, 454], [731, 466], [755, 454], [755, 464], [731, 476], [707, 464]], closed=True), ellipse(16, (731, 450)), fill(c['panel'])]
-    layers.append(layer(0, 'gate', [group('gate', g_items, tr(p=anim([(70, [0, 90]), (100, [0, 0])]), o=anim([(0, 0, 'linear'), (70, 0), (84, 100)])))], op, KS,
-                        masks=[{'inv': False, 'mode': 'a', 'pt': val(circle_path(668, 492, 214)), 'o': val(100), 'x': val(0), 'nm': 'sun'}]))
-    # sun
-    layers.append(layer(0, 'sun', [group('sun', [ellipse(428, (668, 492)), fill(c['coral'])],
-                                         tr(p=(668, 492), a=(668, 492), s=anim([(0, [0, 0]), (26, [104, 104]), (34, [100, 100])])))], op, KS))
-    # orbit
-    ov, oi, oo = arc(650, 470, 300, -150, 110)
-    layers.append(layer(0, 'orbit', [group('orbit', [shape(ov, oi, oo), trim(anim([(10, 0), (70, 100)], 'in_out')), stroke(c['coral'], 7)])], op, KS))
+    layers.append(layer(0, 'disc', [group('disc', [ellipse(2 * r, (cx, cy)), fill(c['coral'])],
+                                          tr(p=anim([(58, [cx, cy - 70]), (78, [cx, cy])]), a=(cx, cy), s=anim([(58, [0, 0]), (74, [116, 116]), (82, [100, 100])])))], op, KS))
+    reveal = anim([(14, [circle_path(512, 520, 1)]), (62, [circle_path(512, 520, 430)])], 'standard')
+    layers.append(layer(0, 'S', [group('S', [shape(parse_poly(ORBIT_S), closed=True), fill(c['ink'])])], op, KS,
+                        masks=[{'inv': False, 'mode': 'a', 'pt': reveal, 'o': val(100), 'x': val(0), 'nm': 'reveal'}]))
+    segs = [shape(parse_poly(d), closed=True) for d in ORBIT_SEGMENTS]
+    layers.append(layer(0, 'orbit', [group('orbit', segs + [fill(c['ink'])],
+                                           tr(p=(512, 512), a=(512, 512), r=anim([(0, -50), (40, 0)]), o=anim([(0, 0), (16, 100)])))], op, KS))
     return comp('Sprichst — welcome intro', 512, 512, op, layers)
 
 def nav_indicator(c):
@@ -385,11 +373,84 @@ def tour_design(c):
                    TOUR_OP, {'o': _loop()}))
     return comp('Sprichst — tour: design', TOUR_W, TOUR_H, TOUR_OP, L)
 
+# ---------------------------------------------------------------- state and feedback animations
+def _state_frame(c, glyph_layers, op=72):
+    """96 x 96: hairline ring, coral disc at the upper right, and the glyph. Lottie draws the first layer on top."""
+    L = list(glyph_layers)
+    L.append(layer(0, 'disc', [group('disc', [ellipse(26, (78, 18)), fill(c['coral'])],
+                                     tr(p=(78, 18), a=(78, 18), s=anim([(8, [0, 0]), (22, [118, 118]), (30, [100, 100])])))], op))
+    L.append(layer(0, 'ring', [group('ring', [ellipse(88, (48, 48)), stroke(c['line'], 1.5, o=anim([(0, 0), (14, 100)]))])], op))
+    return L
+
+def empty_state(c):
+    """An open book whose pages settle: nothing here yet, but there will be. 1.2 s, once."""
+    op = 72
+    left = shape([[48, 66], [48, 34], [26, 30], [26, 62]], closed=True)
+    right = shape([[48, 66], [48, 34], [70, 30], [70, 62]], closed=True)
+    glyph = layer(0, 'book', [group('lines', [shape([[32, 42], [42, 44]]), shape([[32, 50], [42, 52]]), shape([[54, 44], [64, 42]]), shape([[54, 52], [64, 50]]),
+                                              trim(anim([(30, 0), (46, 100)])), stroke(c['line'], 2)]),
+                              group('right', [right, fill(c['surface']), stroke(c['ink'], 3)],
+                                    tr(p=(48, 66), a=(48, 66), r=anim([(12, 24), (30, 0)]), o=anim([(12, 0), (20, 100)]))),
+                              group('left', [left, fill(c['surface']), stroke(c['ink'], 3)],
+                                    tr(p=(48, 66), a=(48, 66), r=anim([(12, -24), (30, 0)]), o=anim([(12, 0), (20, 100)])))], op)
+    return comp('Sprichst - empty state', 96, 96, op, _state_frame(c, [glyph], op))
+
+def error_state(c):
+    """A warning triangle that shakes once: something went wrong, and the words say what. 1.2 s, once."""
+    op = 72
+    tri = shape([[48, 26], [70, 66], [26, 66]], closed=True)
+    x = anim([(24, [0, 0]), (28, [-3, 0]), (32, [3, 0]), (36, [-2, 0]), (40, [2, 0]), (44, [0, 0])], 'in_out')
+    glyph = layer(0, 'warning', [group('mark', [shape([[48, 40], [48, 54]]), stroke(c['danger'], 3.5)], tr(o=anim([(20, 0), (26, 100)]))),
+                                 group('dot', [ellipse(4.5, (48, 60)), fill(c['danger'])], tr(o=anim([(20, 0), (26, 100)]))),
+                                 group('triangle', [tri, trim(anim([(8, 0), (30, 100)])), stroke(c['danger'], 3.5)])], op, {'p': x})
+    return comp('Sprichst - error state', 96, 96, op, _state_frame(c, [glyph], op))
+
+def offline_state(c):
+    """A cloud with a line drawn through it: no connection. 1.2 s, once."""
+    op = 72
+    cloud = [ellipse(26, (38, 54)), ellipse(34, (54, 48)), ellipse(24, (66, 56)), rect(44, 18, 9, (52, 60))]
+    glyph = layer(0, 'cloud', [group('slash', [shape([[28, 28], [70, 70]]), trim(anim([(24, 0), (40, 100)])), stroke(c['ink'], 4)]),
+                               group('slash halo', [shape([[28, 28], [70, 70]]), trim(anim([(24, 0), (40, 100)])), stroke(c['canvas'], 9)]),
+                               group('cloud', cloud + [fill(c['surface'])], tr(p=(48, 52), a=(48, 52), s=anim([(6, [60, 60]), (20, [104, 104]), (26, [100, 100])]), o=anim([(6, 0), (14, 100)]))),
+                               group('cloud line', cloud + [stroke(c['mark'], 3)], tr(p=(48, 52), a=(48, 52), s=anim([(6, [60, 60]), (20, [104, 104]), (26, [100, 100])]), o=anim([(6, 0), (14, 100)])))], op)
+    return comp('Sprichst - offline state', 96, 96, op, _state_frame(c, [glyph], op))
+
+def level_up(c):
+    """A coral disc with an arrow rising out of it and a ring that fades away. 1.2 s, once."""
+    op = 72
+    return comp('Sprichst - level up', 72, 72, op, [
+        layer(0, 'arrow', [group('arrow', [shape([[0, 12], [0, -12]]), shape([[-10, -2], [0, -12], [10, -2]]),
+                                           trim(anim([(18, 0), (34, 100)])), stroke(c['canvas'], 5)])], op, {'p': [36, 36, 0]}),
+        layer(0, 'disc', [group('disc', [ellipse(52), fill(c['coral'])], tr(s=anim([(0, [0, 0]), (16, [108, 108]), (24, [100, 100])])))], op, {'p': [36, 36, 0]}),
+        layer(0, 'ring', [group('ring', [ellipse(anim([(16, [52, 52]), (60, [72, 72])])), stroke(c['coral'], 2, o=anim([(0, 0, 'linear'), (15, 0, 'linear'), (16, 100), (60, 0)]))])], op, {'p': [36, 36, 0]}),
+    ])
+
+def coach_thinking(c):
+    """Three dots in a row, bouncing in turn: the coach is writing. 1.2 s loop."""
+    op = 72
+    dots = []
+    for k in range(3):
+        d = 6 * k
+        dots.append(group(f'dot{k}', [ellipse(8, (12 + 16 * k, 14)), fill(c['muted'])],
+                          tr(p=anim([(d, [0, 0], 'in_out'), (d + 12, [0, -6], 'in_out'), (d + 24, [0, 0], 'in_out'), (72, [0, 0])]))))
+    return comp('Sprichst - coach thinking', 56, 28, op, [layer(0, 'dots', dots, op)])
+
+def download_model(c):
+    """An arrow dropping into a tray, again and again: a model is downloading. 1 s loop."""
+    op = 60
+    return comp('Sprichst - download', 40, 40, op, [
+        layer(0, 'arrow', [group('arrow', [shape([[0, -9], [0, 5]]), shape([[-6, -1], [0, 5], [6, -1]]), stroke(c['coral'], 3)])], op,
+              {'p': anim([(0, [20, 10, 0]), (36, [20, 18, 0]), (60, [20, 18, 0])], 'in_out'), 'o': anim([(0, 0, 'linear'), (8, 100, 'linear'), (40, 100, 'linear'), (54, 0)])}),
+        layer(0, 'tray', [group('tray', [shape([[8, 26], [8, 32], [32, 32], [32, 26]]), stroke(c['ink'], 3)])], op),
+    ])
+
 ANIMS = {'welcome_intro': welcome_intro, 'nav_indicator': nav_indicator, 'lesson_complete': lesson_complete,
          'achievement_unlocked': achievement_unlocked, 'streak_kept': streak_kept, 'answer_correct': answer_correct,
          'answer_incorrect': answer_incorrect, 'loading': loading,
          'tour_lessons': tour_lessons, 'tour_coach': tour_coach, 'tour_review': tour_review,
-         'tour_private': tour_private, 'tour_design': tour_design}
+         'tour_private': tour_private, 'tour_design': tour_design,
+         'empty_state': empty_state, 'error_state': error_state, 'offline_state': offline_state,
+         'level_up': level_up, 'coach_thinking': coach_thinking, 'download_model': download_model}
 
 os.makedirs(OUT, exist_ok=True)
 for name, fn in ANIMS.items():

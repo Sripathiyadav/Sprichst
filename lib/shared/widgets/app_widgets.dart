@@ -6,6 +6,7 @@ import '../../app/theme/breakpoints.dart';
 import 'design_widgets.dart';
 import 'glass.dart';
 import 'masthead.dart';
+import 'lottie_view.dart';
 
 export 'design_widgets.dart';
 export 'geometry.dart';
@@ -598,9 +599,11 @@ class FeedbackBanner extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.animation,
   });
 
-  /// Feedback on an answer.
+  /// Feedback on an answer. The check or cross draws itself, next to the word
+  /// "Correct" or "Not quite", never alone.
   const FeedbackBanner.answer({
     Key? key,
     required bool correct,
@@ -610,6 +613,7 @@ class FeedbackBanner extends StatelessWidget {
           tone: correct ? BannerTone.success : BannerTone.danger,
           title: correct ? 'Correct' : 'Not quite',
           message: message,
+          animation: correct ? 'answer_correct' : 'answer_incorrect',
         );
 
   final BannerTone tone;
@@ -617,6 +621,9 @@ class FeedbackBanner extends StatelessWidget {
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
+
+  /// A Lottie shown instead of the icon.
+  final String? animation;
 
   @override
   Widget build(BuildContext context) {
@@ -648,7 +655,10 @@ class FeedbackBanner extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, color: fg, size: 24),
+              if (animation != null)
+                SprichstLottie(animation!, width: 32, height: 32)
+              else
+                Icon(icon, color: fg, size: 24),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(

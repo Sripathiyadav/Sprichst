@@ -23,6 +23,7 @@ class _LessonViewState extends ConsumerState<LessonView> {
   var _stage = _Stage.introduction;
   List<ExerciseResult> _results = const [];
   var _outcome = (xpEarned: 0, leveledUpTo: null as CefrLevel?);
+  var _streakDays = 0;
   var _wasCompletedBefore = false;
 
   @override
@@ -70,6 +71,7 @@ class _LessonViewState extends ConsumerState<LessonView> {
                             total: _results.where((r) => !r.isRetry).length,
                             xpEarned: _outcome.xpEarned,
                             leveledUpTo: _outcome.leveledUpTo,
+                            streakDays: _streakDays,
                             note: _wasCompletedBefore
                                 ? 'XP is awarded the first time you complete a lesson.'
                                 : null,
@@ -101,11 +103,13 @@ class _LessonViewState extends ConsumerState<LessonView> {
 
   Future<void> _finish(List<ExerciseResult> results) async {
     try {
-      final outcome = await ref
-          .read(appControllerProvider)
-          .completeLesson(widget.lesson, results);
+      final app = ref.read(appControllerProvider);
+      final streakBefore = app.profile?.streakAt(DateTime.now()) ?? 0;
+      final outcome = await app.completeLesson(widget.lesson, results);
       if (!mounted) return;
+      final streakAfter = app.profile?.streakAt(DateTime.now()) ?? 0;
       setState(() {
+        _streakDays = streakAfter > streakBefore ? streakAfter : 0;
         _results = results;
         _outcome = outcome;
         _stage = _Stage.complete;

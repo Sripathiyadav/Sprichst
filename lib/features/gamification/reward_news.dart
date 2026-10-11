@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_theme.dart';
 import '../../domain/learning/achievements.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../../shared/widgets/lottie_view.dart';
 import 'badge_icons.dart';
 
 /// Quests finished and badges earned in the session that just ended.
@@ -19,6 +20,11 @@ class RewardNews extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (reward.newBadges.isNotEmpty)
+            const Center(
+              child: SprichstLottie('achievement_unlocked',
+                  width: 120, height: 120),
+            ),
           for (final quest in reward.completedQuests)
             _Line(
               icon: Icons.task_alt_rounded,

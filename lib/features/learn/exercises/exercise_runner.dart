@@ -161,6 +161,7 @@ class SessionSummary extends StatelessWidget {
     required this.xpEarned,
     this.note,
     this.leveledUpTo,
+    this.streakDays = 0,
   });
 
   final String title;
@@ -169,6 +170,9 @@ class SessionSummary extends StatelessWidget {
   final int xpEarned;
   final String? note;
   final CefrLevel? leveledUpTo;
+
+  /// The streak, when this session extended it; 0 otherwise.
+  final int streakDays;
 
   @override
   Widget build(BuildContext context) {
@@ -205,11 +209,21 @@ class SessionSummary extends StatelessWidget {
             ),
             if (leveledUpTo != null) ...[
               const SizedBox(height: AppSpacing.md),
+              const SprichstLottie('level_up', width: 72, height: 72),
               FeedbackBanner(
                 tone: BannerTone.success,
                 title: 'New level',
                 message: 'You are now working at ${leveledUpTo!.label}.',
               ),
+            ],
+            if (streakDays > 0) ...[
+              const SizedBox(height: AppSpacing.md),
+              const SprichstLottie('streak_kept', width: 240, height: 120),
+              Text(
+                  streakDays == 1
+                      ? 'Streak started: 1 day.'
+                      : 'Streak kept: $streakDays days in a row.',
+                  style: theme.textTheme.titleMedium),
             ],
             if (note != null) ...[
               const SizedBox(height: AppSpacing.sm),
