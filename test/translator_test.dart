@@ -10,6 +10,7 @@ import 'package:sprichst/app/app_controller.dart';
 import 'package:sprichst/data/ai/cloud_ai_repository.dart';
 import 'package:sprichst/data/ai/cloud_ai_settings.dart';
 import 'package:sprichst/data/ai/cloud_providers.dart';
+import 'package:sprichst/data/ai/http_ai_repository.dart';
 import 'package:sprichst/data/ai/mock_ai_repository.dart';
 import 'package:sprichst/data/on_device/model_catalogue.dart';
 import 'package:sprichst/data/on_device/model_manager.dart';
@@ -130,6 +131,49 @@ void main() {
       final body = jsonDecode(seen.single.body) as Map<String, dynamic>;
       final user = (body['messages'] as List).last['content'] as String;
       expect(user.length, lessThan(2300));
+    });
+  });
+
+  group('with the developer server', () {
+    test('posts the text and direction and returns the translation', () async {
+      late http.Request seen;
+      final repository = HttpAIRepository(
+        baseUrl: 'http://x:8000',
+        client: MockClient((request) async {
+          seen = request;
+          return http.Response('{"translation":" Good day "}', 200);
+        }),
+      );
+      expect(await repository.translate('Guten Tag', _de), 'Good day');
+      expect(seen.url.path, '/v1/translate');
+      expect(
+          jsonDecode(seen.body), {'text': 'Guten Tag', 'direction': 'de-en'});
+      await repository.translate('Good day', _en);
+      expect((jsonDecode(seen.body) as Map)['direction'], 'en-de');
+    });
+
+    test('an error or an empty answer is an error, not a blank result',
+        () async {
+      final failing = HttpAIRepository(
+          baseUrl: 'http://x:8000',
+          client: MockClient((_) async => http.Response('nope', 502)));
+      await expectLater(failing.translate('Hallo', _de), throwsException);
+      final empty = HttpAIRepository(
+          baseUrl: 'http://x:8000',
+          client: MockClient((_) async => http.Response('{}', 200)));
+      await expectLater(empty.translate('Hallo', _de), throwsFormatException);
+    });
+
+    test('the coach reply carries the English of its question', () async {
+      final repository = HttpAIRepository(
+        baseUrl: 'http://x:8000',
+        client: MockClient((_) async => http.Response(
+            '{"reply":"Gut","followUp":"Wo wohnst du?","followUpTranslation":"Where do you live?"}',
+            200)),
+      );
+      final reply =
+          await repository.chat('Hallo', const TutorContext(level: 'A1'));
+      expect(reply.followUpTranslation, 'Where do you live?');
     });
   });
 

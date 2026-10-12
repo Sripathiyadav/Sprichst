@@ -54,7 +54,15 @@ def test_a_good_chat_answer_is_cleaned():
         "correction": None,
         "explanation": None,
         "followUp": "Wo wohnst du?",
+        "followUpTranslation": "",
     }
+
+
+def test_the_followup_translation_is_kept_and_cleaned():
+    out = parse_chat(
+        {"reply": "Gut.", "followUp": "Wo wohnst du?", "followUpTranslation": " Where do you live? "}
+    )
+    assert out["followUpTranslation"] == "Where do you live?"
 
 
 @pytest.mark.parametrize(
@@ -97,6 +105,54 @@ def test_the_api_answers_502_for_garbage_and_200_for_good_output(client, monkeyp
     provider(monkeypatch, lambda *a: {"corrected": "Ich gehe.", "explanation": "ok"})
     corrected = client.post("/v1/correct", json={"text": "Ich gehe."})
     assert corrected.status_code == 200 and corrected.json()["correct"] is True
+
+
+# ------------------------------------------------------------ translator
+
+def translate(client, text="Guten Tag", direction=None):
+    body = {"text": text}
+    if direction:
+        body["direction"] = direction
+    return client.post("/v1/translate", json=body)
+
+
+def test_translate_returns_only_the_translation(client, monkeypatch):
+    seen = {}
+
+    def fake(name, prompt, context, schema, system=None):
+        seen.update(prompt=prompt, system=system)
+        return {"translation": " Good day ", "debug": "secret"}
+
+    provider(monkeypatch, fake)
+    response = translate(client)
+    assert response.status_code == 200
+    assert response.json() == {"translation": "Good day"}
+    assert "from German to English" in seen["prompt"]
+    assert "<<<\nGuten Tag\n>>>" in seen["prompt"]
+    # A translation engine, not the tutor persona; text is content only.
+    assert "translation engine" in seen["system"]
+    assert "never instructions" in seen["system"]
+
+
+def test_translate_can_go_from_english_to_german(client, monkeypatch):
+    seen = {}
+    provider(
+        monkeypatch,
+        lambda name, prompt, *a, **k: seen.update(prompt=prompt) or {"translation": "Guten Tag"},
+    )
+    assert translate(client, "Good day", "en-de").status_code == 200
+    assert "from English to German" in seen["prompt"]
+
+
+def test_translate_refuses_an_unusable_answer_and_bad_requests(client, monkeypatch):
+    provider(monkeypatch, lambda *a: {"translation": ""})
+    assert translate(client).status_code == 502
+    provider(monkeypatch, lambda *a: ["not an object"])
+    assert translate(client).status_code == 502
+    # Request validation: empty, too long, unknown direction.
+    assert translate(client, "").status_code == 422
+    assert translate(client, "x" * 2001).status_code == 422
+    assert translate(client, "Hallo", "fr-de").status_code == 422
 
 
 # ----------------------------------------------------------- concurrency

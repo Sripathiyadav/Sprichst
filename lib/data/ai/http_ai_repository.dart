@@ -124,9 +124,33 @@ class HttpAIRepository implements AIRepository {
   }
 
   @override
-  Future<String> translate(String text, TranslationDirection direction) =>
-      throw UnsupportedError(
-          'The developer server has no translator; use the phone or your own AI key.');
+  Future<String> translate(String text, TranslationDirection direction) async {
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/v1/translate'),
+          headers: await _headers(),
+          body: jsonEncode({
+            'text': text,
+            'direction': direction == TranslationDirection.germanToEnglish
+                ? 'de-en'
+                : 'en-de',
+          }),
+        )
+        .timeout(_slow);
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'AI server returned ${response.statusCode}: ${response.body}',
+      );
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final translation = (data['translation'] as String? ?? '').trim();
+    if (translation.isEmpty) {
+      throw const FormatException('The server did not return a translation.');
+    }
+    return translation;
+  }
 
   @override
   Future<TranscriptionResult> transcribeAudio(

@@ -76,13 +76,14 @@ class ChatResult(_Result):
     correction: Optional[str] = Field(default=None, max_length=1500)
     explanation: Optional[str] = Field(default=None, max_length=1500)
     followUp: str = Field(default="", max_length=500)
+    followUpTranslation: str = Field(default="", max_length=500)
 
     @field_validator("correction", "explanation", mode="before")
     @classmethod
     def _text_or_null(cls, value: Any) -> Optional[str]:
         return _optional_text(value)
 
-    @field_validator("reply", "followUp", mode="before")
+    @field_validator("reply", "followUp", "followUpTranslation", mode="before")
     @classmethod
     def _text(cls, value: Any) -> str:
         return _optional_text(value) or ""
@@ -107,8 +108,16 @@ class CorrectionResult(_Result):
     level: str = Field(default="", max_length=30)
     mistakes: list[Mistake] = Field(default_factory=list, max_length=20)
     followUp: str = Field(default="", max_length=500)
+    followUpTranslation: str = Field(default="", max_length=500)
 
-    @field_validator("original", "explanation", "level", "followUp", mode="before")
+    @field_validator(
+        "original",
+        "explanation",
+        "level",
+        "followUp",
+        "followUpTranslation",
+        mode="before",
+    )
     @classmethod
     def _text(cls, value: Any) -> str:
         return _optional_text(value) or ""
@@ -134,6 +143,22 @@ def _check(model: type[BaseModel], data: Any) -> dict[str, Any]:
         return model.model_validate(data).model_dump()
     except ValidationError as error:
         raise ModelOutputError(str(error.errors()[0]["loc"])) from error
+
+
+class TranslationResult(_Result):
+    translation: str = Field(max_length=6000)
+
+    @field_validator("translation", mode="before")
+    @classmethod
+    def _required_text(cls, value: Any) -> str:
+        text = _optional_text(value)
+        if not text:
+            raise ValueError("a translation is required")
+        return text
+
+
+def parse_translation(data: Any) -> dict[str, Any]:
+    return _check(TranslationResult, data)
 
 
 def parse_chat(data: Any) -> dict[str, Any]:
