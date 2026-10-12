@@ -173,6 +173,15 @@ flutter run -t tool/preview_main.dart -d chrome
 
 Full click-by-click guide: [docs/SETUP.md](docs/SETUP.md).
 
+### Run with (or without) the developer AI server
+
+You never need `ai-server/`. The released app does not use it, and in debug builds the app works without it too: the AI runs on the phone or with your own key. If you want the optional server while developing, one command starts it with the app and stops it when the app stops:
+
+```bash
+scripts/dev.sh -d chrome        # app + server (extra arguments go to flutter run)
+scripts/dev.sh --no-server      # app only
+```
+
 ### Use an AI coach
 
 * **On the phone:** Account → AI & voice → *Models on this phone* → download once (use Wi-Fi), then it works offline.
