@@ -14,6 +14,7 @@ import '../account/account_view.dart';
 import '../learn/lesson_view.dart';
 import '../practice/practice_session_view.dart';
 import '../practice/writing_practice_view.dart';
+import '../translator/translator_view.dart';
 import '../gamification/open_quest.dart';
 import '../gamification/quests_card.dart';
 import 'plan_card.dart';
@@ -158,7 +159,23 @@ class _HomeViewState extends ConsumerState<HomeView>
             const SizedBox(height: AppSpacing.sm),
             _PracticeCards(due: app.dueReviews),
             const SizedBox(height: AppSpacing.sm),
-            const _WritingTile(),
+            Consumer(
+              builder: (context, ref, _) => _ToolTile(
+                tileKey: const ValueKey('home-writing'),
+                icon: Icons.keyboard_alt_outlined,
+                title: 'Writing practice',
+                subtitle: 'Type German with ä ö ü ß, faster.',
+                onTap: () => openWritingPractice(context, ref),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _ToolTile(
+              tileKey: const ValueKey('home-translator'),
+              icon: Icons.translate,
+              title: 'Translator',
+              subtitle: 'Translate any text, German to English and back.',
+              onTap: () => openTranslator(context),
+            ),
             const SizedBox(height: AppSpacing.xxl),
             SectionTitle(
               'Daily quests',
@@ -427,35 +444,46 @@ class _PracticeCards extends ConsumerWidget {
   }
 }
 
-/// A way in to writing practice, from Home.
-class _WritingTile extends ConsumerWidget {
-  const _WritingTile();
+/// A way in to a tool (writing practice, the translator) from Home.
+class _ToolTile extends StatelessWidget {
+  const _ToolTile({
+    required this.tileKey,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final Key tileKey;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final t = context.tokens;
     return Semantics(
       button: true,
-      label: 'Writing practice. Type German sentences with ä ö ü ß.',
+      label: '$title. $subtitle',
       excludeSemantics: true,
-      onTap: () => openWritingPractice(context, ref),
+      onTap: onTap,
       child: InkWell(
-        key: const ValueKey('home-writing'),
+        key: tileKey,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: () => openWritingPractice(context, ref),
+        onTap: onTap,
         child: SoftCard(
           child: Row(
             children: [
-              Icon(Icons.keyboard_alt_outlined, color: t.ink, size: 28),
+              Icon(icon, color: t.ink, size: 28),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Writing practice',
-                        style: theme.textTheme.titleMedium),
-                    Text('Type German with ä ö ü ß, faster.',
+                    Text(title, style: theme.textTheme.titleMedium),
+                    Text(subtitle,
                         style: theme.textTheme.bodySmall
                             ?.copyWith(color: t.inkMuted)),
                   ],

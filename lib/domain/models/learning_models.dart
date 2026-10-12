@@ -721,6 +721,25 @@ class TutorReply {
   final String followUpTranslation;
 }
 
+/// Which way a translation goes.
+enum TranslationDirection {
+  germanToEnglish('German', 'English', 'de', 'en'),
+  englishToGerman('English', 'German', 'en', 'de');
+
+  const TranslationDirection(
+      this.sourceName, this.targetName, this.sourceCode, this.targetCode);
+
+  final String sourceName;
+  final String targetName;
+
+  /// Language codes, so screen readers pronounce each text correctly.
+  final String sourceCode;
+  final String targetCode;
+
+  TranslationDirection get swapped =>
+      this == germanToEnglish ? englishToGerman : germanToEnglish;
+}
+
 class AudioCapture {
   const AudioCapture({
     required this.bytes,

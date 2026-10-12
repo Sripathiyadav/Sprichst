@@ -24,6 +24,9 @@ abstract class AIRepository {
     TutorContext context,
   );
 
+  /// Translates [text] between German and English, as plain text.
+  Future<String> translate(String text, TranslationDirection direction);
+
   Future<TranscriptionResult> transcribeAudio(
     AudioCapture audio,
     TutorContext context,

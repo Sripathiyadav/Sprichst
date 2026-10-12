@@ -32,6 +32,8 @@ Your message or recording, the last few messages of the current conversation (so
 
 ## Training
 
+The translator works the same way: the text you type or paste is translated on your phone, or sent straight to the provider you chose with your own key. It is not kept by the app, and translations can contain mistakes, so check anything important.
+
 We do not train or fine-tune any model on your messages, recordings or learning data. With your own key, how the provider treats what you send is governed by your agreement with it; check its data and training settings in your account there.
 
 ## Human oversight and reporting problems

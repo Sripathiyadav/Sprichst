@@ -12,6 +12,9 @@ import '../on_device/on_device_ai_repository.dart'
         chatPrompt,
         correctionPrompt,
         parseCoachReply,
+        parseTranslation,
+        translationPrompt,
+        translationSystemPrompt,
         parseTutorReply,
         systemPrompt;
 import 'cloud_ai_settings.dart';
@@ -52,6 +55,8 @@ class CloudAIRepository implements AIRepository {
 
   static const _jsonShapeChat =
       'Answer with one JSON object whose string fields are "corrected", "explanation", "reply", "followUp" and "followUpTranslation" (the followUp question in simple English). Answer with the JSON object only.';
+  static const _jsonShapeTranslation =
+      'Answer with one JSON object with the string field "translation". Answer with the JSON object only.';
   static const _jsonShapeCorrection =
       'Answer with one JSON object with the boolean "correct" and the string fields "corrected", "explanation", "followUp" and "followUpTranslation" (the followUp question in simple English). Answer with the JSON object only.';
 
@@ -73,6 +78,16 @@ class CloudAIRepository implements AIRepository {
       correctionPrompt(clean),
     );
     return parseCoachReply(raw, clean);
+  }
+
+  @override
+  Future<String> translate(String text, TranslationDirection direction) async {
+    final clean = sanitizeText(text, maxLength: InputLimits.translation);
+    final raw = await _complete(
+      '$translationSystemPrompt\n$_jsonShapeTranslation',
+      translationPrompt(clean, direction),
+    );
+    return parseTranslation(raw);
   }
 
   @override

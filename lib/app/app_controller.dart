@@ -457,6 +457,14 @@ class AppController extends ChangeNotifier {
   /// Forgets the conversation so far; the next message starts a new one.
   void startNewConversation() => _conversation.clear();
 
+  /// Translates a pasted or typed text. It needs no profile: translating is a
+  /// tool, not a lesson.
+  Future<String> translate(String text, TranslationDirection direction) {
+    final clean = sanitizeText(text, maxLength: InputLimits.translation);
+    if (clean.isEmpty) throw ArgumentError('Write or paste a text first.');
+    return _aiRepository.translate(clean, direction);
+  }
+
   Future<TutorReply> chat(String message) async {
     final text = _nonEmpty(message);
     final context = tutorContext;

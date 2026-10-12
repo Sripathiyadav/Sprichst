@@ -157,6 +157,10 @@ class HybridAIRepository implements AIRepository {
       _text((r) => r.chat(message, context));
 
   @override
+  Future<String> translate(String text, TranslationDirection direction) =>
+      _text((r) => r.translate(text, direction));
+
+  @override
   Future<TranscriptionResult> transcribeAudio(
           AudioCapture audio, TutorContext context) =>
       _text((r) => r.transcribeAudio(audio, context), hearing: true);

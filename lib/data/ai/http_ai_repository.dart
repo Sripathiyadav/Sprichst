@@ -124,6 +124,11 @@ class HttpAIRepository implements AIRepository {
   }
 
   @override
+  Future<String> translate(String text, TranslationDirection direction) =>
+      throw UnsupportedError(
+          'The developer server has no translator; use the phone or your own AI key.');
+
+  @override
   Future<TranscriptionResult> transcribeAudio(
     AudioCapture audio,
     TutorContext context,

@@ -67,6 +67,12 @@ class MockAIRepository implements AIRepository {
   }
 
   @override
+  Future<String> translate(String text, TranslationDirection direction) async {
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    return '[${direction.targetName}] $text';
+  }
+
+  @override
   Future<TranscriptionResult> transcribeAudio(
     AudioCapture audio,
     TutorContext context,

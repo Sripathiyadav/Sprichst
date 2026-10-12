@@ -9,6 +9,10 @@ abstract final class InputLimits {
   /// A coach message or a text to be spoken (gateway: `Message`).
   static const message = 1500;
 
+  /// A text to translate: more than a chat message, still small enough for a
+  /// model on a phone.
+  static const translation = 2000;
+
   /// The learner's name (Firestore rules allow 60; the form allows 40).
   static const name = 40;
 

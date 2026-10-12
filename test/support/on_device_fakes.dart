@@ -13,6 +13,9 @@ class FakeRuntime implements OnDeviceRuntime {
   Object? downloadError;
   final List<String> calls = [];
 
+  /// The messages of the latest generate call.
+  List<TutorMessage> lastMessages = const [];
+
   @override
   bool get isSupported => true;
   @override
@@ -41,6 +44,7 @@ class FakeRuntime implements OnDeviceRuntime {
   Future<String> generateJson(OnDeviceModel model, List<TutorMessage> messages,
       {required Map<String, dynamic> jsonSchema, int maxTokens = 320}) async {
     calls.add('generate:${model.id}');
+    lastMessages = messages;
     return reply;
   }
 

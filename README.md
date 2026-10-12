@@ -22,6 +22,7 @@ Sprichst is a German-learning app built around a **curriculum and a learning eng
 | 🤖 **AI coach** | Chat and voice practice with corrections, reasons, and an **English translation of every question** so new words come with meanings |
 | 🧠 **Smart practice** | A deterministic planner picks the next review, weak-skill drill or lesson from *your own answers*; spaced repetition brings things back |
 | ⌨️ **Writing practice** | Type German sentences with **ä ö ü ß** keys at hand, with live feedback, speed and accuracy |
+| 🔁 **Translator** | Translate any typed or pasted text **German ⇄ English**, on the phone or with your own AI key; copy, listen, swap, translate back |
 | 🃏 **Flashcards & games** | Spaced-repetition cards and five games (Artikel-Rausch, Memory, Buchstabensalat, Wortle, Gespräch) |
 | 🔒 **Private by design** | AI runs **on the phone**, or with the learner's **own key** from Groq, Gemini, OpenAI, Claude, Grok, Mistral, DeepSeek, OpenRouter or any OpenAI-compatible server. There is **no Sprichst AI server**, no analytics, no ads |
 | 🌍 **Languages** | German today; the app says **more languages are coming soon** (welcome, first onboarding step, Learn and Account) and lets learners request one |

@@ -140,6 +140,26 @@ void main() {
       await _shot(tester, '$mode-writing');
     });
 
+    testWidgets('translator, $mode', (tester) async {
+      await pumpSprichst(tester,
+          size: const Size(390, 844),
+          brightness: brightness,
+          repository: InMemoryLearningRepository(_learner()));
+      final tile = find.byKey(const ValueKey('home-translator'));
+      await tester.dragUntilVisible(
+          tile, find.byType(ListView).first, const Offset(0, -200));
+      await tester.ensureVisible(tile);
+      await tester.pumpAndSettle();
+      await tester.tap(tile);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const ValueKey('translate-input')),
+          'Wie komme ich zum Bahnhof?');
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('translate-go')));
+      await tester.pumpAndSettle();
+      await _shot(tester, '$mode-translator');
+    });
+
     testWidgets('study screens, $mode', (tester) async {
       await pumpSprichst(tester,
           size: const Size(390, 844),

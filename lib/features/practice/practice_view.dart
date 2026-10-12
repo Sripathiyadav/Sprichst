@@ -15,6 +15,7 @@ import '../games/open_game.dart';
 import '../home/plan_card.dart';
 import 'mock_exam_view.dart';
 import 'practice_session_view.dart';
+import '../translator/translator_view.dart';
 import 'writing_practice_view.dart';
 
 class PracticeView extends ConsumerWidget {
@@ -81,6 +82,10 @@ class PracticeView extends ConsumerWidget {
           const SectionTitle('Writing practice'),
           const SizedBox(height: AppSpacing.sm),
           const _WritingCard(),
+          const SizedBox(height: AppSpacing.xxl),
+          const SectionTitle('Translator'),
+          const SizedBox(height: AppSpacing.sm),
+          const _TranslatorCard(),
           const SizedBox(height: AppSpacing.xxl),
           const SectionTitle('Games'),
           const SizedBox(height: AppSpacing.sm),
@@ -260,6 +265,36 @@ class _WritingCard extends ConsumerWidget {
             onPressed: () => openWritingPractice(context, ref),
             icon: const Icon(Icons.keyboard_alt_outlined),
             label: const Text('Start writing practice'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// German ⇄ English for any text.
+class _TranslatorCard extends StatelessWidget {
+  const _TranslatorCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SoftCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Translate anything', style: theme.textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            'Type or paste a text and get it in German or English, on this phone or with your own AI key.',
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          OutlinedButton.icon(
+            key: const ValueKey('open-translator'),
+            onPressed: () => openTranslator(context),
+            icon: const Icon(Icons.translate),
+            label: const Text('Open the translator'),
           ),
         ],
       ),
