@@ -57,8 +57,13 @@ void main() {
     await _pump(tester, _learner());
     await tester.tap(find.byKey(const ValueKey('start-quests')));
     await tester.pumpAndSettle();
-    // The first quest is "finish a lesson": a lesson opens.
-    expect(find.text('Start practice'), findsOneWidget);
+    // Which quest comes first changes with the date (a lesson, flashcards, a
+    // game or practice). Either it opens, or, for a new learner with no cards
+    // yet, it says why not.
+    expect(tester.takeException(), isNull);
+    final left = find.byKey(const ValueKey('start-quests')).evaluate().isEmpty;
+    final explained = find.byType(SnackBar).evaluate().isNotEmpty;
+    expect(left || explained, isTrue);
   });
 
   testWidgets('the top-right avatar opens the account details', (tester) async {

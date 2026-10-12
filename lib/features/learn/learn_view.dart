@@ -74,6 +74,8 @@ class LearnView extends ConsumerWidget {
               ),
           ],
           const SizedBox(height: AppSpacing.xl),
+          const MoreLanguagesNote(),
+          const SizedBox(height: AppSpacing.xl),
           const SectionTitle('Roadmap'),
           const SizedBox(height: AppSpacing.sm),
           for (final level in CefrLevel.values) ...[

@@ -95,6 +95,13 @@ class _Welcome extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text('Learn German from your first words to confident conversation.',
               style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: AppSpacing.xs),
+          Text('More languages coming soon.',
+              key: const ValueKey('welcome-more-languages'),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: context.tokens.inkMuted)),
           const SizedBox(height: AppSpacing.xxl),
           PrimaryButton(label: 'Start', onPressed: onStart),
           const SizedBox(height: AppSpacing.xs),
@@ -159,6 +166,8 @@ class _LanguageStep extends StatelessWidget {
         children: [
           const _StepHeader(
               step: 1, title: 'What language should explain German?'),
+          const MoreLanguagesNote(),
+          const SizedBox(height: AppSpacing.md),
           for (final language in ['English', 'Hindi', 'Telugu', 'Other'])
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),

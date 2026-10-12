@@ -12,6 +12,7 @@ export 'design_widgets.dart';
 export 'geometry.dart';
 export 'glass.dart';
 export 'masthead.dart';
+export 'more_languages.dart';
 export 'option_tile.dart';
 export 'summary_block.dart';
 export 'wordmark.dart';

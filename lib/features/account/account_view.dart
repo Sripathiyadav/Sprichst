@@ -297,15 +297,19 @@ enum _FeedbackType {
 /// Feedback delivery is not configured, so this builds a complete report and
 /// copies it to the clipboard instead of pretending to send it.
 class _ContactPage extends ConsumerStatefulWidget {
-  const _ContactPage();
+  const _ContactPage({this.type = _FeedbackType.bug, this.draft = ''});
+
+  /// What the report is about to begin with, and a starting text.
+  final _FeedbackType type;
+  final String draft;
 
   @override
   ConsumerState<_ContactPage> createState() => _ContactPageState();
 }
 
 class _ContactPageState extends ConsumerState<_ContactPage> {
-  final _message = TextEditingController();
-  var _type = _FeedbackType.bug;
+  late final _message = TextEditingController(text: widget.draft);
+  late var _type = widget.type;
 
   @override
   void dispose() {
@@ -491,6 +495,31 @@ class _LearningPreferencesPage extends ConsumerWidget {
       title: 'Learning preferences',
       subtitle: 'These choices guide lessons and the tutor’s explanations.',
       children: [
+        SettingsSection(
+          title: 'Language you are learning',
+          children: [
+            const SettingsTile(
+              icon: Icons.translate,
+              title: 'German',
+              subtitle: 'The only language today.',
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+              child: MoreLanguagesNote(
+                onRequest: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const _ContactPage(
+                      type: _FeedbackType.feature,
+                      draft:
+                          'I would like to learn this language with Sprichst: ',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         SettingsSection(
           title: 'Learning plan',
           children: [
