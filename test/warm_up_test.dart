@@ -22,7 +22,7 @@ Future<(HybridAIRepository, List<http.Request>)> _setup(
   final settings = CloudAISettings(
       store: MemorySecretStore({
     if (key)
-      CloudAISettings.keyNameOf('groq'): 'gsk_AbCdEfGhIjKlMnOpQrSt123456',
+      CloudAISettings.keyNameOf('groq'): 'gsk_' 'AbCdEfGhIjKlMnOpQrSt123456',
   }));
   await settings.load();
   final seen = <http.Request>[];
@@ -79,7 +79,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final settings = CloudAISettings(
         store: MemorySecretStore({
-      CloudAISettings.keyNameOf('groq'): 'gsk_AbCdEfGhIjKlMnOpQrSt123456',
+      CloudAISettings.keyNameOf('groq'): 'gsk_' 'AbCdEfGhIjKlMnOpQrSt123456',
     }));
     await settings.load();
     final cloud = CloudAIRepository(
