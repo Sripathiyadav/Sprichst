@@ -12,6 +12,7 @@ import '../../domain/repositories/ai_exceptions.dart';
 import '../../shared/input_rules.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../../shared/widgets/speak_button.dart';
+import '../account/web_ai_notice.dart';
 
 /// Opens the translator.
 void openTranslator(BuildContext context) {
@@ -157,6 +158,7 @@ class _TranslatorViewState extends ConsumerState<TranslatorView> {
                       theme.textTheme.bodyMedium?.copyWith(color: t.inkMuted),
                 ),
                 const SizedBox(height: AppSpacing.lg),
+                const WebAiNotice(),
                 _DirectionBar(direction: d, onSwap: _swap),
                 const SizedBox(height: AppSpacing.md),
                 TextField(

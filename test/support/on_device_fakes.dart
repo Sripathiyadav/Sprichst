@@ -16,8 +16,10 @@ class FakeRuntime implements OnDeviceRuntime {
   /// The messages of the latest generate call.
   List<TutorMessage> lastMessages = const [];
 
+  /// False imitates a web browser, where models cannot run.
+  bool supported = true;
   @override
-  bool get isSupported => true;
+  bool get isSupported => supported;
   @override
   Future<int?> deviceRamMb() async => ram;
   @override

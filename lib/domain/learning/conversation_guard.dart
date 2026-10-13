@@ -28,7 +28,9 @@ class ConversationGuard {
     final candidates = [
       for (final s in sentences)
         if (s.endsWith('?')) s,
-      if (reply.followUp.trim().isNotEmpty) reply.followUp.trim(),
+      // A follow-up that is not a question is not one: small models sometimes
+      // repeat the reply there.
+      if (reply.followUp.trim().endsWith('?')) reply.followUp.trim(),
     ];
 
     final asked = askedQuestions(history);

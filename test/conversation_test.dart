@@ -279,6 +279,31 @@ void main() {
           fresh.followUpTranslation);
     });
 
+    test('a follow-up that is not a question is replaced', () {
+      final fresh = _guard.freshen(
+        const TutorReply(
+            reply: 'Ich komme morgen zu meiner Arbeit.',
+            followUp: 'Ich komme morgen zu meiner Arbeit.',
+            followUpTranslation: 'Ich komme morgen zu meiner Arbeit.'),
+        const [],
+        level: 'A1',
+      );
+      expect(fresh.followUp, endsWith('?'));
+      expect(fresh.followUpTranslation, isNotEmpty);
+      expect(fresh.followUpTranslation, isNot(fresh.followUp));
+    });
+
+    test('a translation that only repeats the German is dropped', () {
+      final tutor = parseTutorReply(
+          '{"corrected":"","explanation":"","reply":"Gut","followUp":"Wo wohnst du?","followUpTranslation":"Wo wohnst du?"}',
+          'Hallo');
+      expect(tutor.followUpTranslation, '');
+      final coach = parseCoachReply(
+          '{"correct":true,"corrected":"Hallo.","explanation":"","followUp":"Wo wohnst du?","followUpTranslation":"wo wohnst du"}',
+          'Hallo.');
+      expect(coach.followUpTranslation, '');
+    });
+
     test('every starter question has an English translation', () {
       for (final s in conversationStarters) {
         expect(s.english.trim(), isNotEmpty, reason: s.text);

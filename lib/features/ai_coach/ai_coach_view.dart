@@ -11,6 +11,7 @@ import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/ai_exceptions.dart';
 import '../../shared/input_rules.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../account/web_ai_notice.dart';
 import '../../shared/widgets/lottie_view.dart';
 import '../account/account_view.dart' show AIAndVoicePage;
 import '../account/on_device_ai_page.dart';
@@ -102,6 +103,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                   children: [
                     const _ProviderChip(),
                     const SizedBox(height: AppSpacing.sm),
+                    const WebAiNotice(),
                     const _OfflineSetupBanner(),
                     if (_messages.isEmpty)
                       _CoachEmptyState(onVoiceMode: _openVoiceMode)

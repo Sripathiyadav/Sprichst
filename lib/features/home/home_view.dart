@@ -11,6 +11,7 @@ import '../../domain/learning/adaptive_planner.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../account/account_view.dart';
+import '../account/web_ai_notice.dart';
 import '../learn/lesson_view.dart';
 import '../practice/practice_session_view.dart';
 import '../practice/writing_practice_view.dart';
@@ -129,6 +130,7 @@ class _HomeViewState extends ConsumerState<HomeView>
           physics: const AlwaysScrollableScrollPhysics(),
           padding: pageListPadding(context),
           children: [
+            const WebAiNotice(),
             _Today(
               profile: profile,
               streak: streak,

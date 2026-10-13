@@ -296,7 +296,11 @@ CoachReply parseCoachReply(String raw, String original) {
     corrected: unchanged ? original : fixed,
     explanation: explanation,
     followUp: (data['followUp'] as String? ?? '').trim(),
-    followUpTranslation: (data['followUpTranslation'] as String? ?? '').trim(),
+    followUpTranslation:
+        _normalise((data['followUpTranslation'] as String? ?? '')) ==
+                _normalise(data['followUp'] as String? ?? '')
+            ? ''
+            : (data['followUpTranslation'] as String? ?? '').trim(),
     wasCorrect: unchanged,
   );
 }
@@ -333,14 +337,18 @@ TutorReply parseTutorReply(String raw, String message) {
       corrected.toLowerCase() != 'null' &&
       _normalise(corrected) != _normalise(message) &&
       keptWords(message, corrected) >= 0.5;
+  final followUp = (data['followUp'] as String? ?? '').trim();
+  final translation = (data['followUpTranslation'] as String? ?? '').trim();
   return TutorReply(
     reply: (data['reply'] as String? ?? '').trim(),
     correction: isCorrection ? corrected : null,
     explanation: isCorrection
         ? explainChange(message, corrected, data['explanation'] as String?)
         : null,
-    followUp: (data['followUp'] as String? ?? '').trim(),
-    followUpTranslation: (data['followUpTranslation'] as String? ?? '').trim(),
+    followUp: followUp,
+    // A "translation" that is the question again is not English.
+    followUpTranslation:
+        _normalise(translation) == _normalise(followUp) ? '' : translation,
   );
 }
 
