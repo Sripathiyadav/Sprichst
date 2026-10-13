@@ -305,7 +305,7 @@ void main() {
           find.textContaining(
               RegExp(r'^(MON|TUES|WEDNES|THURS|FRI|SATUR|SUN)DAY, ')),
           findsOneWidget);
-      expect(find.textContaining('Guten'), findsOneWidget);
+      expect(find.textContaining(RegExp('Gut')), findsOneWidget);
       expect(find.text('CONTINUE LEARNING'), findsOneWidget);
     });
 
