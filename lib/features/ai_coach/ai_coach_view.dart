@@ -316,6 +316,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     if (error is ModelNotInstalledException ||
         error is ProviderUnavailableException ||
         error is HearingUnavailableException ||
+        error is LocalModelsUnavailableException ||
         error is VoiceUnavailableException) {
       return error.toString();
     }
@@ -481,6 +482,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         final explained = error is ModelNotInstalledException ||
             error is ProviderUnavailableException ||
             error is HearingUnavailableException ||
+            error is LocalModelsUnavailableException ||
             error is VoiceUnavailableException;
         // Offer the phone, never do it unasked: the learner decides where
         // their words go.
@@ -557,10 +559,12 @@ class _ProviderChip extends ConsumerWidget {
     final onPhone = models.isSupported && models.activeTutor != null;
 
     final (label, icon) = switch (profile.aiProviderPreference) {
-      AIProviderPreference.local => (
-          '${profile.aiProviderPreference.label} · nothing leaves your phone',
-          Icons.phone_android
-        ),
+      AIProviderPreference.local => models.isSupported
+          ? (
+              '${profile.aiProviderPreference.label} · nothing leaves your phone',
+              Icons.phone_android
+            )
+          : ('This phone only · not possible in a browser', Icons.info_outline),
       AIProviderPreference.cloud => (
           '${profile.aiProviderPreference.label} · sends your messages to $name',
           Icons.cloud_outlined
@@ -572,10 +576,15 @@ class _ProviderChip extends ConsumerWidget {
                   'Automatic · sends your messages to $name until a model is downloaded',
                   Icons.cloud_outlined
                 )
-              : (
-                  'Automatic · download a model or add an AI key to start',
-                  Icons.info_outline
-                ),
+              : models.isSupported
+                  ? (
+                      'Automatic · download a model or add an AI key to start',
+                      Icons.info_outline
+                    )
+                  : (
+                      'Add an AI key to start (no local models in a browser)',
+                      Icons.info_outline
+                    ),
     };
     return Align(
       alignment: Alignment.centerLeft,

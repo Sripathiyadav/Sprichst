@@ -86,8 +86,14 @@ class HybridAIRepository implements AIRepository {
 
     final pref = preference();
 
-    // A browser cannot run models: the cloud is the only place to answer.
-    if (!models.isSupported) return _cloud(call, hearing: hearing);
+    // A browser cannot run models: the cloud is the only place to answer, and
+    // only if the learner has not said that nothing may leave the device.
+    if (!models.isSupported) {
+      if (pref == AIProviderPreference.local) {
+        throw const LocalModelsUnavailableException();
+      }
+      return _cloud(call, hearing: hearing);
+    }
 
     // The provider cannot hear: the phone's Whisper does, whatever the mode.
     if (hearing &&

@@ -383,6 +383,7 @@ class VoiceSession extends ChangeNotifier {
   /// of what the learner can do.
   static String? _explain(Object error) =>
       error is ProviderUnavailableException ||
+              error is LocalModelsUnavailableException ||
               error is VoiceUnavailableException
           ? error.toString()
           : null;

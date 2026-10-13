@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,9 +6,12 @@ import 'firebase_options.dart';
 
 import 'app/app.dart';
 import 'app/startup_problem.dart';
+import 'domain/repositories/ai_exceptions.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // A browser has no on-device models: error messages must not point there.
+  ProviderUnavailableException.inBrowser = kIsWeb;
 
   try {
     await Firebase.initializeApp(

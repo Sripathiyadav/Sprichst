@@ -103,7 +103,8 @@ class _TranslatorViewState extends ConsumerState<TranslatorView> {
       if (!mounted) return;
       final explained = error is ModelNotInstalledException ||
           error is ProviderUnavailableException ||
-          error is HearingUnavailableException;
+          error is HearingUnavailableException ||
+          error is LocalModelsUnavailableException;
       setState(() {
         _result = null;
         _error = explained

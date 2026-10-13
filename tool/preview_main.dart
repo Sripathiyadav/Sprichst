@@ -10,6 +10,7 @@
 //   PREVIEW_GOAL       = everyday | travel | work | goethe | testdaf
 //   PREVIEW_REAL_AI    = true: use the real AI repository (server/on-device) instead of the mock
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sprichst/app/app.dart';
@@ -24,6 +25,7 @@ import 'package:sprichst/domain/learning/progress_tracker.dart';
 import 'package:sprichst/domain/models/curriculum.dart';
 import 'package:sprichst/domain/models/dialogue_models.dart';
 import 'package:sprichst/domain/models/learning_models.dart';
+import 'package:sprichst/domain/repositories/ai_exceptions.dart';
 import 'package:sprichst/domain/repositories/auth_repository.dart';
 import 'package:sprichst/domain/repositories/learning_repository.dart';
 import 'package:sprichst/features/auth/auth_view_model.dart';
@@ -142,6 +144,7 @@ class _PreviewLearning implements LearningRepository {
 }
 
 void main() {
+  ProviderUnavailableException.inBrowser = kIsWeb;
   runApp(ProviderScope(
     overrides: [
       authRepositoryProvider.overrideWithValue(_PreviewAuth()),
