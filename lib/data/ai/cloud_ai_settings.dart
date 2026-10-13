@@ -124,7 +124,11 @@ class CloudAISettings extends ChangeNotifier {
           validBaseUrl(preferences.getString(_customUrlName) ?? '');
       for (final p in cloudProviders) {
         final model = preferences.getString(modelNameOf(p.id));
-        if (model != null && validModel(model) != null) _models[p.id] = model;
+        if (model != null &&
+            validModel(model) != null &&
+            !p.retiredModels.contains(model)) {
+          _models[p.id] = model;
+        }
       }
     } catch (_) {}
     notifyListeners();

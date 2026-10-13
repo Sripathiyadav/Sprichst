@@ -32,6 +32,7 @@ class CloudProvider {
     this.maxTokensField = 'max_tokens',
     this.freeTier = false,
     this.keyOptional = false,
+    this.retiredModels = const {},
   });
 
   /// Stable id, used in storage names: never rename one.
@@ -63,6 +64,10 @@ class CloudProvider {
   /// A self-hosted server may not need a key at all.
   final bool keyOptional;
 
+  /// Models the provider has withdrawn. A choice saved by an earlier version
+  /// is ignored, so the learner is not stuck on a model that no longer exists.
+  final Set<String> retiredModels;
+
   bool get isCustom => id == custom.id;
   bool get canTranscribe => transcriptionModel != null;
   String get defaultModel => models.isEmpty ? '' : models.first.id;
@@ -79,11 +84,14 @@ class CloudProvider {
     keyHint: 'gsk_…',
     transcriptionModel: 'whisper-large-v3-turbo',
     freeTier: true,
+    retiredModels: {'llama-3.3-70b-versatile', 'llama-3.1-8b-instant'},
     models: [
-      CloudModel('llama-3.3-70b-versatile', 'Llama 3.3 70B (best answers)',
-          'The most accurate German. Uses your daily allowance faster.'),
-      CloudModel('llama-3.1-8b-instant', 'Llama 3.1 8B (more messages)',
-          'Quicker and lighter, so your daily allowance lasts longer.'),
+      CloudModel('qwen/qwen3.8-27b', 'Qwen 3.8 27B (fast, good German)',
+          'Quick answers and a generous free allowance.'),
+      CloudModel('openai/gpt-oss-120b', 'GPT-OSS 120B (best answers)',
+          'The most accurate. Thinks first, so replies take a little longer.'),
+      CloudModel('openai/gpt-oss-20b', 'GPT-OSS 20B (lighter)',
+          'Smaller and quicker than the 120B, with a little less depth.'),
     ],
   );
 
@@ -185,11 +193,12 @@ class CloudProvider {
     keyHint: 'sk-or-…',
     jsonMode: false,
     freeTier: true,
+    retiredModels: {'meta-llama/llama-3.3-70b-instruct:free'},
     models: [
+      CloudModel('openrouter/free', 'Free models',
+          'OpenRouter picks a free model for each message.'),
       CloudModel('openrouter/auto', 'Automatic',
-          'OpenRouter picks a model for each message.'),
-      CloudModel('meta-llama/llama-3.3-70b-instruct:free',
-          'Llama 3.3 70B (free)', 'Free, with a daily limit.'),
+          'OpenRouter picks the best model for each message (uses credit).'),
     ],
   );
 

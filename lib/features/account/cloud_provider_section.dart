@@ -18,6 +18,15 @@ final cloudKeyCheckerProvider = Provider<
           .verifyKey(provider, key, baseUrl: baseUrl);
 });
 
+/// Lists the models a provider offers a key. Replaced in tests.
+final cloudModelListerProvider = Provider<
+    Future<List<String>> Function(
+        CloudProvider provider, String? key, String? baseUrl)>((ref) {
+  return (provider, key, baseUrl) =>
+      CloudAIRepository(settings: ref.read(cloudAISettingsProvider))
+          .listModels(provider, key, baseUrl: baseUrl);
+});
+
 /// Account → AI & voice → My own AI key: any provider the learner has an
 /// account with. The key stays on this device.
 class CloudProviderSection extends ConsumerStatefulWidget {
@@ -33,6 +42,7 @@ class _CloudProviderSectionState extends ConsumerState<CloudProviderSection> {
   final _url = TextEditingController();
   final _model = TextEditingController();
   var _checking = false;
+  var _loadingModels = false;
   var _hidden = true;
   String? _result;
   var _resultOk = false;
@@ -128,6 +138,63 @@ class _CloudProviderSectionState extends ConsumerState<CloudProviderSection> {
     await settings.removeKey();
     if (!mounted) return;
     _say('Key removed from this device.', ok: true);
+  }
+
+  /// Asks the provider which models it has now, and lets the learner pick one:
+  /// built-in suggestions can go out of date when a provider retires a model.
+  Future<void> _chooseFromProvider() async {
+    final settings = ref.read(cloudAISettingsProvider);
+    final provider = settings.provider;
+    setState(() => _loadingModels = true);
+    List<String>? ids;
+    try {
+      ids = await ref.read(cloudModelListerProvider)(
+          provider, settings.key, settings.baseUrl);
+    } catch (_) {
+      ids = null;
+    }
+    if (!mounted) return;
+    setState(() => _loadingModels = false);
+    if (ids == null) {
+      _say('Could not load the models. Check your key and connection.',
+          ok: false);
+      return;
+    }
+    if (ids.isEmpty) {
+      _say('${provider.name} did not list any chat models.', ok: false);
+      return;
+    }
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SafeArea(
+        child: ConstrainedBox(
+          constraints:
+              BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .7),
+          child: ListView(
+            key: const ValueKey('cloud-model-sheet'),
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            children: [
+              Text('Models from ${provider.name}',
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: AppSpacing.xs),
+              for (final id in ids!)
+                ListTile(
+                  key: ValueKey('model-$id'),
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(id),
+                  selected: id == settings.model,
+                  onTap: () => Navigator.of(context).pop(id),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (picked == null || !mounted) return;
+    await settings.setModel(picked);
+    if (mounted) _say('Using $picked.', ok: true);
   }
 
   Future<void> _useModel() async {
@@ -290,6 +357,18 @@ class _CloudProviderSectionState extends ConsumerState<CloudProviderSection> {
                   padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                   child: Text('Using model: ${settings.model}',
                       key: const ValueKey('cloud-model-current')),
+                ),
+              if (hasKey || provider.isCustom)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const ValueKey('cloud-models'),
+                    onPressed: _loadingModels ? null : _chooseFromProvider,
+                    icon: const Icon(Icons.list_alt_outlined),
+                    label: Text(_loadingModels
+                        ? 'Loading models…'
+                        : 'See the models ${provider.name} offers'),
+                  ),
                 ),
               TextField(
                 key: const ValueKey('cloud-model-field'),

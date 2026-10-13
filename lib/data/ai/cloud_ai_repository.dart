@@ -38,7 +38,8 @@ class CloudAIRepository implements AIRepository {
   final http.Client _client;
 
   static const _timeout = Duration(seconds: 40);
-  static const _maxTokens = 400;
+  // Room for models that think before they answer (their reasoning counts).
+  static const _maxTokens = 1200;
 
   CloudProvider get provider => settings.provider;
   bool get canTranscribe => provider.canTranscribe;
@@ -125,6 +126,52 @@ class CloudAIRepository implements AIRepository {
   @override
   Future<VoiceList> listVoices() =>
       throw UnsupportedError('Cloud providers do not speak; the phone does.');
+
+  /// The chat models [provider] offers this key, from its own model list, so a
+  /// learner can pick one that exists when a built-in suggestion has been
+  /// withdrawn. Speech, embedding, image and safety models are left out.
+  Future<List<String>> listModels(CloudProvider provider, String? key,
+      {String? baseUrl}) async {
+    final base = provider.isCustom ? baseUrl : provider.baseUrl;
+    if (base == null) return const [];
+    final response = await _guard(
+        provider,
+        () => _client
+            .get(Uri.parse('$base/models'),
+                headers: _headers(provider, key, json: false))
+            .timeout(_timeout));
+    final data = _decode(provider, response.body);
+    final items = (data['data'] ?? data['models']);
+    if (items is! List) return const [];
+    const notChat = [
+      'whisper',
+      'embed',
+      'tts',
+      'guard',
+      'moderation',
+      'dall-e',
+      'image',
+      'audio',
+      'safeguard',
+      'orpheus',
+      'transcribe',
+      'realtime',
+      'rerank',
+      'imagen',
+      'veo',
+      'speech',
+    ];
+    final ids = <String>{};
+    for (final item in items) {
+      var id = item is Map ? (item['id'] ?? item['name']) : item;
+      if (id is! String) continue;
+      id = id.replaceFirst('models/', ''); // Gemini prefixes its ids
+      final lower = id.toLowerCase();
+      if (notChat.any(lower.contains)) continue;
+      if (CloudAISettings.validModel(id) != null) ids.add(id);
+    }
+    return ids.toList()..sort();
+  }
 
   /// Asks [provider] whether [key] works, by listing its models. Null means
   /// it does. [baseUrl] is needed for [CloudProvider.custom].

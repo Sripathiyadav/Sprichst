@@ -156,7 +156,7 @@ void main() {
           'https://api.groq.com/openai/v1/chat/completions');
       expect(request.headers['Authorization'], 'Bearer $_key');
       final body = jsonDecode(request.body) as Map<String, dynamic>;
-      expect(body['model'], 'llama-3.3-70b-versatile');
+      expect(body['model'], 'qwen/qwen3.8-27b');
       expect(body['response_format'], {'type': 'json_object'});
       final prompt = jsonEncode(body['messages']);
       expect(prompt, contains('Tutor: Hallo! Wie heißt du?'));
@@ -457,7 +457,7 @@ void main() {
       await settings.setModel('gpt-4.1');
       await settings.setProvider('groq');
       expect(settings.key, _key);
-      expect(settings.model, 'llama-3.3-70b-versatile');
+      expect(settings.model, 'qwen/qwen3.8-27b');
       await settings.setProvider('openai');
       expect(settings.model, 'gpt-4.1');
       expect(
@@ -800,13 +800,13 @@ void main() {
 
     testWidgets('the model can be chosen', (tester) async {
       await pump(tester);
-      await tester.ensureVisible(find.text('Llama 3.1 8B (more messages)'));
-      await tester.tap(find.text('Llama 3.1 8B (more messages)'));
+      await tester.ensureVisible(find.text('GPT-OSS 20B (lighter)'));
+      await tester.tap(find.text('GPT-OSS 20B (lighter)'));
       await tester.pumpAndSettle();
       final container = ProviderScope.containerOf(
           tester.element(find.byType(CloudProviderSection)));
-      expect(container.read(cloudAISettingsProvider).model,
-          'llama-3.1-8b-instant');
+      expect(
+          container.read(cloudAISettingsProvider).model, 'openai/gpt-oss-20b');
     });
   });
 }
