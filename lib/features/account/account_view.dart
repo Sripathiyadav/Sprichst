@@ -753,8 +753,15 @@ class AIAndVoicePageState extends ConsumerState<AIAndVoicePage> {
                         state: provider == profile.aiProviderPreference
                             ? OptionState.selected
                             : OptionState.idle,
-                        onTap: () => _save(
-                            profile.copyWith(aiProviderPreference: provider)),
+                        onTap: () async {
+                          await _save(
+                              profile.copyWith(aiProviderPreference: provider));
+                          // Choosing online: connect now, so the first message
+                          // has no wait.
+                          if (provider == AIProviderPreference.cloud) {
+                            ref.read(appControllerProvider).warmUpCloud();
+                          }
+                        },
                       ),
                     ),
                 ],

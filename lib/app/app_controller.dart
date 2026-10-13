@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -222,6 +224,13 @@ class AppController extends ChangeNotifier {
         currentLesson: currentLesson);
   }
 
+  /// Connects ahead of time to the learner's own AI provider, when they chose
+  /// it, so the first online message has no wait. Safe to call any time.
+  void warmUpCloud() {
+    final ai = _aiRepository;
+    if (ai is HybridAIRepository) unawaited(ai.warmUp());
+  }
+
   Future<void> initialize() async {
     isLoading = true;
     error = null;
@@ -239,6 +248,7 @@ class AppController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+    warmUpCloud();
   }
 
   /// Pull-to-refresh: sends anything not yet saved, then reads the learner's

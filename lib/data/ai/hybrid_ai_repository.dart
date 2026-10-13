@@ -7,6 +7,7 @@ import '../../domain/repositories/ai_exceptions.dart';
 import '../../domain/repositories/learning_repository.dart';
 import '../on_device/model_manager.dart';
 import '../on_device/on_device_ai_repository.dart';
+import 'cloud_ai_repository.dart';
 
 /// Where one request should be answered, when the learner has said so.
 enum AiRoute { phone }
@@ -146,6 +147,16 @@ class HybridAIRepository implements AIRepository {
       }
       rethrow;
     }
+  }
+
+  /// Gets a learner who chose their own AI key ready for the first message, so
+  /// switching online has no wait. Does nothing in any other mode: nothing is
+  /// sent to a provider unless the learner chose to use it.
+  Future<void> warmUp() async {
+    final repo = cloud;
+    if (repo is! CloudAIRepository) return;
+    if (preference() != AIProviderPreference.cloud || !_hasCloud) return;
+    await repo.warmUp();
   }
 
   @override

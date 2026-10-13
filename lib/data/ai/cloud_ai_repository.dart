@@ -150,6 +150,19 @@ class CloudAIRepository implements AIRepository {
     }
   }
 
+  /// Opens the connection to the provider ahead of the first message (the
+  /// network handshake is most of the wait), by asking it for its model list.
+  /// Sends no message, and any failure is ignored: the first real request
+  /// reports problems to the learner.
+  Future<void> warmUp() async {
+    final key = settings.key;
+    final base = settings.baseUrl;
+    if (base == null || (key == null && !provider.keyOptional)) return;
+    try {
+      await verifyKey(provider, key, baseUrl: provider.isCustom ? base : null);
+    } catch (_) {}
+  }
+
   Map<String, String> _headers(CloudProvider p, String? key,
       {required bool json}) {
     return {
