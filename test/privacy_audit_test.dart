@@ -77,7 +77,10 @@ void main() {
       for (final file in files) {
         final path = file.path;
         final scanned = path.startsWith('lib/') ||
-            path.startsWith('web/') && !path.startsWith('web/vendor/') ||
+            // web/legal holds prose that names tools only to say we do not use them.
+            path.startsWith('web/') &&
+                !path.startsWith('web/vendor/') &&
+                !path.startsWith('web/legal/') ||
             path == 'pubspec.yaml' ||
             path.startsWith('android/app/src/main') ||
             path.startsWith('ios/Runner');

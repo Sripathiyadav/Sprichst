@@ -1,4 +1,4 @@
-package com.example.sprichst
+package com.sprichst.app
 
 import io.flutter.embedding.android.FlutterActivity
 

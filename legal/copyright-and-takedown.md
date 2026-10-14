@@ -15,11 +15,11 @@ We respect other people's intellectual property and expect users to do the same.
 
 Send a notice to our designated copyright agent:
 
-[[COPYRIGHT_AGENT_NAME]]
-[[COPYRIGHT_AGENT_ADDRESS]]
-Email: [[COPYRIGHT_AGENT_EMAIL]]
+Sripathi Vangapandla
+Rudolf-Ernst-Weise-Str. 34, 06112 Halle (Saale), Germany
+Email: sripathiyadav66@gmail.com
 
-(US users: the agent is registered with the U.S. Copyright Office under 17 U.S.C. § 512(c)(2). Registration number: [[DMCA_REGISTRATION_NUMBER]].)
+(US users: this contact is not registered as a designated agent with the U.S. Copyright Office.)
 
 Please include:
 
@@ -38,7 +38,7 @@ On a valid notice we remove or disable access to the material promptly, tell the
 
 ## Counter-notice
 
-If your content was removed and you believe that was a mistake, send a counter-notice to the same address with: your signature; identification of the removed material and where it was; a statement under penalty of perjury that you believe in good faith it was removed by mistake or misidentification; your name, address and phone; and consent to the jurisdiction of the federal court for your address (or, outside the US, the court for [[JURISDICTION_CITY]]) and to accept service from the complainant. We forward the counter-notice, and restore the material in 10 to 14 business days unless the complainant tells us they have started a court case. EU users may also use our complaint handling and out-of-court dispute settlement under DSA Articles 20 and 21.
+If your content was removed and you believe that was a mistake, send a counter-notice to the same address with: your signature; identification of the removed material and where it was; a statement under penalty of perjury that you believe in good faith it was removed by mistake or misidentification; your name, address and phone; and consent to the jurisdiction of the federal court for your address (or, outside the US, the court for Halle (Saale), Germany) and to accept service from the complainant. We forward the counter-notice, and restore the material in 10 to 14 business days unless the complainant tells us they have started a court case. EU users may also use our complaint handling and out-of-court dispute settlement under DSA Articles 20 and 21.
 
 ## Repeat infringers
 
@@ -50,4 +50,4 @@ We close the accounts of users who are repeat infringers, in appropriate circums
 
 ## Other illegal content
 
-To report other illegal content under the Digital Services Act, contact [[DSA_CONTACT_EMAIL]] (see the Impressum). Give a clear explanation of why you think the content is illegal, its exact location, and your name and email (unless the report concerns child sexual abuse material, where you may stay anonymous).
+To report other illegal content under the Digital Services Act, contact sripathiyadav66@gmail.com (see the Impressum). Give a clear explanation of why you think the content is illegal, its exact location, and your name and email (unless the report concerns child sexual abuse material, where you may stay anonymous).

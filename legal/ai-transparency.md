@@ -38,7 +38,7 @@ We do not train or fine-tune any model on your messages, recordings or learning 
 
 ## Human oversight and reporting problems
 
-Content is not reviewed by a person unless you report it. If an answer is harmful, wrong in a way that matters, or you think the AI misbehaved, tell us at [[SUPPORT_EMAIL]] (include the date and what you saw). Account → Contact developer prepares a report you can copy and send.
+Content is not reviewed by a person unless you report it. If an answer is harmful, wrong in a way that matters, or you think the AI misbehaved, tell us at sripathiyadav66@gmail.com (include the date and what you saw). Account → Contact developer prepares a report you can copy and send.
 
 ## Your rights
 

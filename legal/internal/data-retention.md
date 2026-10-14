@@ -11,4 +11,4 @@
 | Rights requests and copyright notices | 3 years after closure | Manual |
 | On-device cache | Until reset, sign-out and clear, or uninstall | User |
 
-Inactive accounts: [[INACTIVE_ACCOUNT_POLICY, for example delete after 24 months of inactivity with a prior email notice]].
+Inactive accounts: We do not delete inactive accounts automatically; the data stays until the learner deletes the account (Account → Danger zone → Delete account) or asks us to at sripathiyadav66@gmail.com.

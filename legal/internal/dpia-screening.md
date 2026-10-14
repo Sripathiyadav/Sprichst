@@ -1,6 +1,6 @@
 # DPIA screening (GDPR Art. 35)
 
-Date: 8 October 2026. Reviewer: [[REVIEWER]].
+Date: 8 October 2026. Reviewer: Sripathi Vangapandla.
 
 Criteria from the EDPB guidelines (a DPIA is usually needed when two or more apply):
 

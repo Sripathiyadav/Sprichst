@@ -31,3 +31,4 @@ firebase/node_modules/
 firestore-debug.log
 .firebase-deploy.*.json
 .firebase/
+store/play/release/

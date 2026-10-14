@@ -1,6 +1,6 @@
 # Handling data subject requests
 
-1. Receive at [[PRIVACY_EMAIL]]. Log date received (the clock starts: 1 month GDPR, 45 days CCPA).
+1. Receive at sripathiyadav66@gmail.com. Log date received (the clock starts: 1 month GDPR, 45 days CCPA).
 2. Confirm identity: reply must come from the account's Google email or be verified by signing in. Never send data to an unverified address.
 3. Act:
    - Access / portability: export the user's Firestore documents as JSON (the in-app export covers the profile).

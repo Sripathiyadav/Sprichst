@@ -14,13 +14,13 @@ This policy explains what personal data Sprichst ("the app", "we") handles when 
 
 The controller of your personal data is:
 
-[[CONTROLLER_NAME]]
-[[CONTROLLER_ADDRESS]]
-Email: [[PRIVACY_EMAIL]]
+Sripathi Vangapandla
+Rudolf-Ernst-Weise-Str. 34, 06112 Halle (Saale), Germany
+Email: sripathiyadav66@gmail.com
 
-Contact for privacy questions: [[PRIVACY_CONTACT]] (if we have appointed a data protection officer, they are named here: [[DPO_NAME_OR_NONE]]).
+Contact for privacy questions: sripathiyadav66@gmail.com (we have not appointed a data protection officer, as none is required).
 
-[[EU_UK_REPRESENTATIVE_OR_NONE]]
+We are based in the EU, so no EU representative is needed. We have not appointed a UK representative.
 
 ## 2. What we handle, why, and on what legal basis
 
@@ -56,7 +56,7 @@ We use no advertising or analytics cookies. We store only what the app needs to 
 
 ## 5. Who receives your data
 
-Google (Firebase Authentication and Cloud Firestore). Google Ireland Limited provides these services in the EEA and UK, and Google LLC in the United States, acting as our processor for your account and learning profile. The data is stored in the location [[FIRESTORE_REGION]]. Google's own privacy information applies to the Google account you sign in with.
+Google (Firebase Authentication and Cloud Firestore). Google Ireland Limited provides these services in the EEA and UK, and Google LLC in the United States, acting as our processor for your account and learning profile. The data is stored in the location europe-west3 (Frankfurt, Germany). Google's own privacy information applies to the Google account you sign in with.
 
 The AI provider you choose (only if you add your own key). Which one is up to you: Groq, Inc.; Google (Gemini); OpenAI; Anthropic; xAI; Mistral AI; DeepSeek; OpenRouter, Inc.; or a server of your choosing that speaks the OpenAI chat API (their companies and locations vary, and are mostly in the United States). You have your own account and agreement with that provider; it is not our processor and we do not receive, and cannot see, what you send. Your message, the last few messages of the conversation and the short learning summary go to it only when you choose "My own AI key", or in "Automatic" when a model is not yet downloaded and you have added a key. Read the provider's own privacy policy and data terms for what it keeps. If you choose "This phone only", nothing is sent to any provider. Sprichst asks before it moves a message to a different place: when your provider's allowance runs out, your key is rejected or you are offline, you are told and decide whether to answer on your phone.
 
@@ -68,7 +68,7 @@ We do not use other analytics, advertising or tracking recipients.
 
 ## 6. Transfers outside your country
 
-Google processes data in the United States and other countries, and so may the AI provider you choose if you use your own key (that transfer is made by you, under your agreement with the provider). Where the GDPR or UK GDPR applies, we rely on an adequacy decision (such as the EU-US Data Privacy Framework for certified recipients) or on the European Commission's Standard Contractual Clauses, together with the UK addendum where needed, and on additional safeguards. You can ask us for a copy of the safeguards at [[PRIVACY_EMAIL]].
+Google processes data in the United States and other countries, and so may the AI provider you choose if you use your own key (that transfer is made by you, under your agreement with the provider). Where the GDPR or UK GDPR applies, we rely on an adequacy decision (such as the EU-US Data Privacy Framework for certified recipients) or on the European Commission's Standard Contractual Clauses, together with the UK addendum where needed, and on additional safeguards. You can ask us for a copy of the safeguards at sripathiyadav66@gmail.com.
 
 ## 7. How long we keep data
 
@@ -88,11 +88,11 @@ Depending on where you live, you have the right to access your data, correct it,
 - Reset learning progress: Account → Danger zone → Reset learning progress.
 - Delete your account and learning data: Account → Danger zone → Delete account.
 
-For anything else, write to [[PRIVACY_EMAIL]]. We will answer within one month (45 days in California, extendable where the law allows) and will not charge you except for clearly excessive requests. We may need to confirm that you are the account holder. See also "Your Rights" for the full list by region.
+For anything else, write to sripathiyadav66@gmail.com. We will answer within one month (45 days in California, extendable where the law allows) and will not charge you except for clearly excessive requests. We may need to confirm that you are the account holder. See also "Your Rights" for the full list by region.
 
 ## 9. Children
 
-Sprichst is for people aged 16 and over, or the age of digital consent in your country if that is lower, and in India for people aged 18 and over. Younger learners need a parent or guardian to set up the account and agree to this policy on their behalf. We do not knowingly collect data from children below those ages. If you think a child has given us data, contact [[PRIVACY_EMAIL]] and we will delete it. The app contains no advertising, no tracking and no public chat for anyone.
+Sprichst is for people aged 16 and over, or the age of digital consent in your country if that is lower, and in India for people aged 18 and over. Younger learners need a parent or guardian to set up the account and agree to this policy on their behalf. We do not knowingly collect data from children below those ages. If you think a child has given us data, contact sripathiyadav66@gmail.com and we will delete it. The app contains no advertising, no tracking and no public chat for anyone.
 
 ## 10. Security
 
@@ -100,17 +100,17 @@ We protect your data with measures suited to the risk: encrypted connections, pe
 
 ## 11. Regional information
 
-European Economic Area and United Kingdom. The controller is named in section 1. You can complain to your national data protection authority; in the UK that is the Information Commissioner's Office. Our lead supervisory authority is [[SUPERVISORY_AUTHORITY]].
+European Economic Area and United Kingdom. The controller is named in section 1. You can complain to your national data protection authority; in the UK that is the Information Commissioner's Office. Our lead supervisory authority is the Landesbeauftragter für den Datenschutz Sachsen-Anhalt (state data protection commissioner of Saxony-Anhalt), Magdeburg, Germany.
 
 Switzerland. We apply the revised Federal Act on Data Protection. You can contact the Federal Data Protection and Information Commissioner.
 
-California and other US states. We do not sell or share personal information, we do not use it for targeted advertising, and we do not use or disclose sensitive personal information beyond providing the service. We collect these categories: identifiers (account identifier, email, name), internet activity inside the app (your learning activity), audio (voice recordings, which are discarded after transcription), and inferences (your weak skills and recommendations). You may request to know, delete, correct and limit use of your data, and we will not discriminate against you for doing so. Send requests to [[PRIVACY_EMAIL]]; an authorised agent may act for you. If we deny a request, you can appeal by replying to that decision. We also honour browser Global Privacy Control signals, although we have nothing to opt you out of. Residents of Virginia, Colorado, Connecticut, Texas and other states with similar laws have comparable rights.
+California and other US states. We do not sell or share personal information, we do not use it for targeted advertising, and we do not use or disclose sensitive personal information beyond providing the service. We collect these categories: identifiers (account identifier, email, name), internet activity inside the app (your learning activity), audio (voice recordings, which are discarded after transcription), and inferences (your weak skills and recommendations). You may request to know, delete, correct and limit use of your data, and we will not discriminate against you for doing so. Send requests to sripathiyadav66@gmail.com; an authorised agent may act for you. If we deny a request, you can appeal by replying to that decision. We also honour browser Global Privacy Control signals, although we have nothing to opt you out of. Residents of Virginia, Colorado, Connecticut, Texas and other states with similar laws have comparable rights.
 
 Canada. We handle personal information in line with PIPEDA and, in Quebec, Law 25. You may ask to access or correct it and can complain to the Office of the Privacy Commissioner of Canada or your provincial regulator.
 
 Brazil. Under the LGPD you have the rights in Art. 18, including confirmation of processing, access, correction, anonymisation or deletion, portability and information about sharing. You can complain to the ANPD.
 
-India. We are preparing to meet the Digital Personal Data Protection Act, 2023 as its provisions take effect. You may ask to access, correct or erase your data, nominate someone to exercise your rights if you die or become incapacitated, and use our grievance contact, [[GRIEVANCE_OFFICER]]. If you are under 18, a parent or guardian must agree on your behalf.
+India. We are preparing to meet the Digital Personal Data Protection Act, 2023 as its provisions take effect. You may ask to access, correct or erase your data, nominate someone to exercise your rights if you die or become incapacitated, and use our grievance contact, Sripathi Vangapandla, sripathiyadav66@gmail.com. If you are under 18, a parent or guardian must agree on your behalf.
 
 Australia, Japan, South Korea, South Africa and elsewhere. We apply the same protections to everyone and will respect your rights under local law, such as the Australian Privacy Principles, Japan's APPI, Korea's PIPA and South Africa's POPIA.
 
@@ -120,4 +120,4 @@ If we change this policy in a meaningful way we will tell you in the app before 
 
 ## 13. Contact
 
-[[CONTROLLER_NAME]], [[CONTROLLER_ADDRESS]], [[PRIVACY_EMAIL]].
+Sripathi Vangapandla, Rudolf-Ernst-Weise-Str. 34, 06112 Halle (Saale), Germany, sripathiyadav66@gmail.com.

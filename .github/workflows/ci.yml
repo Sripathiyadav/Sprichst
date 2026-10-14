@@ -21,6 +21,12 @@ jobs:
       - run: flutter test
       - name: Third-party notices are current
         run: python3 scripts/generate_third_party_notices.py --check
+      - name: Legal documents have no open fields
+        run: python3 scripts/check_legal_placeholders.py --strict
+      - name: Public legal web pages match legal/
+        run: |
+          pip install markdown
+          python3 scripts/build_legal_pages.py --check
       - name: Course content is valid
         run: python3 scripts/validate_curriculum.py
       - name: Web build

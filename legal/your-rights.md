@@ -2,7 +2,7 @@
 
 Last updated: 8 October 2026
 
-You can use most of these rights directly in the app. For the rest, write to [[PRIVACY_EMAIL]]. We answer within one month (45 days for California requests, extendable once where the law allows and we tell you why). Exercising a right is free. We may ask for proof that the account is yours, and we may refuse or charge a reasonable fee only for requests that are clearly unfounded or excessive.
+You can use most of these rights directly in the app. For the rest, write to sripathiyadav66@gmail.com. We answer within one month (45 days for California requests, extendable once where the law allows and we tell you why). Exercising a right is free. We may ask for proof that the account is yours, and we may refuse or charge a reasonable fee only for requests that are clearly unfounded or excessive.
 
 ## In the app
 
@@ -38,7 +38,7 @@ You have access, correction and deletion rights, and the right to complain to th
 
 ## Children and guardians
 
-A parent or guardian can ask us to access or delete a child's data at [[PRIVACY_EMAIL]].
+A parent or guardian can ask us to access or delete a child's data at sripathiyadav66@gmail.com.
 
 ## Consumer rights
 

@@ -4,8 +4,8 @@ These documents cover privacy, terms, AI transparency, copyright and security fo
 
 ## Before you publish
 
-1. Fill every `[[PLACEHOLDER]]` (controller, addresses, contacts, copyright agent, regions, retention). `python3 scripts/check_legal_placeholders.py` lists what is left; `--strict` fails while any remain (use it in the release pipeline).
-2. Register your DMCA designated agent at copyright.gov/dmca-directory (US$6, renewed every 3 years) if you serve US users.
+1. Fill every placeholder written in double square brackets (controller, addresses, contacts, copyright agent, regions, retention). `python3 scripts/check_legal_placeholders.py` lists what is left; `--strict` fails while any remain (use it in the release pipeline).
+2. Optional: register a DMCA designated agent at copyright.gov/dmca-directory (US$6, renewed every 3 years) if you serve US users, then replace the "not registered" line in `copyright-and-takedown.md`.
 3. Sign the Google Cloud / Firebase Data Processing Addendum and your AI provider's DPA; pick the Firestore region (an EU region for EU users is advisable).
 4. Decide whether you need an EU/UK representative (GDPR Art. 27) and a data protection officer (Art. 37).
 5. Complete `internal/` records; keep them current.

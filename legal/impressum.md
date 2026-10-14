@@ -2,38 +2,35 @@
 
 Information under § 5 Digital-Dienste-Gesetz (DDG), § 18 Medienstaatsvertrag (MStV), Art. 5 of the EU E-Commerce Directive and Art. 11 and 12 of the Digital Services Act.
 
-Replace every placeholder before publishing. A German Impressum must be complete, easy to find, and reachable in two clicks; the app links it from the legal hub and the sign-in screen.
-
 ## Provider
 
-[[CONTROLLER_NAME]]
-[[LEGAL_FORM_IF_COMPANY]]
-[[CONTROLLER_ADDRESS]] (a street address where you can be served; a P.O. box is not enough)
-
-Represented by: [[AUTHORISED_REPRESENTATIVE_IF_COMPANY]]
+Sripathi Vangapandla
+Private individual (non-commercial student project)
+Rudolf-Ernst-Weise-Str. 34, 06112 Halle (Saale), Germany
 
 ## Contact
 
-Email: [[SUPPORT_EMAIL]]
-Telephone: [[PHONE_NUMBER_OR_SECOND_FAST_CHANNEL]]
-(A second fast and direct means of contact is required, for example a contact form in addition to email.)
+Email: sripathiyadav66@gmail.com
+Telephone and WhatsApp: +49 155 65800258 (WhatsApp username: @sripathi_yadav)
+Portfolio: [sripathiyadavportfolio.netlify.app](https://sripathiyadavportfolio.netlify.app)
+Also on [Instagram](https://www.instagram.com/sri.in.germany/), [LinkedIn](https://www.linkedin.com/in/sripathi-yadav/) and [GitHub](https://github.com/Sripathiyadav)
 
 ## Register entries
 
-Commercial register: [[REGISTER_COURT_AND_NUMBER_OR_NONE]]
-VAT ID (§ 27a UStG): [[VAT_ID_OR_NONE]]
+Commercial register: none (private individual)
+VAT ID (§ 27a UStG): none
 
 ## Responsible for content under § 18(2) MStV
 
-[[NAME_AND_ADDRESS_OR_SAME_AS_ABOVE]]
+Sripathi Vangapandla, Rudolf-Ernst-Weise-Str. 34, 06112 Halle (Saale), Germany
 
 ## Digital Services Act contact point
 
-Single point of contact for authorities and recipients of the service: [[DSA_CONTACT_EMAIL]]. We communicate in German and English.
+Single point of contact for authorities and recipients of the service: sripathiyadav66@gmail.com. We communicate in German and English.
 
 ## Consumer dispute resolution
 
-[[ADR_STATEMENT, for example: We are not willing or obliged to participate in dispute resolution proceedings before a consumer arbitration board.]]
+We are not willing or obliged to participate in dispute resolution proceedings before a consumer arbitration board.
 
 ## Liability for links
 

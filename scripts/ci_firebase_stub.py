@@ -46,7 +46,7 @@ SERVICES_JSON = {
         {
             "client_info": {
                 "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
-                "android_client_info": {"package_name": "com.example.sprichst"},
+                "android_client_info": {"package_name": "com.sprichst.app"},
             },
             "oauth_client": [],
             "api_key": [{"current_key": "ci-stub"}],

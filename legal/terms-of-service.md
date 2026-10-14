@@ -2,7 +2,7 @@
 
 Last updated: 8 October 2026
 
-These terms are the agreement between you and [[CONTROLLER_NAME]] ("we", "us") for using the Sprichst app and website. Please read them together with the Privacy Policy, the Disclaimer and the AI Transparency notice. Nothing in these terms limits rights that the law gives you as a consumer and that cannot be waived.
+These terms are the agreement between you and Sripathi Vangapandla ("we", "us") for using the Sprichst app and website. Please read them together with the Privacy Policy, the Disclaimer and the AI Transparency notice. Nothing in these terms limits rights that the law gives you as a consumer and that cannot be waived.
 
 ## 1. The service
 
@@ -14,11 +14,11 @@ You must be 16 or older, or old enough under your country's law to agree to onli
 
 ## 3. Your account
 
-You sign in with a Google account. You are responsible for keeping that account secure and for what happens under it. Tell us at [[SUPPORT_EMAIL]] if you think someone else has accessed it. You may stop using Sprichst at any time and can delete your account in Account → Danger zone → Delete account.
+You sign in with a Google account. You are responsible for keeping that account secure and for what happens under it. Tell us at sripathiyadav66@gmail.com if you think someone else has accessed it. You may stop using Sprichst at any time and can delete your account in Account → Danger zone → Delete account.
 
 ## 4. Price
 
-[[PRICING_STATEMENT]] If we introduce paid features we will show the full price, the billing period, how to cancel, and your right of withdrawal before you pay, and these terms will be updated first.
+Sprichst is free. The on-device AI model costs nothing. If you choose to connect your own key for an AI provider, any fees or paid plans with that provider are between you and them; we never charge for it and never see your payments. If we introduce paid features we will show the full price, the billing period, how to cancel, and your right of withdrawal before you pay, and these terms will be updated first.
 
 ## 5. Acceptable use
 
@@ -35,7 +35,7 @@ We may limit or suspend access when someone breaks these rules or puts the servi
 
 ## 6. Our content and your content
 
-The lessons, exercises, design, text, icons and code of Sprichst belong to [[CONTROLLER_NAME]] or our licensors and are protected by copyright and other laws. Open-source components keep their own licences, listed in the Third-Party Notices. We give you a personal, non-exclusive, non-transferable right to use the app and its content for your own learning.
+The lessons, exercises, design, text, icons and code of Sprichst belong to Sripathi Vangapandla or our licensors and are protected by copyright and other laws. Open-source components keep their own licences, listed in the Third-Party Notices. We give you a personal, non-exclusive, non-transferable right to use the app and its content for your own learning.
 
 What you write or say to the app (your answers, messages and recordings) stays yours. You give us only the permission needed to process it to give you the service as described in the Privacy Policy. We do not use it to train AI models.
 
@@ -59,7 +59,7 @@ We aim to keep the service running, but we do not promise it will be uninterrupt
 
 Nothing in these terms limits our liability for intent, gross negligence, injury to life, body or health, fraud, defective products under mandatory product liability law, or anything else the law does not allow us to limit.
 
-Subject to that, and to the extent allowed: we are liable for slight negligence only where we break an essential duty that the contract exists to deliver, and then only for typical, foreseeable damage. We are not responsible for losses caused by AI answers you chose to rely on, for exam results, for the unavailability of your device or network, or for the actions of third-party services outside our control. [[REVIEW_LIABILITY_CLAUSE_WITH_COUNSEL]] The app is otherwise provided "as is" where the law allows.
+Subject to that, and to the extent allowed: we are liable for slight negligence only where we break an essential duty that the contract exists to deliver, and then only for typical, foreseeable damage. We are not responsible for losses caused by AI answers you chose to rely on, for exam results, for the unavailability of your device or network, or for the actions of third-party services outside our control. The app is otherwise provided "as is" where the law allows.
 
 Your statutory warranty rights under consumer law (for example the EU Digital Content Directive) are not affected.
 
@@ -69,13 +69,13 @@ You can end it by deleting your account. We may end or suspend your access for a
 
 ## 12. Governing law and disputes
 
-If you are a consumer, the law of your country of residence applies to the extent it gives you mandatory protection; otherwise the law of [[GOVERNING_LAW_COUNTRY]] applies, excluding the UN Convention on Contracts for the International Sale of Goods. You may bring a claim in the courts of your country of residence. Our courts are in [[JURISDICTION_CITY]] for businesses and where the law allows.
+If you are a consumer, the law of your country of residence applies to the extent it gives you mandatory protection; otherwise the law of Germany applies, excluding the UN Convention on Contracts for the International Sale of Goods. You may bring a claim in the courts of your country of residence. Our courts are in Halle (Saale), Germany for businesses and where the law allows.
 
-Online dispute resolution. We are neither willing nor obliged to take part in consumer dispute settlement proceedings before a consumer arbitration board unless the law requires it. [[ADJUST_FOR_ADR_POLICY]] The EU's former online dispute resolution platform has been discontinued.
+Online dispute resolution. We are neither willing nor obliged to take part in consumer dispute settlement proceedings before a consumer arbitration board unless the law requires it. The EU's former online dispute resolution platform has been discontinued.
 
 ## 13. Contact and notices
 
-[[CONTROLLER_NAME]], [[CONTROLLER_ADDRESS]], [[SUPPORT_EMAIL]]. We reach you by the email on your Google account or inside the app. See the Impressum for our provider details and the Digital Services Act contact point.
+Sripathi Vangapandla, Rudolf-Ernst-Weise-Str. 34, 06112 Halle (Saale), Germany, sripathiyadav66@gmail.com. We reach you by the email on your Google account or inside the app. See the Impressum for our provider details and the Digital Services Act contact point.
 
 ## 14. Final provisions
 

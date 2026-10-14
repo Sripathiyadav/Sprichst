@@ -190,9 +190,16 @@ after
         () {
       final copyright = _read('legal/copyright-and-takedown.md');
       expect(copyright, contains('designated copyright agent'));
-      expect(copyright, contains('512(c)'));
+      expect(copyright, contains('not registered as a designated agent'));
       expect(copyright, contains('Counter-notice'));
       expect(copyright, contains('penalty of perjury'));
+    });
+
+    test('no document still has an unfilled [[FIELD]]', () {
+      for (final doc in legalDocuments) {
+        expect(RegExp(r'\[\[[A-Z_]').hasMatch(_read(doc.asset)), isFalse,
+            reason: doc.asset);
+      }
     });
 
     test('no document contains a real-looking key or secret', () {
@@ -214,7 +221,7 @@ after
       }
     });
 
-    testWidgets('opening a document shows its text and highlights placeholders',
+    testWidgets('opening a document shows its text and names the provider',
         (tester) async {
       tester.view.physicalSize = const Size(900, 2400);
       tester.view.devicePixelRatio = 1;
@@ -226,7 +233,7 @@ after
       expect(find.text('Privacy Policy'), findsWidgets);
       expect(find.textContaining('We do not use analytics', findRichText: true),
           findsWidgets);
-      expect(find.textContaining('[[CONTROLLER_NAME]]', findRichText: true),
+      expect(find.textContaining('Sripathi Vangapandla', findRichText: true),
           findsWidgets);
     });
 

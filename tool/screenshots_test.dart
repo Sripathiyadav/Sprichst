@@ -10,50 +10,13 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sprichst/domain/models/learning_models.dart';
 
 import '../test/support/fakes.dart';
+import 'shot_support.dart';
 
 final _dir = Platform.environment['SHOT_DIR'] ?? 'build/shots';
-
-Future<void> _loadFonts() async {
-  final figtree = FontLoader('Figtree');
-  // Text with no font named (button labels, for one) is drawn with the test
-  // font, solid blocks. Giving that font's name to Roboto makes it readable.
-  for (final file in Directory('assets/fonts/figtree')
-      .listSync()
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.ttf'))) {
-    figtree.addFont(Future.value(
-        ByteData.view(Uint8List.fromList(file.readAsBytesSync()).buffer)));
-  }
-  await figtree.load();
-  for (final family in ['Roboto', 'Ahem']) {
-    final loader = FontLoader(family);
-    for (final file in Directory('assets/fonts/roboto')
-        .listSync()
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.ttf'))) {
-      loader.addFont(Future.value(
-          ByteData.view(Uint8List.fromList(file.readAsBytesSync()).buffer)));
-    }
-    await loader.load();
-  }
-
-  // Material icons come from the Flutter SDK, which tests do not load alone.
-  final root = Platform.environment['FLUTTER_ROOT'] ??
-      '/opt/homebrew/Caskroom/flutter/3.24.3/flutter';
-  final icons = File(
-      '$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf');
-  if (icons.existsSync()) {
-    final iconLoader = FontLoader('MaterialIcons')
-      ..addFont(Future.value(
-          ByteData.view(Uint8List.fromList(icons.readAsBytesSync()).buffer)));
-    await iconLoader.load();
-  }
-}
 
 Future<void> _shot(WidgetTester tester, String name) async {
   await tester.pumpAndSettle();
@@ -84,7 +47,7 @@ LearningProfile _learner() => LearningProfile.newLearner(
     );
 
 void main() {
-  setUpAll(_loadFonts);
+  setUpAll(loadShotFonts);
 
   for (final brightness in [Brightness.light, Brightness.dark]) {
     final mode = brightness.name;

@@ -2,7 +2,7 @@
 
 Last updated: 8 October 2026
 
-We want everyone to be able to learn with Sprichst. Our goal is to meet the Web Content Accessibility Guidelines (WCAG) 2.2 level AA and EN 301 549, in line with the European Accessibility Act and similar laws. We have not yet had a full external audit, so we do not claim conformance. [[CONFIRM_IF_MICRO_ENTERPRISE_EXEMPTION_APPLIES]]
+We want everyone to be able to learn with Sprichst. Our goal is to meet the Web Content Accessibility Guidelines (WCAG) 2.2 level AA and EN 301 549, in line with the European Accessibility Act and similar laws. We have not yet had a full external audit, so we do not claim conformance. Sprichst is a free, non-commercial project run by one person, so it falls under the micro-enterprise exemption of the European Accessibility Act. We still work towards the standard and welcome reports of barriers.
 
 ## What is in place
 
@@ -22,4 +22,4 @@ We want everyone to be able to learn with Sprichst. Our goal is to meet the Web 
 
 ## Tell us
 
-Report barriers at [[SUPPORT_EMAIL]] or Account → Contact developer. We reply within 14 days. If you are unhappy with the answer, you can contact the competent market surveillance authority of your country; in Germany that is the Marktüberwachungsstelle der Länder für die Barrierefreiheit von Produkten und Dienstleistungen (MSBS).
+Report barriers at sripathiyadav66@gmail.com or Account → Contact developer. We reply within 14 days. If you are unhappy with the answer, you can contact the competent market surveillance authority of your country; in Germany that is the Marktüberwachungsstelle der Länder für die Barrierefreiheit von Produkten und Dienstleistungen (MSBS).
