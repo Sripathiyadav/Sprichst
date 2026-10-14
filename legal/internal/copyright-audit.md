@@ -19,7 +19,7 @@
 
 ## Designated copyright agent
 
-A DMCA safe harbour (17 U.S.C. § 512(c)) needs a registered agent. Details go in `[[COPYRIGHT_AGENT_*]]` in `copyright-and-takedown.md` and in the US Copyright Office directory (renew every three years). Sprichst hosts no public user content, so the exposure is low, but the agent and takedown process are in place anyway.
+A DMCA safe harbour (17 U.S.C. § 512(c)) needs a registered agent. The contact is in `copyright-and-takedown.md`, which says it is not registered; to register, use the US Copyright Office directory (renew every three years). Sprichst hosts no public user content, so the exposure is low, but the agent and takedown process are in place anyway.
 
 ## Trademarks
 

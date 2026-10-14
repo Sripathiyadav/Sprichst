@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>sprichst</string>
+	<string>Sprichst</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -32,7 +32,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<!-- REVERSED_CLIENT_ID from GoogleService-Info.plist: lets Google's sign-in redirect back into the app. -->
-				<string>com.googleusercontent.apps.54358857337-c1nve0fppgkfq0oibndipab8bspje6a9</string>
+				<string>com.googleusercontent.apps.54358857337-59v2kgmjeu3ug5bm546bpbf41sdcsrcb</string>
 			</array>
 		</dict>
 	</array>

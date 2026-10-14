@@ -63,7 +63,7 @@ Questions or feedback: sripathiyadav66@gmail.com
 * **Contact email**: sripathiyadav66@gmail.com
 * **Website**: https://sprichstweb.web.app
 * **Phone**: optional (+49 155 65800258 is in the Impressum; leave blank if you prefer)
-* **Privacy policy URL**: https://sprichst-74bed.web.app/legal/privacy-policy
+* **Privacy policy URL**: https://sprichstweb.web.app/legal/privacy-policy
 * **Release notes (first release)**: `First release: 48 lessons, daily quests, flashcards, five games, writing practice, a translator and an AI tutor that works offline once downloaded.`
 
 ## App content (Policy → App content)
@@ -77,8 +77,8 @@ Questions or feedback: sripathiyadav66@gmail.com
 | Content rating (IARC) | Category: Reference / Education. Violence, sexual content, language, controlled substances, gambling: **No** to all. Users can interact: **No** (no chat with other people). Shares location: **No**. AI-generated content: the in-app AI tutor produces text; answer the AI questions truthfully (yes, generative AI, no user-to-user sharing). Expected rating: **Everyone / PEGI 3** |
 | Government app, Financial features, Health, News, COVID-19 | **No** to all |
 | Advertising ID | **No** (the app does not use it; there is no AD_ID permission in the bundle) |
-| Data deletion | Account deletion URL: https://sprichst-74bed.web.app/legal/your-rights . In the app: Account → Danger zone → Delete account (deletes the account and learning data) |
-| AI-generated content policy | The coach/translator output is AI-generated. The in-app **Account → Contact developer** lets users report bad answers; the AI transparency page explains it: https://sprichst-74bed.web.app/legal/ai-transparency |
+| Data deletion | Account deletion URL: https://sprichstweb.web.app/legal/your-rights . In the app: Account → Danger zone → Delete account (deletes the account and learning data) |
+| AI-generated content policy | The coach/translator output is AI-generated. The in-app **Account → Contact developer** lets users report bad answers; the AI transparency page explains it: https://sprichstweb.web.app/legal/ai-transparency |
 
 ### Data safety form
 
@@ -122,5 +122,5 @@ Declare **not collected**: location, contacts, photos, files, financial info, he
 
 ## Still open (not needed for Android)
 
-* iOS and macOS still use the placeholder id `com.example.sprichst`. For the App Store they need a real id, a new Firebase iOS app, `GoogleService-Info.plist`, the URL scheme and the keychain group (see `docs/DEPLOYMENT.md`).
+* iOS and macOS now use `com.sprichst.app` too (new Firebase iOS app, new `GoogleService-Info.plist`, URL scheme and keychain group updated). For the App Store you still need an Apple Developer account and signing.
 * DMCA designated agent: not registered (the takedown page says so). Optional.

@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report security problems privately to **[[SECURITY_EMAIL]]** (or through GitHub's "Report a vulnerability" on this repository). Do not open a public issue. Include what you found, how to reproduce it, and the impact. We acknowledge reports within 3 working days, aim to fix serious problems within 30 days, and will credit you if you wish. Please do not access other people's data, run denial-of-service tests, or test against production accounts beyond your own. Good-faith research within these limits will not be pursued legally.
+Please report security problems privately to **sripathiyadav66@gmail.com** (or through GitHub's "Report a vulnerability" on this repository). Do not open a public issue. Include what you found, how to reproduce it, and the impact. We acknowledge reports within 3 working days, aim to fix serious problems within 30 days, and will credit you if you wish. Please do not access other people's data, run denial-of-service tests, or test against production accounts beyond your own. Good-faith research within these limits will not be pursued legally.
 
 ## Design rules this project enforces with tests
 

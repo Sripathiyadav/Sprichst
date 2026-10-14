@@ -45,16 +45,15 @@ macOS, push-style notifications, and the microphone on a physical device.
 
 ## 2. Before anything is public (blockers)
 
-1. **Application id.** Both stores reject `com.example.*`. Pick a real id such as
-   `app.sprichst.learn`, then change it in `android/app/build.gradle`
-   (`namespace` and `applicationId`), Xcode (`PRODUCT_BUNDLE_IDENTIFIER` for iOS
-   and macOS, and the keychain group in `Runner.entitlements`) and register the new
-   apps in Firebase. Download the new `google-services.json` and
-   `GoogleService-Info.plist` and update the URL scheme in `Info.plist`.
-2. **Legal text.** `python3 scripts/check_legal_placeholders.py --strict` still
-   lists open `[[…]]` fields (support email, supervisory authority, VAT id,
-   liability clause, reviewer). Fill them, have a lawyer read the terms, and
-   publish the privacy policy at a public URL (stores require one).
+1. **Application id** (done): `com.sprichst.app` on Android (`android/app/build.gradle`),
+   iOS and macOS (`PRODUCT_BUNDLE_IDENTIFIER`, the keychain group in
+   `Runner.entitlements`, the URL scheme in both `Info.plist` files), registered in
+   Firebase. It cannot change once the app is published, so confirm the name is
+   free when you create the app in Play Console.
+2. **Legal text** (done): `python3 scripts/check_legal_placeholders.py --strict`
+   passes. The policies are public at `https://sprichstweb.web.app/legal/` (built
+   by `scripts/build_legal_pages.py`) and on the launch site. Have a lawyer read the
+   terms.
 3. **Release signing keys.** Android upload key (`android/key.properties`), an
    Apple Developer account (paid, about US$99 a year) for iOS and macOS.
 4. **Firebase.** Create the production project (or keep this one), enable Google
@@ -137,7 +136,7 @@ fine for checking the UI but cannot sign in.
 * **Security hygiene.** Dependabot (or a monthly `flutter pub outdated`), rerun
   `scripts/generate_third_party_notices.py`, rotate the upload key only if
   leaked, review `firestore.rules` after every profile-model change.
-* **Support.** One mailbox (the `[[SUPPORT_EMAIL]]` field), answer data requests
+* **Support.** One mailbox (sripathiyadav66@gmail.com), answer data requests
   within 30 days using `legal/internal/dsar-procedure.md`, keep
   `legal/internal/incident-response.md` where you can find it.
 * **Content.** The course is one JSON file with a validator; new lessons ship in

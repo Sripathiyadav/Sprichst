@@ -84,9 +84,8 @@ travels in the clear.
 
 ## Release checklist (Android)
 
-1. Replace the placeholder application id `com.example.sprichst` in
-   `android/app/build.gradle` (Play rejects `com.example.*`) and register that
-   package in Firebase; download its `google-services.json`.
+1. The application id is `com.sprichst.app` (`android/app/build.gradle`), registered
+   in Firebase; `google-services.json` comes from `firebase apps:sdkconfig ANDROID <appId>`.
 2. Add your release signing key (never commit it) and build:
    `flutter build appbundle --release`.
 3. minSdk is 24 (needed for the Keystore-backed storage and the models).

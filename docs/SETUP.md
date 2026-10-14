@@ -59,7 +59,7 @@ Sign-in fails on iOS unless all three of these are in place:
 
 1. **Download `GoogleService-Info.plist` after enabling Google sign-in** in Firebase (Authentication → Sign-in method). A plist downloaded earlier lacks `CLIENT_ID` and `REVERSED_CLIENT_ID`; re-download it and replace `ios/Runner/GoogleService-Info.plist` (git-ignored).
 2. **`ios/Runner/Info.plist` carries two values from that file**: `GIDClientID` (the `CLIENT_ID`) and a `CFBundleURLTypes` entry whose scheme is the `REVERSED_CLIENT_ID`. Google redirects back into the app through that scheme. If you ever regenerate the Firebase iOS app, update both.
-3. The bundle identifier in Xcode matches the one registered in Firebase (`com.example.sprichst` today).
+3. The bundle identifier in Xcode matches the one registered in Firebase (`com.sprichst.app`).
 
 On a simulator, iOS shows a "Wants to Use google.com to Sign In" prompt first; that is expected. If Firebase later reports `keychain-error`, enable **Keychain Sharing** for the Runner target in Xcode.
 
@@ -144,7 +144,7 @@ Keep the personal-assistant, Google Calendar, Tasks, and Keep work out of this m
 2. **Hosting headers:** `firebase/firebase.json` sets the Content-Security-Policy. It already allows the AI providers a learner can bring their own key for (Groq, OpenAI, Anthropic, xAI, Mistral, DeepSeek, OpenRouter) and Google's hosts (which cover Gemini); browsers block every other origin. Only add your own origin if you run the developer gateway.
 3. **Web build:** run `python3 scripts/vendor_web_deps.py` (once, and after upgrading `firebase_core`), then `flutter build web --release`. The result loads nothing from Google, a CDN or a font service until a learner presses "Continue with Google".
 4. **AI gateway:** `pip install -r ai-server/requirements.txt`, then set `AUTH_REQUIRED=1`, `FIREBASE_PROJECT_ID`, `RATE_LIMIT_PER_MINUTE` and `CORS_ORIGINS` (see `ai-server/.env.example`) and serve it over HTTPS. Provider keys such as `GROQ_API_KEY` belong only in the server's `.env`.
-5. **Legal:** fill the placeholders in `legal/` (`python3 scripts/check_legal_placeholders.py --strict` must pass), register your DMCA agent, and work through `legal/internal/release-checklist.md`.
+5. **Legal:** `legal/` is filled in (`python3 scripts/check_legal_placeholders.py --strict` must pass; optionally register a DMCA agent), and work through `legal/internal/release-checklist.md`.
 
 ## Gateway load, limits and logs
 
