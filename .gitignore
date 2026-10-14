@@ -29,3 +29,4 @@ node_modules/
 firebase/node_modules/
 *-debug.log
 firestore-debug.log
+.firebase-deploy.*.json

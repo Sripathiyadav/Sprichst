@@ -36,5 +36,11 @@
     serviceWorkerSettings: {
       serviceWorkerVersion: {{flutter_service_worker_version}},
     },
+    // Start the app, then take the loading screen from index.html away.
+    onEntrypointLoaded: async function (engineInitializer) {
+      const runner = await engineInitializer.initializeEngine();
+      await runner.runApp();
+      document.getElementById('boot')?.remove();
+    },
   });
 })();

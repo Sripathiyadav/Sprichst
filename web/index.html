@@ -38,8 +38,22 @@
 
   <title>Sprichst</title>
   <link rel="manifest" href="manifest.json">
+  <!-- Something to look at while the app downloads, so the page is never blank. -->
+  <style>
+    body { margin: 0; background: #f2eae1; color: #1f1d1c; font-family: system-ui, sans-serif; }
+    @media (prefers-color-scheme: dark) { body { background: #1f1d1c; color: #f2eae1; } }
+    #boot { position: fixed; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 16px; }
+    #boot b { font-size: 28px; letter-spacing: .5px; }
+    #boot i { width: 28px; height: 28px; border-radius: 50%; border: 3px solid currentColor;
+              border-top-color: transparent; animation: spin .9s linear infinite; opacity: .6; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { #boot i { animation: none; } }
+  </style>
 </head>
 <body>
+  <div id="boot" role="status" aria-live="polite"><b>Sprichst</b><i aria-hidden="true"></i><span>Loading…</span></div>
+  <noscript>Sprichst needs JavaScript to run. Please turn it on and reload the page.</noscript>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

@@ -70,9 +70,16 @@ macOS, push-style notifications, and the microphone on a physical device.
 ### 3.1 Web (free, fastest first launch)
 
 ```bash
-flutter build web --release
-firebase deploy --only hosting
+scripts/deploy_web.sh qa 1d   # private preview link that expires, to check first
+scripts/deploy_web.sh live    # the real site
 ```
+
+The script builds, then deploys (the Firebase CLI refuses a build folder outside
+the config folder, so it deploys from a temporary copy of `firebase/firebase.json`).
+Hosting serves everything over HTTPS with a Google-issued certificate, so the
+browser shows the padlock, and compresses files with Brotli. Files the browser
+never downloads (other renderers, debug symbols, the on-device speech runtime)
+are left out of the upload by the `ignore` list.
 
 `firebase/firebase.json` already sets the Content-Security-Policy, HSTS and the
 other headers. Add the production domain in Firebase Auth → Authorized domains.

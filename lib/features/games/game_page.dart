@@ -8,6 +8,7 @@ import '../../domain/games/game_models.dart';
 import '../../domain/learning/achievements.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../gamification/reward_news.dart';
+import '../../shared/plural.dart';
 
 typedef GameBuilder = Widget Function(
     BuildContext context, void Function(GameOutcome outcome) onFinished);
@@ -128,7 +129,7 @@ class GameResultView extends StatelessWidget {
                     textAlign: TextAlign.center),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  '${outcome.score} points · ${outcome.correct} of ${outcome.total} right'
+                  '${countOf(outcome.score, 'point')} · ${outcome.correct} of ${outcome.total} right'
                   '${outcome.bestCombo >= 3 ? ' · best streak ${outcome.bestCombo}' : ''}'
                   '${xp > 0 ? ' · +$xp XP' : ''}',
                   textAlign: TextAlign.center,

@@ -109,7 +109,7 @@ class ExerciseEvaluator {
     final percent = (assessment.score * 100).round();
     final covered = assessment.pointsCovered.where((c) => c).length;
     final summary = '$percent% · $covered of ${brief.points.length} content '
-        'points · ${assessment.wordCount} words.';
+        'points · ${assessment.wordCount} ${assessment.wordCount == 1 ? 'word' : 'words'}.';
     return ExerciseResult(
       exercise: exercise,
       response: response,

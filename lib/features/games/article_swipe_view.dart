@@ -10,6 +10,7 @@ import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
 import 'article_chip.dart';
 import 'game_page.dart';
+import '../../shared/plural.dart';
 
 /// Artikel-Rausch. Swipe the noun left for der, up for die, right for das, or
 /// press the buttons: swiping is a shortcut, never the only way.
@@ -107,7 +108,7 @@ class _ArticleSwipeViewState extends State<ArticleSwipeView> {
           score: _game.score,
           combo: _game.combo,
           trailing: Semantics(
-            label: '$seconds seconds left',
+            label: '${countOf(seconds, 'second')} left',
             child: Chip(
               avatar: Icon(Icons.timer_outlined,
                   size: 18, color: low ? theme.colorScheme.error : null),

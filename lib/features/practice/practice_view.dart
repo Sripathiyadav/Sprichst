@@ -17,6 +17,7 @@ import 'mock_exam_view.dart';
 import 'practice_session_view.dart';
 import '../translator/translator_view.dart';
 import 'writing_practice_view.dart';
+import '../../shared/plural.dart';
 
 class PracticeView extends ConsumerWidget {
   const PracticeView({super.key});
@@ -218,7 +219,7 @@ class _FlashcardsCard extends ConsumerWidget {
                 ? 'Words you learn in lessons appear here as flashcards.'
                 : ready == 0
                     ? 'All caught up — come back when cards are due.'
-                    : '$ready cards ready',
+                    : '${countOf(ready, 'card')} ready',
             style: theme.textTheme.titleMedium,
           ),
           if (summary.total > 0) ...[
@@ -234,7 +235,9 @@ class _FlashcardsCard extends ConsumerWidget {
             onPressed:
                 summary.total == 0 ? null : () => openFlashcards(context, ref),
             icon: const Icon(Icons.style_outlined),
-            label: Text(ready == 0 ? 'Nothing due' : 'Review $ready cards'),
+            label: Text(ready == 0
+                ? 'Nothing due'
+                : 'Review ${countOf(ready, 'card')}'),
           ),
         ],
       ),

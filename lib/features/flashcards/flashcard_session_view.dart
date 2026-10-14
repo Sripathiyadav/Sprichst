@@ -11,6 +11,7 @@ import '../../shared/widgets/app_widgets.dart';
 import '../../shared/widgets/speak_button.dart';
 import '../games/article_chip.dart';
 import '../gamification/reward_news.dart';
+import '../../shared/plural.dart';
 
 /// A spaced-repetition flashcard session.
 ///
@@ -426,7 +427,7 @@ class _Summary extends ConsumerWidget {
                 SessionSummaryBadge(
                   title: 'Session complete',
                   line:
-                      'You remembered $recalled of $total cards${xp > 0 ? ' and earned $xp XP' : ''}.',
+                      'You remembered $recalled of ${countOf(total, 'card')}${xp > 0 ? ' and earned $xp XP' : ''}.',
                 ),
                 if (reward != null) ...[
                   const SizedBox(height: AppSpacing.lg),
