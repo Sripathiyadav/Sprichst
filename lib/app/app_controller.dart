@@ -366,6 +366,8 @@ class AppController extends ChangeNotifier {
       QuestEvent(
         cards: reviews.length,
         correct: reviews.where((r) => r.rating.recalled).length,
+        // A session shorter than the cap means nothing else was due or new.
+        clearedCards: reviews.length < FlashcardDeck.defaultSessionLimit,
       ),
       now,
     );

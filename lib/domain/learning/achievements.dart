@@ -27,12 +27,18 @@ class QuestEvent {
     this.cards = 0,
     this.games = 0,
     this.correct = 0,
+    this.clearedCards = false,
   });
 
   final int lessons;
   final int cards;
   final int games;
   final int correct;
+
+  /// True when the learner has reviewed every card they had due or new today.
+  /// The cards quest then counts as done even if fewer cards than its target
+  /// were available, so it can always be finished.
+  final bool clearedCards;
 
   bool get isEmpty => lessons + cards + games + correct == 0;
 
@@ -96,8 +102,8 @@ class Achievements {
         xp: questXp),
     Quest(
         kind: QuestKind.cards,
-        title: 'Review 10 flashcards',
-        target: 10,
+        title: 'Review 5 flashcards',
+        target: 5,
         xp: questXp),
     Quest(kind: QuestKind.games, title: 'Play 2 games', target: 2, xp: questXp),
     Quest(
@@ -144,6 +150,11 @@ class Achievements {
     for (final quest in questsFor(today)) {
       final gained = event.of(quest.kind);
       if (gained > 0) progress[quest.id] = (progress[quest.id] ?? 0) + gained;
+      if (quest.kind == QuestKind.cards && event.clearedCards) {
+        progress[quest.id] = progress[quest.id]! > quest.target
+            ? progress[quest.id]!
+            : quest.target;
+      }
       if (!done.contains(quest.id) &&
           (progress[quest.id] ?? 0) >= quest.target) {
         done.add(quest.id);
