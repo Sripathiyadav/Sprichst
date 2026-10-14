@@ -17,7 +17,6 @@ class OnboardingView extends ConsumerStatefulWidget {
 
 class _OnboardingViewState extends ConsumerState<OnboardingView> {
   var _step = 0;
-  var _language = 'English';
   var _level = CefrLevel.preA1;
   var _goal = LearningGoal.everyday;
 
@@ -35,20 +34,14 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
                 key: const ValueKey(1),
                 onDone: () => setState(() => _step = 2),
               ),
-            2 => _LanguageStep(
+            2 => _LevelStep(
                 key: const ValueKey(2),
-                selected: _language,
-                onSelect: (value) => setState(() => _language = value),
-                onNext: () => setState(() => _step = 3),
-              ),
-            3 => _LevelStep(
-                key: const ValueKey(3),
                 selected: _level,
                 onSelect: (value) => setState(() => _level = value),
-                onNext: () => setState(() => _step = 4),
+                onNext: () => setState(() => _step = 3),
               ),
             _ => _GoalStep(
-                key: const ValueKey(4),
+                key: const ValueKey(3),
                 selected: _goal,
                 onSelect: (value) => setState(() => _goal = value),
                 onFinish: _finish,
@@ -63,7 +56,7 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
     try {
       await ref
           .read(appControllerProvider)
-          .completeOnboarding(language: _language, level: _level, goal: _goal);
+          .completeOnboarding(level: _level, goal: _goal);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -105,7 +98,7 @@ class _Welcome extends StatelessWidget {
           const SizedBox(height: AppSpacing.xxl),
           PrimaryButton(label: 'Start', onPressed: onStart),
           const SizedBox(height: AppSpacing.xs),
-          Text('A quick tour of how it works, then three questions.',
+          Text('A quick tour of how it works, then two questions.',
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
@@ -128,9 +121,9 @@ class _StepHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SkillMeter(
-            label: 'STEP $step OF 3',
-            value: step / 3,
-            valueLabel: '$step / 3',
+            label: 'STEP $step OF 2',
+            value: step / 2,
+            valueLabel: '$step / 2',
             compact: true),
         const SizedBox(height: AppSpacing.lg),
         Semantics(
@@ -149,42 +142,6 @@ class _StepHeader extends StatelessWidget {
   }
 }
 
-class _LanguageStep extends StatelessWidget {
-  const _LanguageStep(
-      {super.key,
-      required this.selected,
-      required this.onSelect,
-      required this.onNext});
-  final String selected;
-  final ValueChanged<String> onSelect;
-  final VoidCallback onNext;
-
-  @override
-  Widget build(BuildContext context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _StepHeader(
-              step: 1, title: 'What language should explain German?'),
-          const MoreLanguagesNote(),
-          const SizedBox(height: AppSpacing.md),
-          for (final language in ['English', 'Hindi', 'Telugu', 'Other'])
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: OptionTile(
-                label: language,
-                state: language == selected
-                    ? OptionState.selected
-                    : OptionState.idle,
-                onTap: () => onSelect(language),
-              ),
-            ),
-          const SizedBox(height: AppSpacing.md),
-          PrimaryButton(label: 'Continue', onPressed: onNext, block: true),
-        ],
-      );
-}
-
 class _LevelStep extends StatelessWidget {
   const _LevelStep(
       {super.key,
@@ -201,7 +158,7 @@ class _LevelStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const _StepHeader(
-              step: 2,
+              step: 1,
               title: 'Where are you now?',
               hint: 'Choose a starting point. You can change it later.'),
           for (final level in CefrLevel.values)
@@ -239,7 +196,7 @@ class _GoalStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const _StepHeader(
-              step: 3,
+              step: 2,
               title: 'What do you want German for?',
               hint:
                   'Your lessons, vocabulary and practice follow this goal. You can change it any time.'),

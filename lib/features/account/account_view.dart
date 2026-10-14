@@ -469,7 +469,6 @@ class _ProfilePageState extends ConsumerState<_ProfilePage> {
 class _LearningPreferencesPage extends ConsumerWidget {
   const _LearningPreferencesPage();
 
-  static const _languages = ['English', 'Hindi', 'Telugu', 'Other'];
   static const _topics = [
     'Everyday life',
     'Travel',
@@ -557,30 +556,6 @@ class _LearningPreferencesPage extends ConsumerWidget {
                 onChanged: (value) {
                   if (value != null) {
                     _save(ref, profile.copyWith(targetLevel: value));
-                  }
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                0,
-                AppSpacing.md,
-                AppSpacing.md,
-              ),
-              child: DropdownButtonFormField<String>(
-                value: _languages.contains(profile.nativeLanguage)
-                    ? profile.nativeLanguage
-                    : 'Other',
-                decoration:
-                    const InputDecoration(labelText: 'Explanation language'),
-                items: [
-                  for (final language in _languages)
-                    DropdownMenuItem(value: language, child: Text(language)),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    _save(ref, profile.copyWith(nativeLanguage: value));
                   }
                 },
               ),

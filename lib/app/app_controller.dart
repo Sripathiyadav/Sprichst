@@ -277,7 +277,7 @@ class AppController extends ChangeNotifier {
   /// Starts the learner at the first lesson of the level they chose, so
   /// choosing A1 does not begin with A0 greetings.
   Future<void> completeOnboarding({
-    required String language,
+    String language = 'English', // lessons explain in English only, for now
     required CefrLevel level,
     LearningGoal goal = LearningGoal.everyday,
   }) {

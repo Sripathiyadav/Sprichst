@@ -82,7 +82,6 @@ void main() {
         expect(tester.takeException(), isNull, reason: 'tour page ${page + 1}');
         await _tapVisible(tester, find.byKey(const ValueKey('tour-next')));
       }
-      await _tapVisible(tester, find.text('Continue')); // language
       await _tapVisible(tester, find.text('Continue')); // level
       expect(find.text('What do you want German for?'), findsOneWidget);
       expect(tester.takeException(), isNull);

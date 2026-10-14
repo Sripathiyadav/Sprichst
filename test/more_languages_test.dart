@@ -10,7 +10,7 @@ LearningProfile _learner() => LearningProfile.newLearner(
 
 void main() {
   testWidgets(
-      'the welcome screen and the first step say more languages are coming',
+      'the welcome screen says more languages are coming, and no explanation-language choice is offered',
       (tester) async {
     await pumpSprichst(tester,
         size: const Size(390, 900),
@@ -21,10 +21,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('tour-skip')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('more-languages')), findsOneWidget);
-    expect(find.text(MoreLanguagesNote.title), findsOneWidget);
-    // Informational: no request button during onboarding.
-    expect(find.byKey(const ValueKey('request-language')), findsNothing);
+    // Lessons are in English only, so there is nothing to choose.
+    expect(find.text('Hindi'), findsNothing);
+    expect(find.text('Telugu'), findsNothing);
+    expect(find.text('Where are you now?'), findsOneWidget);
   });
 
   testWidgets('Learn carries the note too', (tester) async {

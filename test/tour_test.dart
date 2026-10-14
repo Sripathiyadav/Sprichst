@@ -199,7 +199,7 @@ void main() {
       expect(find.textContaining('1 OF 5'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('tour-skip')));
       await tester.pumpAndSettle();
-      expect(find.text('What language should explain German?'), findsOneWidget);
+      expect(find.text('Where are you now?'), findsOneWidget);
     });
 
     testWidgets('the tour can be taken again from Account', (tester) async {

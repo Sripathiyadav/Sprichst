@@ -89,7 +89,7 @@ flowchart LR
     J --> D
 ```
 
-1. **Onboarding** sets the explanation language, the starting CEFR level and a goal (everyday, travel, work, Goethe-Zertifikat or TestDaF). The path, vocabulary and practice follow the goal.
+1. **Onboarding** sets the starting CEFR level and a goal (everyday, travel, work, Goethe-Zertifikat or TestDaF). The path, vocabulary and practice follow the goal.
 2. **Home** shows the streak, a level gauge that sweeps up from 0 on every refresh, today's three quests (each with its own *Start* button) and the single recommended step.
 3. **Every answer feeds the planner.** Accuracy per skill decides what comes back, when, and how hard it is. Missed exercises are retried and re-spaced. Finishing a level well moves you up.
 4. **The coach** corrects only real mistakes, explains why in English, remembers the last few messages so it doesn't repeat questions, and translates its follow-up question.
