@@ -6,7 +6,7 @@ Everything below is ready to paste into Play Console. Files are in this folder.
 
 | What | File | Spec |
 | --- | --- | --- |
-| App bundle (signed with your upload key) | `release/sprichst-1.0.0+1.aab` (git-ignored, 169 MB, arm64) | version 1.0.0, code 1 |
+| App bundle (signed with your upload key) | `release/sprichst-1.0.0+2.aab` (git-ignored, 169 MB, arm64) | version 1.0.0, code 2 |
 | App icon | `icon-512.png` | 512 × 512 PNG |
 | Feature graphic | `feature-graphic-1024x500.png` | 1024 × 500 PNG |
 | Phone screenshots (9) | `phone/01-…09-*.png` | 1080 × 1920 (9:16), Play wants 2–8 → upload the first 8 |
@@ -108,7 +108,7 @@ Declare **not collected**: location, contacts, photos, files, financial info, he
 
 1. **Developer account**: one-time US$25 at play.google.com/console. A personal account created after Nov 2023 must run a **closed test with at least 12 testers for 14 days** before production. Ask friends to opt in, then apply for production access.
 2. **Create the app** in Play Console: name `Sprichst: Learn German`, default language English (UK or US), App, Free.
-3. **Play App Signing** (accept the default). Upload `release/sprichst-1.0.0+1.aab` to *Closed testing* first.
+3. **Play App Signing** (accept the default). Upload `release/sprichst-1.0.0+2.aab` to *Closed testing* first.
 4. **Register Play's signing certificate for Google sign-in**: Play Console → Release → Setup → App signing → copy the *App signing key certificate* SHA-1 and SHA-256, then run
    `firebase apps:android:sha:create 1:54358857337:android:a96e9ca0987797c29f66a8 <SHA1> --project sprichst-74bed` (and again for the SHA-256), and download a fresh `google-services.json` with `firebase apps:sdkconfig ANDROID 1:54358857337:android:a96e9ca0987797c29f66a8 --project sprichst-74bed`. **Without this, Google sign-in fails for people who install from Play.**
 5. **Package name `com.sprichst.app` is permanent** once published. If you would rather use a different one, change it now (see `docs/DEPLOYMENT.md`).
