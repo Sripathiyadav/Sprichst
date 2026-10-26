@@ -223,7 +223,7 @@ Last verified on web, Android, iOS (simulator) and macOS: see [docs/DEPLOYMENT.m
 The full plan is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**. In short:
 
 1. ✅ App id is `com.sprichst.app` on Android, iOS and macOS, registered in Firebase. Check it is free in Play Console before the first upload; it is permanent after that.
-2. ✅ Legal fields are filled and the policies are public at `/legal/` on the web app. Have the terms read by a lawyer.
+2. ✅ Legal fields are filled and the policies are public at `https://sprichst.app/legal/`. Have the terms read by a lawyer.
 3. 🔑 **Play App Signing fingerprints** in Firebase after the first upload, and an **Apple Developer account** for iOS and macOS.
 4. ✅ The web build is live on Firebase Hosting (`scripts/deploy_web.sh`).
 5. 🤖 **Android closed test** (12 testers, 14 days; see `store/play/LISTING.md`) and **TestFlight**, then public launch.

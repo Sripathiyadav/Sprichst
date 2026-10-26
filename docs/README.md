@@ -18,7 +18,7 @@ This page is the map. Each topic has one detailed document below.
 
 Legal documents (privacy policy, terms, Impressum and the rest) live in
 [`legal/`](../legal/README.md). The public copies are at
-`https://sprichstweb.web.app/legal/`.
+`https://sprichst.app/legal/`.
 
 ---
 
@@ -160,7 +160,9 @@ Identifiers in use:
 | --- | --- |
 | Android and iOS package id | `com.sprichst.app` |
 | Firebase project | `sprichst-74bed` |
-| Web app | `https://sprichst-74bed.web.app` |
+| Web app (main address) | `https://sprichst.app` |
+| Other domains (registered, pointing at the same site) | `https://sprichst.de`, `https://sprichst.eu` |
+| Firebase default address | `https://sprichst-74bed.web.app` |
 | Launch site | `https://sprichstweb.web.app` |
 
 ## 5. Contributing
