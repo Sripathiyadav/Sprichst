@@ -112,7 +112,7 @@ class AccountView extends ConsumerWidget {
                 icon: Icons.explore_outlined,
                 title: 'How Sprichst works',
                 subtitle:
-                    'A five-screen tour of lessons, the coach and privacy.',
+                    'A three-screen tour of lessons, the coach and privacy.',
                 onTap: () => _push(context, const IntroTourPage()),
               ),
               SettingsTile(

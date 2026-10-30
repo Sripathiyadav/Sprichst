@@ -91,12 +91,12 @@ void main() {
   });
 
   group('the tour', () {
-    testWidgets('has five pages and finishes after the last', (tester) async {
+    testWidgets('has three pages and finishes after the last', (tester) async {
       var done = 0;
       await _pumpTour(tester, onDone: () => done++);
-      expect(tourPages, hasLength(5));
-      for (var page = 1; page <= 5; page++) {
-        expect(find.textContaining('$page OF 5'), findsOneWidget);
+      expect(tourPages, hasLength(3));
+      for (var page = 1; page <= 3; page++) {
+        expect(find.textContaining('$page OF 3'), findsOneWidget);
         expect(find.text(tourPages[page - 1].title), findsOneWidget);
         expect(find.byType(Lottie), findsOneWidget);
         expect(done, 0);
@@ -110,10 +110,10 @@ void main() {
       await _pumpTour(tester, onDone: () {});
       expect(find.byKey(const ValueKey('tour-back')), findsNothing);
       await _next(tester);
-      expect(find.textContaining('2 OF 5'), findsOneWidget);
+      expect(find.textContaining('2 OF 3'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('tour-back')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 5'), findsOneWidget);
+      expect(find.textContaining('1 OF 3'), findsOneWidget);
     });
 
     testWidgets('swiping moves between pages', (tester) async {
@@ -121,11 +121,11 @@ void main() {
       await tester.fling(
           find.text(tourPages[0].title), const Offset(-300, 0), 1200);
       await tester.pumpAndSettle();
-      expect(find.textContaining('2 OF 5'), findsOneWidget);
+      expect(find.textContaining('2 OF 3'), findsOneWidget);
       await tester.fling(
           find.text(tourPages[1].title), const Offset(300, 0), 1200);
       await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 5'), findsOneWidget);
+      expect(find.textContaining('1 OF 3'), findsOneWidget);
     });
 
     testWidgets('Skip leaves at once', (tester) async {
@@ -196,7 +196,7 @@ void main() {
       expect(find.text('Willkommen bei\nSprichst.'), findsOneWidget);
       await tester.tap(find.text('Start'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 5'), findsOneWidget);
+      expect(find.textContaining('1 OF 3'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('tour-skip')));
       await tester.pumpAndSettle();
       expect(find.text('Where are you now?'), findsOneWidget);
@@ -213,10 +213,10 @@ void main() {
       await tester.ensureVisible(find.text('How Sprichst works'));
       await tester.tap(find.text('How Sprichst works'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 5'), findsOneWidget);
+      expect(find.textContaining('1 OF 3'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('tour-skip')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('OF 5'), findsNothing);
+      expect(find.textContaining('OF 3'), findsNothing);
       expect(find.text('How Sprichst works'), findsOneWidget);
     });
   });

@@ -77,8 +77,8 @@ void main() {
       expect(find.text('Start'), findsOneWidget);
       await _tapVisible(tester, find.text('Start'));
       // The tour, page by page, with nothing overflowing at any size.
-      for (var page = 0; page < 5; page++) {
-        expect(find.textContaining('${page + 1} OF 5'), findsOneWidget);
+      for (var page = 0; page < 3; page++) {
+        expect(find.textContaining('${page + 1} OF 3'), findsOneWidget);
         expect(tester.takeException(), isNull, reason: 'tour page ${page + 1}');
         await _tapVisible(tester, find.byKey(const ValueKey('tour-next')));
       }

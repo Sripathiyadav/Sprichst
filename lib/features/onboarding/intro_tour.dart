@@ -20,8 +20,8 @@ class TourPageData {
   final String body;
 }
 
-/// What Sprichst does and how it is built, in five screens. Every claim here is
-/// something the app really does; the tests keep the list at five pages.
+/// What Sprichst does and how it is built, in three short screens. Every claim
+/// here is something the app really does; the tests keep the list at three pages.
 const tourPages = <TourPageData>[
   TourPageData(
     animation: 'tour_lessons',
@@ -38,25 +38,11 @@ const tourPages = <TourPageData>[
         'Write or speak with the AI coach. It corrects you gently, tells you why, and remembers the last few messages so it does not repeat itself.',
   ),
   TourPageData(
-    animation: 'tour_review',
-    label: 'REMEMBER',
-    title: 'Practice that comes back',
-    body:
-        'Words and mistakes return a little later each time you get them right, so what you learn stays learned.',
-  ),
-  TourPageData(
     animation: 'tour_private',
     label: 'PRIVATE',
     title: 'Your words stay yours',
     body:
         'The coach runs on your phone. For stronger answers you can bring your own key from Groq, Gemini, OpenAI, Claude, Grok and more; it stays on your device. Sprichst runs no AI server and sells or tracks nothing. Set it up any time in Account → AI & voice.',
-  ),
-  TourPageData(
-    animation: 'tour_design',
-    label: 'DESIGN',
-    title: 'Calm, clear and yours',
-    body:
-        'Paper-and-ink screens with one main action each. Status is always a word and an icon, never colour alone. Text scales with your settings, and motion stops when you turn on Reduce Motion.',
   ),
 ];
 

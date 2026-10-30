@@ -42,7 +42,7 @@ These are rendered from the real app (`tool/screenshots_test.dart`), not drawing
   <tr>
     <td align="center"><img src="docs/screenshots/sign-in.png" width="190" alt="Sign in"><br><sub><b>1 · Sign in</b><br>Google, no tracking</sub></td>
     <td align="center"><img src="docs/screenshots/welcome.png" width="190" alt="Welcome"><br><sub><b>2 · Welcome</b><br>animated mark</sub></td>
-    <td align="center"><img src="docs/screenshots/tour-lessons.png" width="190" alt="Tour"><br><sub><b>3 · Tour</b><br>5 short pages</sub></td>
+    <td align="center"><img src="docs/screenshots/tour-lessons.png" width="190" alt="Tour"><br><sub><b>3 · Tour</b><br>3 short pages</sub></td>
     <td align="center"><img src="docs/screenshots/goal.png" width="190" alt="Goal"><br><sub><b>4 · Your goal</b><br>language, level, goal</sub></td>
   </tr>
 </table>

@@ -208,7 +208,7 @@ class _WritingPracticeViewState extends State<WritingPracticeView> {
                             ? 'Letter ${wrongAt + 1} is not right: delete it and type ${run.target[wrongAt] == ' ' ? 'a space' : '“${run.target[wrongAt]}”'}.'
                             : next != null &&
                                     TypingPractice.special.hasMatch(next)
-                                ? 'Next: $next. Use the key above, or your keyboard’s German layout.'
+                                ? 'Next: $next. Tap the German key below, or use your keyboard’s German layout.'
                                 : run.started
                                     ? 'Keep going.'
                                     : 'Start typing. The timer starts with your first letter.',
@@ -228,6 +228,15 @@ class _WritingPracticeViewState extends State<WritingPracticeView> {
         ),
         const SizedBox(height: AppSpacing.sm),
         // Out of the scroll area, so the keys stay in reach above the keyboard.
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Text(
+            'No German letters on your keyboard? Tap them here.',
+            key: const ValueKey('german-keys-caption'),
+            style: theme.textTheme.labelLarge
+                ?.copyWith(color: context.tokens.inkMuted),
+          ),
+        ),
         _GermanKeys(onKey: _insert, highlight: next),
         const SizedBox(height: AppSpacing.sm),
         PrimaryButton(
