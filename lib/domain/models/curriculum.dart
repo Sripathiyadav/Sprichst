@@ -74,15 +74,6 @@ class Curriculum {
   /// Every exercise, in curriculum order.
   Iterable<Exercise> get exercises => lessons.expand((l) => l.exercises);
 
-  /// The first lesson taught at [level] or any later level, or null when the
-  /// course has nothing at or above it.
-  Lesson? firstLessonAtOrAbove(CefrLevel level) {
-    for (final lesson in lessons) {
-      if (lesson.level.index >= level.index) return lesson;
-    }
-    return null;
-  }
-
   List<Lesson> lessonsAt(CefrLevel level) => _lessonsByLevel[level] ?? const [];
 
   /// The first lesson, in curriculum order, that [isCompleted] rejects. When

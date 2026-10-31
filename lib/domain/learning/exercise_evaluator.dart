@@ -69,11 +69,49 @@ class ExerciseEvaluator {
     // one worth naming rather than showing as a mystery.
     final lowered = given.toLowerCase();
     final caseOnly = accepted.any((a) => a.toLowerCase() == lowered);
+    final typo = caseOnly ? null : _spellingSlip(given, accepted);
+    // The explanation is about grammar (often the article), so it is left out
+    // when the grammar was right and only a word was misspelled.
     final feedback = caseOnly
         ? 'Check your capitalisation — correct: ${exercise.answer}. ${exercise.explanation}'
-        : 'Correct answer: ${exercise.answer}. ${exercise.explanation}';
+        : typo != null
+            ? 'Check the spelling: “${typo.$1}” should be “${typo.$2}”. Correct answer: ${exercise.answer}.'
+            : 'Correct answer: ${exercise.answer}. ${exercise.explanation}';
     return _result(exercise, response, false, feedback);
   }
+
+  /// The one misspelled word, as (written, expected), when [given] matches an
+  /// accepted answer word for word apart from a small typo in one word that is
+  /// not an article. Null otherwise.
+  static (String, String)? _spellingSlip(String given, List<String> accepted) {
+    final words = given.split(' ');
+    for (final answer in accepted) {
+      final expected = answer.split(' ');
+      if (expected.length != words.length) continue;
+      final differ = [
+        for (var i = 0; i < words.length; i++)
+          if (words[i] != expected[i]) i,
+      ];
+      if (differ.length != 1) continue;
+      final written = words[differ.first];
+      final wanted = expected[differ.first];
+      if (_articles.contains(wanted.toLowerCase()) ||
+          _articles.contains(written.toLowerCase())) {
+        continue;
+      }
+      final distance = SpeechMatcher.editDistance(
+          written.toLowerCase(), wanted.toLowerCase());
+      if (distance > 0 && distance <= (wanted.length > 5 ? 2 : 1)) {
+        return (written, wanted);
+      }
+    }
+    return null;
+  }
+
+  static const _articles = {
+    'der', 'die', 'das', 'den', 'dem', 'des', //
+    'ein', 'eine', 'einen', 'einem', 'einer', 'eines',
+  };
 
   ExerciseResult _cloze(Exercise exercise, String response) {
     final given = response.split(gapSeparator);

@@ -4,223 +4,211 @@ import '../../app/theme/app_theme.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../../shared/widgets/lottie_view.dart';
 
-/// One page of the tour: a picture, a short label, a heading and two plain
-/// sentences.
+/// One scene of the tour: a short label, a heading and two plain sentences.
 class TourPageData {
   const TourPageData({
-    required this.animation,
     required this.label,
     required this.title,
     required this.body,
   });
 
-  final String animation;
   final String label;
   final String title;
   final String body;
 }
 
-/// What Sprichst does and how it is built, in three short screens. Every claim
-/// here is something the app really does; the tests keep the list at three pages.
+/// What Sprichst does and how it is built, in three scenes of one animation
+/// (`assets/lottie/tour_*.json`, 3 s a scene, in this order). Every claim here
+/// is something the app really does.
 const tourPages = <TourPageData>[
   TourPageData(
-    animation: 'tour_lessons',
     label: 'LEARN',
     title: 'One clear next step',
     body:
         'Short lessons build on each other from your first words up. Home always shows what to do next, so you never have to choose from a long menu.',
   ),
   TourPageData(
-    animation: 'tour_coach',
     label: 'TALK',
     title: 'A coach that explains why',
     body:
         'Write or speak with the AI coach. It corrects you gently, tells you why, and remembers the last few messages so it does not repeat itself.',
   ),
   TourPageData(
-    animation: 'tour_private',
     label: 'PRIVATE',
     title: 'Your words stay yours',
     body:
-        'The coach runs on your phone. For stronger answers you can bring your own key from Groq, Gemini, OpenAI, Claude, Grok and more; it stays on your device. Sprichst runs no AI server and sells or tracks nothing. Set it up any time in Account → AI & voice.',
+        'The coach runs on your phone. For stronger answers you can bring your own key from Groq, Gemini, OpenAI, Claude, Grok and more; it stays on your device. Sprichst runs no AI server and sells or tracks nothing.',
   ),
 ];
 
-/// The tour: swipe or use the buttons; "Skip" leaves at any point. Used in
-/// onboarding and again from Account → How Sprichst works.
+/// The tour: one animation that plays its three scenes once, with the words
+/// for the scene on screen. The dots replay a scene; "Skip" leaves at any
+/// point. Used in onboarding and again from Account → How Sprichst works.
 class IntroTour extends StatefulWidget {
   const IntroTour({
     super.key,
     required this.onDone,
     this.finishLabel = 'Continue',
-    this.pages = tourPages,
   });
 
-  /// Called after the last page, or when the learner skips.
+  /// Called by the button, or when the learner skips.
   final VoidCallback onDone;
   final String finishLabel;
-  final List<TourPageData> pages;
 
   @override
   State<IntroTour> createState() => _IntroTourState();
 }
 
-class _IntroTourState extends State<IntroTour> {
-  var _index = 0;
-  var _forward = true;
+class _IntroTourState extends State<IntroTour>
+    with SingleTickerProviderStateMixin {
+  static const _scene = Duration(seconds: 3);
 
-  bool get _last => _index == widget.pages.length - 1;
+  late final _controller =
+      AnimationController(vsync: this, duration: _scene * tourPages.length)
+        ..forward();
 
-  void _go(int delta) {
-    final next = _index + delta;
-    if (next < 0) return;
-    if (next >= widget.pages.length) {
-      widget.onDone();
-      return;
-    }
-    setState(() {
-      _forward = delta > 0;
-      _index = next;
-    });
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
+
+  int get _index => (_controller.value * tourPages.length)
+      .floor()
+      .clamp(0, tourPages.length - 1);
+
+  void _replay(int scene) =>
+      _controller.forward(from: scene / tourPages.length);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final t = context.tokens;
-    final page = widget.pages[_index];
+    final still = MediaQuery.disableAnimationsOf(context);
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      // Swiping is a convenience; the buttons do everything it does.
-      onHorizontalDragEnd: (details) {
-        final v = details.primaryVelocity ?? 0;
-        if (v < -300) _go(1);
-        if (v > 300) _go(-1);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text('HOW SPRICHST WORKS',
-                    style: theme.textTheme.labelSmall),
-              ),
-              TextButton(
-                key: const ValueKey('tour-skip'),
-                onPressed: widget.onDone,
-                child: const Text('Skip'),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          AnimatedSwitcher(
-            duration: motionDuration(context, 220),
-            transitionBuilder: (child, animation) => FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: Offset(_forward ? .06 : -.06, 0),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
+    Widget caption(TourPageData page, int index) => Column(
+          key: ValueKey(index),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('${page.label} · ${index + 1} OF ${tourPages.length}',
+                style: theme.textTheme.labelSmall?.copyWith(color: t.inkMuted)),
+            const SizedBox(height: AppSpacing.xs),
+            Semantics(
+              header: true,
+              child: Text(page.title, style: theme.textTheme.headlineMedium),
             ),
-            child: Column(
-              key: ValueKey(_index),
+            const SizedBox(height: AppSpacing.sm),
+            Text(page.body,
+                style: theme.textTheme.bodyLarge?.copyWith(color: t.inkMuted)),
+          ],
+        );
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child:
+                  Text('HOW SPRICHST WORKS', style: theme.textTheme.labelSmall),
+            ),
+            TextButton(
+              key: const ValueKey('tour-skip'),
+              onPressed: widget.onDone,
+              child: const Text('Skip'),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          decoration: BoxDecoration(
+            color: t.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: t.line),
+          ),
+          child: Center(
+            child: SprichstLottie('tour',
+                width: 240, height: 180, controller: _controller),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        // Without motion every scene's words are shown at once.
+        if (still)
+          for (var i = 0; i < tourPages.length; i++) ...[
+            caption(tourPages[i], i),
+            const SizedBox(height: AppSpacing.lg),
+          ]
+        else
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  decoration: BoxDecoration(
-                    color: t.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: t.line),
-                  ),
-                  child: Center(
-                    child: SprichstLottie(
-                      page.animation,
-                      width: 240,
-                      height: 180,
-                    ),
-                  ),
+                AnimatedSwitcher(
+                  duration: motionDuration(context, 220),
+                  child: caption(tourPages[_index], _index),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                Text('${page.label} · ${_index + 1} OF ${widget.pages.length}',
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: t.inkMuted)),
-                const SizedBox(height: AppSpacing.xs),
-                Semantics(
-                  header: true,
-                  child:
-                      Text(page.title, style: theme.textTheme.headlineMedium),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(page.body,
-                    style:
-                        theme.textTheme.bodyLarge?.copyWith(color: t.inkMuted)),
+                _Dots(count: tourPages.length, index: _index, onTap: _replay),
+                const SizedBox(height: AppSpacing.lg),
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.lg),
-          _Dots(count: widget.pages.length, index: _index),
-          const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              if (_index > 0) ...[
-                OutlinedButton(
-                  key: const ValueKey('tour-back'),
-                  onPressed: () => _go(-1),
-                  child: const Text('Back'),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-              ],
-              Expanded(
-                child: PrimaryButton(
-                  key: const ValueKey('tour-next'),
-                  label: _last ? widget.finishLabel : 'Next',
-                  block: true,
-                  onPressed: () => _go(1),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+        PrimaryButton(
+          key: const ValueKey('tour-next'),
+          label: widget.finishLabel,
+          block: true,
+          onPressed: widget.onDone,
+        ),
+      ],
     );
   }
 }
 
-/// Progress through the tour. The page count is in the text above as well, so
-/// the dots are decoration for sighted users and are not read out.
+/// Where the animation is. Tapping a dot plays that scene again; the scene's
+/// words are on screen as well, so the dots are announced as buttons only.
 class _Dots extends StatelessWidget {
-  const _Dots({required this.count, required this.index});
+  const _Dots({required this.count, required this.index, required this.onTap});
 
   final int count;
   final int index;
+  final ValueChanged<int> onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    return ExcludeSemantics(
-      child: Row(
-        children: [
-          for (var i = 0; i < count; i++)
-            AnimatedContainer(
-              duration: motionDuration(context, 200),
-              margin: const EdgeInsets.only(right: AppSpacing.xs),
-              width: i == index ? 24 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: i == index ? t.coral : t.lineStrong,
-                borderRadius: BorderRadius.circular(4),
+    return Row(
+      children: [
+        for (var i = 0; i < count; i++)
+          Semantics(
+            button: true,
+            label: 'Play scene ${i + 1} of $count again',
+            excludeSemantics: true,
+            child: InkResponse(
+              key: ValueKey('tour-dot-$i'),
+              onTap: () => onTap(i),
+              radius: 24,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Center(
+                  child: AnimatedContainer(
+                    duration: motionDuration(context, 200),
+                    width: i == index ? 24 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: i == index ? t.coral : t.lineStrong,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }

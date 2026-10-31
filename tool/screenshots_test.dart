@@ -66,24 +66,16 @@ void main() {
           size: const Size(390, 844),
           brightness: brightness,
           repository: InMemoryLearningRepository());
-      await _shot(tester, '$mode-onboarding');
-      await tester.tap(find.text('Start'));
-      await tester.pumpAndSettle();
-      for (var page = 1; page <= 3; page++) {
-        await _shot(tester, '$mode-tour-$page');
-        final next = find.byKey(const ValueKey('tour-next'));
-        await tester.ensureVisible(next);
-        await tester.tap(next);
-        await tester.pumpAndSettle();
-      }
-      await _shot(tester, '$mode-onboarding-language');
-      await tester.tap(find.text('Continue'));
+      await _shot(tester, '$mode-onboarding-tour');
+      final start = find.byKey(const ValueKey('tour-next'));
+      await tester.ensureVisible(start);
+      await tester.tap(start);
       await tester.pumpAndSettle();
       await _shot(tester, '$mode-onboarding-level');
       await tester.ensureVisible(find.text('Continue'));
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
-      await _shot(tester, '$mode-onboarding-goal');
+      await _shot(tester, '$mode-onboarding-model');
     });
 
     testWidgets('writing practice, $mode', (tester) async {
@@ -192,9 +184,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // AI & voice, with the AI provider section.
-      await tester.tap(find.text('More').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Account').first);
+      await tester.tap(find.byKey(const ValueKey('home-account')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('AI & voice'));
       await tester.pumpAndSettle();
@@ -222,18 +212,15 @@ void main() {
           brightness: brightness,
           repository: InMemoryLearningRepository(_learner()));
       await _shot(tester, '$mode-home');
-      for (final tab in ['Learn', 'Practice', 'Coach', 'More']) {
+      for (final tab in ['Learn', 'Practice', 'Coach', 'Progress']) {
         await tester.tap(find.text(tab).last);
         await tester.pumpAndSettle();
         await _shot(tester, '$mode-${tab.toLowerCase()}');
       }
-      // Screens behind "More".
-      await tester.tap(find.text('Progress').first);
+      // Account opens from the avatar on Home.
+      await tester.tap(find.text('Home').last);
       await tester.pumpAndSettle();
-      await _shot(tester, '$mode-progress');
-      await tester.pageBack();
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Account').first);
+      await tester.tap(find.byKey(const ValueKey('home-account')));
       await tester.pumpAndSettle();
       await _shot(tester, '$mode-account');
       await tester.ensureVisible(find.text('Legal'));

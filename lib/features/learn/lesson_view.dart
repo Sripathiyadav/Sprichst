@@ -7,6 +7,7 @@ import '../../app/theme/breakpoints.dart';
 import '../../domain/learning/exercise_evaluator.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../practice/practice_session_view.dart';
 import 'exercises/exercise_runner.dart';
 
 enum _Stage { introduction, practice, complete }
@@ -25,6 +26,9 @@ class _LessonViewState extends ConsumerState<LessonView> {
   var _outcome = (xpEarned: 0, leveledUpTo: null as CefrLevel?);
   var _streakDays = 0;
   var _wasCompletedBefore = false;
+
+  /// Time on this screen, for the week's minutes.
+  final _clock = Stopwatch()..start();
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +86,16 @@ class _LessonViewState extends ConsumerState<LessonView> {
                           block: true,
                           onPressed: () => Navigator.of(context).pop(),
                         ),
+                        if (_missed.isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.xs),
+                          TextButton(
+                            key: const ValueKey('review-mistakes'),
+                            onPressed: _reviewMistakes,
+                            child: Text(_missed.length == 1
+                                ? 'Review the mistake'
+                                : 'Review ${_missed.length} mistakes'),
+                          ),
+                        ],
                       ],
                     ),
                 },
@@ -92,6 +106,20 @@ class _LessonViewState extends ConsumerState<LessonView> {
       ),
     );
   }
+
+  /// The exercises missed on the first try, once each.
+  List<Exercise> get _missed => [
+        for (final result in _results)
+          if (!result.isRetry && !result.isCorrect) result.exercise,
+      ];
+
+  /// Goes straight to the missed exercises, in place of this lesson.
+  void _reviewMistakes() => Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) =>
+              PracticeSessionView(title: 'Review mistakes', exercises: _missed),
+        ),
+      );
 
   void _startPractice() {
     final controller = ref.read(appControllerProvider);
@@ -105,7 +133,8 @@ class _LessonViewState extends ConsumerState<LessonView> {
     try {
       final app = ref.read(appControllerProvider);
       final streakBefore = app.profile?.streakAt(DateTime.now()) ?? 0;
-      final outcome = await app.completeLesson(widget.lesson, results);
+      final outcome = await app.completeLesson(widget.lesson, results,
+          spent: _clock.elapsed);
       if (!mounted) return;
       final streakAfter = app.profile?.streakAt(DateTime.now()) ?? 0;
       setState(() {

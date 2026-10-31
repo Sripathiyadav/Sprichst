@@ -19,6 +19,7 @@ export function validProfile(overrides = {}) {
       badges: {},
       questProgress: {},
       questsDone: [],
+      questAnswered: [],
       gameBest: {},
       gamesPlayed: 0,
     },

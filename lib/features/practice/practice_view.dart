@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../account/account_button.dart';
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
@@ -33,6 +34,7 @@ class PracticeView extends ConsumerWidget {
 
     return PageFrame(
       title: 'Practice',
+      trailing: const AccountButton(),
       subtitle: 'Picked from your own answers.',
       child: ListView(
         padding: pageListPadding(context),

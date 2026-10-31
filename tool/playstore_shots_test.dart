@@ -96,9 +96,7 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await _shot(tester, 'coach');
 
-    await tester.tap(find.text('More').last);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Progress').first);
+    await tester.tap(find.text('Progress').last);
     await tester.pumpAndSettle();
     await _shot(tester, 'progress');
   });

@@ -40,6 +40,9 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
   var _saving = false;
   ({int xp, int recalled})? _done;
 
+  /// Time on this screen, for the week's minutes.
+  final _clock = Stopwatch()..start();
+
   DeckCard? get _card => _index < _queue.length ? _queue[_index] : null;
 
   void _reveal() => setState(() => _revealed = true);
@@ -63,7 +66,9 @@ class _FlashcardSessionViewState extends ConsumerState<FlashcardSessionView> {
     setState(() => _saving = true);
     var xp = 0;
     try {
-      xp = (await ref.read(appControllerProvider).completeFlashcards(_reviews))
+      xp = (await ref
+              .read(appControllerProvider)
+              .completeFlashcards(_reviews, spent: _clock.elapsed))
           .xpEarned;
     } catch (_) {
       if (mounted) {

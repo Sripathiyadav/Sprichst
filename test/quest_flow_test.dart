@@ -32,11 +32,12 @@ void main() {
     await app
         .completeLesson(lesson, [for (final e in lesson.exercises) right(e)]);
 
-    // 2. Practice until the 15-correct quest is reachable (6 per session).
-    for (var i = 0; i < 4; i++) {
-      final practice = app.practiceExercises(limit: 6);
-      await app.completePractice([for (final e in practice) right(e)]);
-    }
+    // 2. Fifteen different questions right (the same one counts once a day).
+    final more = app.curriculum.lessonsAt(CefrLevel.a1).skip(1).take(6);
+    await app.completePractice([
+      for (final l in more)
+        for (final e in l.exercises) right(e)
+    ]);
 
     // 3. Flashcards.
     final session = const FlashcardDeck()

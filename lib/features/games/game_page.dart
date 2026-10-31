@@ -32,6 +32,9 @@ class _GamePageState extends ConsumerState<GamePage> {
   var _xp = 0;
   GamificationResult? _reward;
 
+  /// Time on this screen, for the week's minutes.
+  final _clock = Stopwatch()..start();
+
   @override
   Widget build(BuildContext context) {
     final outcome = _outcome;
@@ -57,6 +60,7 @@ class _GamePageState extends ConsumerState<GamePage> {
                         xp: _xp,
                         reward: _reward,
                         onAgain: () => setState(() {
+                          _clock.reset();
                           _outcome = null;
                           _reward = null;
                           _round++;
@@ -74,7 +78,7 @@ class _GamePageState extends ConsumerState<GamePage> {
     final app = ref.read(appControllerProvider);
     var xp = 0;
     try {
-      xp = (await app.completeGame(outcome)).xpEarned;
+      xp = (await app.completeGame(outcome, spent: _clock.elapsed)).xpEarned;
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

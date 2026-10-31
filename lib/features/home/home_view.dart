@@ -10,7 +10,7 @@ import '../../domain/learning/achievements.dart';
 import '../../domain/learning/adaptive_planner.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
-import '../account/account_view.dart';
+import '../account/account_button.dart';
 import '../account/web_ai_notice.dart';
 import '../learn/lesson_view.dart';
 import '../practice/practice_session_view.dart';
@@ -18,6 +18,7 @@ import '../practice/writing_practice_view.dart';
 import '../translator/translator_view.dart';
 import '../gamification/open_quest.dart';
 import '../gamification/quests_card.dart';
+import '../progress/week_minutes_card.dart';
 import 'plan_card.dart';
 
 /// Home: what to learn next, what progress there is, how to continue at once.
@@ -109,20 +110,9 @@ class _HomeViewState extends ConsumerState<HomeView>
       eyebrow: dateEyebrow(now),
       title: '${greeting(now.hour)}, ${profile.name}',
       titleLocale: const Locale('de'),
-      subtitle: 'Ready for today’s practice?',
+      subtitle: 'Ready for today’s ${profile.dailyGoalMinutes} minutes?',
       onLogoTap: _logoTapped,
-      trailing: Semantics(
-        button: true,
-        label: 'Account',
-        excludeSemantics: true,
-        child: InkWell(
-          key: const ValueKey('home-account'),
-          customBorder: const CircleBorder(),
-          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-              builder: (_) => const GlassPage(body: AccountView()))),
-          child: ProfileAvatar(name: profile.name),
-        ),
-      ),
+      trailing: const AccountButton(key: ValueKey('home-account')),
       child: RefreshIndicator(
         onRefresh: _refresh,
         child: ListView(
@@ -191,6 +181,23 @@ class _HomeViewState extends ConsumerState<HomeView>
               now: now,
               onStart: (quest) => openQuest(context, ref, quest),
             ),
+            const SizedBox(height: AppSpacing.xxl),
+            SectionTitle(
+              'This week',
+              action: TextButton(
+                key: const ValueKey('home-progress'),
+                // Progress is the fifth tab.
+                onPressed: () =>
+                    ref.read(shellTabRequestProvider.notifier).state = 4,
+                child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                  Text('Progress'),
+                  SizedBox(width: AppSpacing.xxs),
+                  Icon(Icons.arrow_forward, size: 20),
+                ]),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const WeekMinutesCard(),
             const SizedBox(height: AppSpacing.xxl),
             const SectionTitle('Your progress'),
             const SizedBox(height: AppSpacing.sm),

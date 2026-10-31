@@ -41,16 +41,16 @@ class WordScrambleGame {
   bool get isOver => _index >= rounds.length;
   ScrambleRound? get current => isOver ? null : rounds[_index];
 
-  /// How many letters of the current word the learner has been shown.
+  /// How many letters of the current word the learner has been given.
   int get hintsShown => _hints;
-  String get hintText => current == null
-      ? ''
-      : current!.target.substring(0, math.min(_hints, current!.target.length));
 
-  void hint() {
+  /// Pays for one more given letter. False once all but the last letter have
+  /// been given: the learner places that one.
+  bool hint() {
     final round = current;
-    if (round == null || _hints >= round.target.length - 1) return;
+    if (round == null || _hints >= round.target.length - 1) return false;
     _hints++;
+    return true;
   }
 
   /// Checks a guess (case, spacing and umlaut spelling are forgiven). A wrong

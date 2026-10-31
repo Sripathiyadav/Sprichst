@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../account/account_button.dart';
 import '../../app/app_controller.dart';
 import '../../domain/models/learning_models.dart';
 import '../../app/theme/app_theme.dart';
@@ -10,6 +11,7 @@ import '../../domain/learning/learner_insights.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../gamification/badge_icons.dart';
 import '../learn/lesson_view.dart';
+import 'week_minutes_card.dart';
 
 class ProgressView extends ConsumerWidget {
   const ProgressView({super.key});
@@ -25,6 +27,7 @@ class ProgressView extends ConsumerWidget {
     final streak = profile.streakAt(now);
     return PageFrame(
       title: 'Your progress',
+      trailing: const AccountButton(),
       subtitle:
           'Signals that help Sprichst choose what to teach next. Not a CEFR certificate.',
       child: ListView(padding: pageListPadding(context), children: [
@@ -68,11 +71,15 @@ class ProgressView extends ConsumerWidget {
               child: StatTile(
                 icon: Icons.local_fire_department_outlined,
                 value: '$streak',
-                label: streak == 1 ? 'Day streak' : 'Day streak',
+                label: 'Day streak',
               ),
             ),
           ],
         ),
+        const SizedBox(height: AppSpacing.xxl),
+        const SectionTitle('This week'),
+        const SizedBox(height: AppSpacing.sm),
+        const WeekMinutesCard(),
         const SizedBox(height: AppSpacing.xxl),
         const SectionTitle('Skill matrix'),
         const SizedBox(height: AppSpacing.sm),

@@ -316,6 +316,37 @@ void main() {
       expect(outcome!.correct, 1);
     });
 
+    testWidgets('Buchstabensalat: Hint places the next letter; S and s match',
+        (tester) async {
+      GameOutcome? outcome;
+      await _pump(
+        tester,
+        Scaffold(
+          body: WordScrambleView(
+            words: [coreNouns.firstWhere((w) => w.german == 'Schwester')],
+            onFinished: (o) => outcome = o,
+            random: math.Random(2),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Hint'));
+      await tester.pump();
+      expect(find.text('Hint: the next letter is S.'), findsOneWidget);
+      expect(find.text('S'), findsWidgets);
+      // The rest, tapping whichever S key is free: case does not count.
+      for (final letter in 'CHWESTER'.split('')) {
+        final free = find.byWidgetPredicate((w) =>
+            w is GestureDetector &&
+            w.onTap != null &&
+            w.child is AnimatedContainer &&
+            ((w.child as AnimatedContainer).child as Text).data == letter);
+        await tester.tap(free.first);
+        await tester.pump();
+      }
+      expect(outcome, isNotNull);
+      expect(outcome!.correct, 1);
+    });
+
     testWidgets('Wortle accepts typed guesses and ends on the answer',
         (tester) async {
       GameOutcome? outcome;

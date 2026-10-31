@@ -94,8 +94,9 @@ service cloud.firestore {
     function validGamification(d) {
       return d.get('gamification', {}) is map
           && d.get('gamification', {}).keys().hasOnly(
-              ['badges', 'questDay', 'questProgress', 'questsDone', 'gameBest', 'gamesPlayed'])
+              ['badges', 'questDay', 'questProgress', 'questsDone', 'questAnswered', 'gameBest', 'gamesPlayed'])
           && d.get('gamification', {}).get('badges', {}).size() <= 100
+          && d.get('gamification', {}).get('questAnswered', []).size() <= 2000
           && d.get('gamification', {}).get('gameBest', {}).size() <= 20;
     }
 

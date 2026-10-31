@@ -46,6 +46,28 @@ class _WordScrambleViewState extends State<WordScrambleView> {
   String _text(ScrambleRound round) =>
       _picked.map((i) => round.letters[i]).join();
 
+  /// Puts the next right letter in place. Letters typed wrongly so far are
+  /// taken back first, so the hint always helps.
+  void _hint(ScrambleRound round) {
+    final target = round.target.toLowerCase();
+    if (!target.startsWith(_text(round).toLowerCase())) _picked.clear();
+    if (_picked.length >= target.length || !_game.hint()) {
+      setState(() => _message = 'You can place the last letter.');
+      return;
+    }
+    final next = target[_picked.length];
+    // Case does not count, so a capital S and a small s are the same key.
+    final key = [
+      for (var i = 0; i < round.letters.length; i++)
+        if (!_picked.contains(i) && round.letters[i].toLowerCase() == next) i,
+    ].first;
+    setState(() {
+      _picked.add(key);
+      _message = 'Hint: the next letter is ${_shown(next)}.';
+    });
+    if (_picked.length == round.letters.length) _check(round);
+  }
+
   void _tap(int index) {
     final round = _game.current!;
     if (_picked.contains(index)) return;
@@ -81,7 +103,6 @@ class _WordScrambleViewState extends State<WordScrambleView> {
     if (round == null) return const SizedBox.shrink();
     final theme = Theme.of(context);
     final text = _text(round);
-    final hint = _game.hintText;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -109,12 +130,10 @@ class _WordScrambleViewState extends State<WordScrambleView> {
                     : 'Your answer: $text',
                 excludeSemantics: true,
                 child: Text(
-                  text.isEmpty ? (hint.isEmpty ? '' : hint) : text,
+                  text.split('').map(_shown).join(),
                   style: theme.textTheme.displaySmall?.copyWith(
                     letterSpacing: 4,
-                    color: text.isEmpty
-                        ? theme.colorScheme.onSurfaceVariant
-                        : theme.colorScheme.onSurface,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -154,7 +173,7 @@ class _WordScrambleViewState extends State<WordScrambleView> {
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () => setState(_game.hint),
+              onPressed: () => _hint(round),
               icon: const Icon(Icons.lightbulb_outline),
               label: const Text('Hint'),
             ),
@@ -198,7 +217,7 @@ class _LetterKey extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.control),
           ),
           child: Text(
-            letter.toUpperCase(),
+            _shown(letter),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: used ? scheme.outline : scheme.onPrimary,
                 ),
@@ -208,3 +227,7 @@ class _LetterKey extends StatelessWidget {
     );
   }
 }
+
+/// Letters are shown as capitals on the keys and in the answer, because case
+/// does not count. ß stays ß (its capital would read as two letters).
+String _shown(String letter) => letter == 'ß' ? letter : letter.toUpperCase();

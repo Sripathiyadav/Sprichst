@@ -46,6 +46,31 @@ void main() {
       expect(second.profile.xp, quest.xp);
     });
 
+    test('the same question answered again counts once a day', () {
+      // A day whose quests include the correct-answers one.
+      final day = [
+        for (var d = 1; d <= 8; d++) DateTime(2026, 10, d, 9),
+      ].firstWhere((d) =>
+          Achievements.todaysQuests(d).any((q) => q.kind == QuestKind.correct));
+      final quest = Achievements.todaysQuests(day)
+          .firstWhere((q) => q.kind == QuestKind.correct);
+      const drill =
+          QuestEvent(correctIds: ['article_1', 'article_2', 'article_3']);
+      var profile = _learner();
+      for (var i = 0; i < 3; i++) {
+        profile = Achievements.apply(profile, drill, day).profile;
+      }
+      expect(Achievements.progressOf(profile.gamification, quest, day), 3);
+      // New questions still count, and the next day starts over.
+      profile = Achievements.apply(
+              profile, const QuestEvent(correctIds: ['article_4']), day)
+          .profile;
+      expect(Achievements.progressOf(profile.gamification, quest, day), 4);
+      final tomorrow = day.add(const Duration(days: 1));
+      final next = Achievements.apply(profile, drill, tomorrow).profile;
+      expect(next.gamification.questAnswered, drill.correctIds);
+    });
+
     test('partial progress is remembered, and a new day starts fresh', () {
       final quest = Achievements.todaysQuests(_now).first;
       final half = QuestEvent(

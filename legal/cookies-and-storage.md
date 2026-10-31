@@ -1,6 +1,6 @@
 # Cookies and Local Storage Notice
 
-Last updated: 8 October 2026
+Last updated: 31 October 2026
 
 We follow the ePrivacy rules (in Germany § 25 TDDDG) and equivalents elsewhere. Short version: Sprichst uses only storage that is strictly necessary to give you the service you asked for, so it needs no consent banner. There are no analytics, advertising, social media, fingerprinting or session-replay scripts, and no third-party cookies.
 
@@ -10,6 +10,7 @@ We follow the ePrivacy rules (in Germany § 25 TDDDG) and equivalents elsewhere.
 |---|---|---|---|
 | Sign-in session (Firebase Authentication) | Browser IndexedDB or the phone's secure storage | Keeps you signed in | Until you sign out |
 | Learning profile cache and settings | Browser local storage / app storage | Lets the app work offline and fast | Until you reset, sign out and clear, or uninstall |
+| Minutes studied per day, for the last 14 days | Browser local storage / app storage (never sent to our cloud) | Draws the "This week" chart on Home and Progress | Until you reset your progress, delete your account, clear site data or uninstall |
 | AI provider API key, one per provider (only if you add one) | Secure storage (Keychain / Android Keystore; the browser's protected storage on the web) | Lets the app call your chosen AI provider as you | Until you remove it |
 | AI provider, model and custom server address (not secret) | Local storage | Remembers which provider and model you picked | Until you change it |
 | Downloaded AI models and voices (phone app) | App storage | Offline tutor and speech | Until you delete them |

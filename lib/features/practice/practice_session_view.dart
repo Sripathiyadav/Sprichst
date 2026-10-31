@@ -30,6 +30,9 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
   var _xpEarned = 0;
   var _streakDays = 0;
 
+  /// Time on this screen, for the week's minutes.
+  final _clock = Stopwatch()..start();
+
   @override
   Widget build(BuildContext context) {
     final results = _results;
@@ -79,7 +82,8 @@ class _PracticeSessionViewState extends ConsumerState<PracticeSessionView> {
     try {
       final app = ref.read(appControllerProvider);
       final streakBefore = app.profile?.streakAt(DateTime.now()) ?? 0;
-      final outcome = await app.completePractice(results);
+      final outcome =
+          await app.completePractice(results, spent: _clock.elapsed);
       if (!mounted) return;
       final streakAfter = app.profile?.streakAt(DateTime.now()) ?? 0;
       setState(() {

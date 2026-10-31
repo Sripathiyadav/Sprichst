@@ -28,6 +28,7 @@ class QuestEvent {
     this.games = 0,
     this.correct = 0,
     this.clearedCards = false,
+    this.correctIds,
   });
 
   final int lessons;
@@ -40,7 +41,9 @@ class QuestEvent {
   /// were available, so it can always be finished.
   final bool clearedCards;
 
-  bool get isEmpty => lessons + cards + games + correct == 0;
+  /// The exercises answered correctly, when known. Each counts towards the
+  /// correct-answers quest once a day; [correct] is used when this is null.
+  final List<String>? correctIds;
 
   int of(QuestKind kind) => switch (kind) {
         QuestKind.lesson => lessons,
@@ -145,10 +148,18 @@ class Achievements {
     final fresh = state.questDay != today;
     final progress = fresh ? <String, int>{} : {...state.questProgress};
     final done = fresh ? <String>[] : [...state.questsDone];
+    final answered = fresh ? <String>[] : [...state.questAnswered];
+    final ids = event.correctIds;
+    final newIds = ids == null
+        ? const <String>[]
+        : ids.toSet().where((id) => !answered.contains(id)).toList();
+    answered.addAll(newIds);
 
     final completed = <Quest>[];
     for (final quest in questsFor(today)) {
-      final gained = event.of(quest.kind);
+      final gained = quest.kind == QuestKind.correct && ids != null
+          ? newIds.length
+          : event.of(quest.kind);
       if (gained > 0) progress[quest.id] = (progress[quest.id] ?? 0) + gained;
       if (quest.kind == QuestKind.cards && event.clearedCards) {
         progress[quest.id] = progress[quest.id]! > quest.target
@@ -169,6 +180,7 @@ class Achievements {
         questDay: today,
         questProgress: progress,
         questsDone: done,
+        questAnswered: answered,
       ),
     );
 

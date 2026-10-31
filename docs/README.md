@@ -24,24 +24,31 @@ Legal documents (privacy policy, terms, Impressum and the rest) live in
 
 ## 1. What the app does
 
-A learner signs in with Google, takes a short placement, and gets a plan:
+A learner signs in with Google, watches a short animated tour, picks a CEFR
+level, can download the on-device coach (phones only), and gets a plan:
 
-- **Learn:** a 48-lesson course (about 260 exercises). Each lesson has an
-  introduction, examples and exercises. Mistakes come back later as reviews.
+- **Learn:** a 48-lesson course (about 260 exercises), shown one level at a
+  time with a tab for each level; any lesson can be opened. Each lesson has an
+  introduction, examples and exercises. Mistakes come back later as reviews,
+  and the lesson summary offers to review them at once.
 - **Home:** level gauge, streak, today's three quests (lesson, flashcards,
-  games; a fourth, "answer 15 correctly", appears on other days), and one
-  recommended next step.
+  games; a fourth, "answer 15 correctly", appears on other days), one
+  recommended next step, and this week's minutes against the daily goal.
 - **Practice:** flashcards with spaced repetition, five games, writing practice
   (type a German sentence, with ä ö ü ß keys), and a mock exam for Goethe and
   TestDaF goals.
 - **Coach:** a German conversation partner. It corrects the learner's sentence,
   explains why, asks one follow-up question and shows an English translation of
-  it. Text and voice.
+  it. Text and voice. An empty conversation offers situations to start from
+  (at the café, at the doctor's, a flat viewing…).
 - **Translator:** German to English and English to German, for text the learner
   types or pastes.
-- **Progress:** XP, levels, badges and what the learner has mastered.
+- **Progress:** XP, levels, this week's minutes, badges and what the learner
+  has mastered.
 - **Account:** profile, goal, daily minutes, AI provider, on-device models,
-  voices, privacy controls, data export and deletion.
+  voices, privacy controls, data export and deletion. On phones it opens from
+  the avatar at the top of Home, Learn, Practice and Progress; the tab bar holds
+  Home, Learn, Practice, Coach and Progress.
 
 Lessons explain in English only. Other languages are planned; the app does not
 offer an explanation-language choice yet.
@@ -88,6 +95,9 @@ store/play/     Play Store listing, images and the release checklist
   skill statistics, review items, flashcard schedule, quest progress and badges.
 - **Local copy:** the app keeps a copy on the device so it works offline, and
   syncs when it can (`profile_sync.dart`).
+- **Study minutes:** minutes studied per day (last 14 days) for the "This
+  week" chart. Kept on the device only (`lib/data/study_time_store.dart`), not
+  in the synced profile, so the Firestore rules did not change.
 - **Secrets:** AI keys are stored only in the device's secure storage
   (`flutter_secure_storage`). They are never synced, logged or written to the
   profile.

@@ -79,6 +79,7 @@ abstract final class ProfileCodec {
             'questDay': profile.gamification.questDay,
           'questProgress': profile.gamification.questProgress,
           'questsDone': profile.gamification.questsDone,
+          'questAnswered': profile.gamification.questAnswered,
           'gameBest': profile.gamification.gameBest,
           'gamesPlayed': profile.gamification.gamesPlayed,
         },
@@ -283,6 +284,7 @@ abstract final class ProfileCodec {
           entry.key: _int(entry.value, 0),
       },
       questsDone: _list<String>(raw['questsDone']),
+      questAnswered: _list<String>(raw['questAnswered']),
       gameBest: {
         for (final entry in (_map(raw['gameBest']) ?? const {}).entries)
           entry.key: _int(entry.value, 0),

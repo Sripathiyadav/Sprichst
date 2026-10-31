@@ -17,6 +17,7 @@ class SprichstLottie extends StatelessWidget {
     this.height,
     this.repeat = false,
     this.stillAt = 1,
+    this.controller,
   });
 
   final String name;
@@ -26,6 +27,9 @@ class SprichstLottie extends StatelessWidget {
 
   /// Which moment (0 to 1) to show when motion is reduced.
   final double stillAt;
+
+  /// Drives the animation when the caller needs to know where it is.
+  final Animation<double>? controller;
 
   static String assetOf(String name, Brightness brightness) =>
       'assets/lottie/${name}_${brightness == Brightness.dark ? 'dark' : 'light'}.json';
@@ -40,7 +44,8 @@ class SprichstLottie extends StatelessWidget {
         height: height,
         fit: BoxFit.contain,
         repeat: repeat,
-        controller: still ? AlwaysStoppedAnimation<double>(stillAt) : null,
+        controller:
+            still ? AlwaysStoppedAnimation<double>(stillAt) : controller,
         // A missing or broken file leaves a gap, never a red error box.
         errorBuilder: (_, __, ___) => SizedBox(width: width, height: height),
       ),

@@ -31,14 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
   flutter_riverpod: ^2.6.1
   # Perceptual colour maths (HCT) behind the app's colour system.
   material_color_utilities: ^0.13.0
-  go_router: ^15.1.2
   shared_preferences: ^2.5.3
   firebase_core: ^4.15.0
   firebase_auth: ^6.7.0
@@ -55,7 +50,6 @@ dependencies:
   sherpa_onnx: ^1.13.8
   device_info_plus: ^13.2.0
   archive: ^4.1.0
-  crypto: ^3.0.7
   flutter_secure_storage: ^11.2.0
   lottie: ^3.6.1
 # Privacy: the real google_sign_in_web contacts accounts.google.com on every page

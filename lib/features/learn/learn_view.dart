@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../account/account_button.dart';
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
 import '../../domain/models/learning_models.dart';
@@ -8,87 +9,172 @@ import '../../shared/widgets/app_widgets.dart';
 import '../../shared/widgets/pressable.dart';
 import 'lesson_view.dart';
 
-class LearnView extends ConsumerWidget {
+/// The course, one level at a time. It opens on the learner's level; the tabs
+/// show any other level, and every lesson there can be opened.
+class LearnView extends ConsumerStatefulWidget {
   const LearnView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LearnView> createState() => _LearnViewState();
+}
+
+class _LearnViewState extends ConsumerState<LearnView> {
+  /// The level being shown; null follows the learner's level.
+  CefrLevel? _picked;
+
+  /// The lesson the list opens on: the current one, or the first unfinished
+  /// one of another level.
+  final _anchor = GlobalKey();
+
+  /// The level the list was last scrolled for, so it jumps once per level.
+  CefrLevel? _scrolledFor;
+
+  void _scrollToAnchor(CefrLevel shown) {
+    if (_scrolledFor == shown) return;
+    _scrolledFor = shown;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final anchor = _anchor.currentContext;
+      if (anchor != null) Scrollable.ensureVisible(anchor, alignment: .1);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final app = ref.watch(appControllerProvider);
     final profile = app.profile!;
     final curriculum = app.curriculum;
-    final currentId = app.currentLesson?.id;
+    final current = app.currentLesson;
+    final levels = [
+      for (final level in CefrLevel.values)
+        if (curriculum.lessonsAt(level).isNotEmpty) level,
+    ];
+    final shown = _picked ?? profile.currentLevel;
+    final units = curriculum.units.where((u) => u.level == shown).toList();
+    final anchorId = shown == current?.level
+        ? current!.id
+        : curriculum
+            .lessonsAt(shown)
+            .where((l) => !profile.isLessonCompleted(l.id))
+            .firstOrNull
+            ?.id;
+    final completed = profile.completedLessonCount;
+    _scrollToAnchor(shown);
+
+    final header = [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: EditorialNumber(
+              value: completed,
+              label: 'Lessons completed',
+              unit: completed == 1 ? 'lesson' : 'lessons',
+              size: EditorialSize.numeral,
+              disc: completed > 0,
+            ),
+          ),
+          SizedBox(
+            width: 130,
+            child: LevelGauge(
+              level: profile.currentLevel,
+              progress: curriculum.levelProgress(
+                  profile.currentLevel, profile.isLessonCompleted),
+            ),
+          ),
+        ],
+      ),
+      if (current != null) ...[
+        const SizedBox(height: AppSpacing.md),
+        PrimaryButton(
+          key: const ValueKey('learn-continue'),
+          label: 'Continue: ${current.title}',
+          block: true,
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => LessonView(lesson: current))),
+        ),
+      ],
+      if (levels.length > 1) ...[
+        const SizedBox(height: AppSpacing.md),
+        Wrap(
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
+          children: [
+            for (final level in levels)
+              ChoiceChip(
+                key: ValueKey('level-tab-${level.name}'),
+                label: Text(level.label),
+                selected: level == shown,
+                onSelected: (_) => setState(() => _picked = level),
+              ),
+          ],
+        ),
+      ],
+      const SizedBox(height: AppSpacing.md),
+    ];
+
+    final lessons = [
+      if (shown != profile.currentLevel) ...[
+        FeedbackBanner(
+          key: const ValueKey('other-level-note'),
+          tone: BannerTone.info,
+          title: 'You’re on ${profile.currentLevel.label}',
+          message: 'You can open any ${shown.label} lesson.'
+              '${current == null ? '' : ' Your plan continues with ${current.title}.'}',
+          actionLabel: 'Back to ${profile.currentLevel.label}',
+          onAction: () => setState(() => _picked = null),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+      ],
+      if (units.isEmpty)
+        const SoftCard(child: Text('No lessons at this level yet.')),
+      for (final unit in units) ...[
+        if (unit != units.first) const SizedBox(height: AppSpacing.xl),
+        SectionTitle('${unit.level.label} · ${unit.title}'),
+        const SizedBox(height: AppSpacing.sm),
+        for (final lesson in unit.lessons)
+          Padding(
+            key: lesson.id == anchorId ? _anchor : null,
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: _LessonTile(
+              number:
+                  curriculum.lessons.indexWhere((l) => l.id == lesson.id) + 1,
+              lesson: lesson,
+              status: profile.lessonProgress[lesson.id]?.status ??
+                  LessonStatus.notStarted,
+              isCurrent: lesson.id == current?.id,
+              reason: lesson.id == current?.id
+                  ? app.recommendation?.reasons.firstOrNull
+                  : null,
+            ),
+          ),
+      ],
+      const SizedBox(height: AppSpacing.xl),
+      const MoreLanguagesNote(),
+    ];
 
     return PageFrame(
       title: 'German roadmap',
-      subtitle: 'A path from your first words to C1.',
-      child: ListView(
-        padding: pageListPadding(context),
-        children: [
-          SummaryBlock(
-            lead: EditorialNumber(
-              value: profile.completedLessonCount,
-              label: 'Lessons completed',
-              unit: profile.completedLessonCount == 1 ? 'lesson' : 'lessons',
-              size: EditorialSize.numeral,
-              disc: profile.completedLessonCount > 0,
-            ),
-            level: profile.currentLevel,
-            levelProgress: curriculum.levelProgress(
-                profile.currentLevel, profile.isLessonCompleted),
-            meterLabel: '${profile.currentLevel.label} lessons',
-            meterValue: curriculum.levelProgress(
-                profile.currentLevel, profile.isLessonCompleted),
-            action: app.currentLesson == null
-                ? null
-                : PrimaryButton(
-                    key: const ValueKey('learn-continue'),
-                    label: 'Continue: ${app.currentLesson!.title}',
-                    block: true,
-                    onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                            builder: (_) =>
-                                LessonView(lesson: app.currentLesson!))),
-                  ),
+      trailing: const AccountButton(),
+      compactHeading: true,
+      scrollsUnderNav: false,
+      child: LayoutBuilder(builder: (context, constraints) {
+        // The header stays put and only the lessons scroll, unless the screen
+        // is too short (or the text too large) to leave the list room.
+        final fixed = constraints.maxHeight >= 560 &&
+            MediaQuery.textScalerOf(context).scale(1) < 1.5;
+        final scroll = SingleChildScrollView(
+          padding: pageListPadding(context),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [if (!fixed) ...header, ...lessons],
           ),
-          const SizedBox(height: AppSpacing.xxl),
-          for (final unit in curriculum.units) ...[
-            if (unit != curriculum.units.first)
-              const SizedBox(height: AppSpacing.xl),
-            SectionTitle('${unit.level.label} · ${unit.title}'),
-            const SizedBox(height: AppSpacing.sm),
-            for (final lesson in unit.lessons)
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: _LessonTile(
-                  number:
-                      curriculum.lessons.indexWhere((l) => l.id == lesson.id) +
-                          1,
-                  lesson: lesson,
-                  status: profile.lessonProgress[lesson.id]?.status ??
-                      LessonStatus.notStarted,
-                  isCurrent: lesson.id == currentId,
-                  reason: lesson.id == currentId
-                      ? app.recommendation?.reasons.firstOrNull
-                      : null,
-                ),
-              ),
-          ],
-          const SizedBox(height: AppSpacing.xl),
-          const MoreLanguagesNote(),
-          const SizedBox(height: AppSpacing.xl),
-          const SectionTitle('Roadmap'),
-          const SizedBox(height: AppSpacing.sm),
-          for (final level in CefrLevel.values) ...[
-            _LevelRow(
-              level: level,
-              active: level == profile.currentLevel,
-              progress:
-                  curriculum.levelProgress(level, profile.isLessonCompleted),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-          ],
-        ],
-      ),
+        );
+        if (!fixed) return scroll;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [...header, Expanded(child: scroll)],
+        );
+      }),
     );
   }
 }
@@ -198,34 +284,4 @@ class _LessonTile extends StatelessWidget {
         LessonStatus.inProgress => 'In progress',
         LessonStatus.notStarted => isCurrent ? 'Up next' : 'Not started',
       };
-}
-
-class _LevelRow extends StatelessWidget {
-  const _LevelRow(
-      {required this.level, required this.active, required this.progress});
-  final CefrLevel level;
-  final bool active;
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) => SoftCard(
-        color: active ? context.tokens.accentSoft : null,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              Expanded(
-                child: Text(level.label,
-                    style: Theme.of(context).textTheme.titleMedium),
-              ),
-              if (active)
-                const DsChip('Your level',
-                    icon: Icons.flag_outlined, tone: ChipTone.outline),
-            ]),
-            const SizedBox(height: AppSpacing.xs),
-            SkillMeter(
-                label: level.description, value: progress, compact: true),
-          ],
-        ),
-      );
 }

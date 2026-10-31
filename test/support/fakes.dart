@@ -11,6 +11,7 @@ import 'package:sprichst/app/app_controller.dart';
 import 'package:sprichst/data/ai/cloud_ai_settings.dart';
 import 'package:sprichst/data/ai/mock_ai_repository.dart';
 import 'package:sprichst/data/curriculum_parser.dart';
+import 'package:sprichst/domain/learning/study_time.dart';
 import 'package:sprichst/domain/models/dialogue_models.dart';
 import 'package:sprichst/domain/models/learning_models.dart';
 import 'package:sprichst/domain/repositories/auth_repository.dart';
@@ -107,6 +108,7 @@ List<Override> testOverrides(InMemoryLearningRepository learning,
       learningRepositoryProvider.overrideWithValue(learning),
       aiRepositoryProvider.overrideWithValue(MockAIRepository()),
       onDeviceRuntimeProvider.overrideWithValue(FakeRuntime()),
+      studyTimeStoreProvider.overrideWithValue(MemoryStudyTimeStore()),
       cloudAISettingsProvider
           .overrideWith((ref) => CloudAISettings(store: MemorySecretStore())),
       ...extra,

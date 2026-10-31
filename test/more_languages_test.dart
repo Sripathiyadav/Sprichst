@@ -17,8 +17,6 @@ void main() {
         brightness: Brightness.light,
         repository: InMemoryLearningRepository());
     expect(find.text('More languages coming soon.'), findsOneWidget);
-    await tester.tap(find.text('Start'));
-    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('tour-skip')));
     await tester.pumpAndSettle();
     // Lessons are in English only, so there is nothing to choose.
@@ -46,9 +44,7 @@ void main() {
         size: const Size(390, 1400),
         brightness: Brightness.light,
         repository: InMemoryLearningRepository(_learner()));
-    await tester.tap(find.text('More').last);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Account').first);
+    await tester.tap(find.byKey(const ValueKey('home-account')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Learning preferences'));
     await tester.pumpAndSettle();

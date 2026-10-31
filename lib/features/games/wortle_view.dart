@@ -26,6 +26,15 @@ class _WortleViewState extends State<WortleView> {
   var _typed = '';
   String? _message;
 
+  /// "Letter 2 is A.", once the learner has asked for the hint.
+  String? _hint;
+
+  void _useHint() {
+    final letter = _game.hint();
+    if (letter == null) return;
+    setState(() => _hint = 'Hint: letter ${_game.hinted! + 1} is $letter.');
+  }
+
   static const _rows = ['QWERTZUIOP', 'ASDFGHJKL', 'YXCVBNM'];
 
   @override
@@ -101,8 +110,20 @@ class _WortleViewState extends State<WortleView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Guess the five-letter German word.',
-              style: theme.textTheme.bodyMedium),
+          Row(
+            children: [
+              Expanded(
+                child: Text(_hint ?? 'Guess the five-letter German word.',
+                    style: theme.textTheme.bodyMedium),
+              ),
+              TextButton.icon(
+                key: const ValueKey('wortle-hint'),
+                onPressed: _hint == null && !_game.isOver ? _useHint : null,
+                icon: const Icon(Icons.lightbulb_outline),
+                label: const Text('Hint'),
+              ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.sm),
           Expanded(
             child: Center(

@@ -58,6 +58,24 @@ void main() {
       expect(result.feedback, contains('capitalisation'));
     });
 
+    test('a misspelled noun is named as spelling, not as the article', () {
+      const coffee = Exercise(
+        id: 'coffee_x',
+        kind: ExerciseKind.translation,
+        prompt: 'Translate: the coffee',
+        answer: 'der Kaffee',
+        explanation: 'Kaffee is masculine (der).',
+        skills: ['definite_articles'],
+      );
+      final typo = evaluator.evaluate(coffee, 'der Kafee');
+      expect(typo.isCorrect, isFalse);
+      expect(typo.feedback, contains('“Kafee” should be “Kaffee”'));
+      expect(typo.feedback, isNot(contains('masculine')));
+      // A wrong article still gets the grammar explanation.
+      expect(evaluator.evaluate(coffee, 'die Kaffee').feedback,
+          contains('masculine'));
+    });
+
     test('rejects wrong answers and reveals the correct one', () {
       final result = evaluator.evaluate(_article, 'die');
       expect(result.isCorrect, isFalse);

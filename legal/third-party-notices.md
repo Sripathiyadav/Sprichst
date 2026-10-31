@@ -33,7 +33,7 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | Package | Version | Licence | Used for |
 |---|---|---|---|
 | _flutterfire_internals | 1.3.77 | BSD-3-Clause | dependency |
-| archive | 4.4.0 | BSD-2-Clause | app |
+| archive | 4.5.1 | BSD-2-Clause | app |
 | args | 2.7.0 | BSD-3-Clause | dependency |
 | async | 2.13.1 | BSD-3-Clause | dependency |
 | audio_session | 0.2.4 | MIT | dependency |
@@ -43,10 +43,9 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | cloud_firestore | 6.10.0 | BSD-3-Clause | app |
 | cloud_firestore_platform_interface | 8.0.7 | BSD-3-Clause | dependency |
 | cloud_firestore_web | 5.7.3 | BSD-3-Clause | dependency |
-| code_assets | 1.2.1 | BSD-3-Clause | dependency |
+| code_assets | 2.1.0 | BSD-3-Clause | dependency |
 | collection | 1.19.1 | BSD-3-Clause | dependency |
-| crypto | 3.0.7 | BSD-3-Clause | app |
-| cupertino_icons | 1.0.9 | MIT | app |
+| crypto | 3.0.7 | BSD-3-Clause | dependency |
 | device_info_plus | 13.3.0 | BSD-3-Clause | app |
 | device_info_plus_platform_interface | 8.1.0 | BSD-3-Clause | dependency |
 | dinja | 1.0.0 | MIT | dependency |
@@ -72,13 +71,12 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | flutter_secure_storage_windows | 4.2.2 | BSD-3-Clause | dependency |
 | flutter_test | 0.0.0 | BSD-3-Clause (Flutter SDK) | tests and tools |
 | flutter_web_plugins | 0.0.0 | BSD-3-Clause (Flutter SDK) | dependency |
-| go_router | 15.1.3 | BSD-3-Clause | app |
 | google_sign_in | 7.2.0 | BSD-3-Clause | app |
 | google_sign_in_android | 7.2.17 | BSD-3-Clause | dependency |
 | google_sign_in_ios | 6.3.6 | BSD-3-Clause | dependency |
 | google_sign_in_platform_interface | 3.1.0 | BSD-3-Clause | dependency |
 | google_sign_in_web | 1.1.3 | Project-owned stub | app |
-| hooks | 2.0.2 | BSD-3-Clause | dependency |
+| hooks | 2.2.0 | BSD-3-Clause | dependency |
 | http | 1.6.0 | BSD-3-Clause | app |
 | http_parser | 4.1.2 | BSD-3-Clause | dependency |
 | jni | 1.1.0 | BSD-3-Clause | dependency |
@@ -97,8 +95,8 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | lottie | 3.6.1 | MIT | app |
 | matcher | 0.12.20 | BSD-3-Clause | dependency |
 | material_color_utilities | 0.13.0 | Apache-2.0 | app |
-| meta | 1.18.3 | BSD-3-Clause | dependency |
-| objective_c | 9.5.0 | BSD-3-Clause | dependency |
+| meta | 1.19.0 | BSD-3-Clause | dependency |
+| objective_c | 9.6.2 | BSD-3-Clause | dependency |
 | package_config | 3.0.0 | BSD-3-Clause | dependency |
 | path | 1.9.1 | BSD-3-Clause | dependency |
 | path_provider | 2.1.6 | BSD-3-Clause | app |
@@ -117,7 +115,7 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | record_linux | 2.1.3 | BSD-3-Clause | dependency |
 | record_macos | 2.1.1 | BSD-3-Clause | dependency |
 | record_platform_interface | 2.1.0 | BSD-3-Clause | dependency |
-| record_use | 0.6.0 | BSD-3-Clause | dependency |
+| record_use | 1.1.1 | BSD-3-Clause | dependency |
 | record_web | 2.1.3 | BSD-3-Clause | dependency |
 | record_windows | 2.3.0 | BSD-3-Clause | dependency |
 | riverpod | 2.6.1 | MIT | dependency |
@@ -150,7 +148,7 @@ Gemma is provided under and subject to the Gemma Terms of Use found at ai.google
 | test_api | 0.7.12 | BSD-3-Clause | dependency |
 | typed_data | 1.4.0 | BSD-3-Clause | dependency |
 | uuid | 4.6.0 | MIT | dependency |
-| vector_math | 2.4.2 | BSD-3-Clause | dependency |
+| vector_math | 2.4.3 | BSD-3-Clause | dependency |
 | vm_service | 15.3.0 | BSD-3-Clause | dependency |
 | web | 1.1.1 | BSD-3-Clause | app |
 | win32 | 6.4.0 | BSD-3-Clause | dependency |

@@ -66,16 +66,19 @@ void main() {
       }
     });
 
-    test('every tour page has its animation in both themes', () {
-      for (final page in tourPages) {
-        for (final brightness in Brightness.values) {
-          expect(
-              File(SprichstLottie.assetOf(page.animation, brightness))
-                  .existsSync(),
-              isTrue,
-              reason: '${page.animation} ${brightness.name}');
-        }
+    test('the tour is one animation, in both themes', () {
+      for (final brightness in Brightness.values) {
+        expect(File(SprichstLottie.assetOf('tour', brightness)).existsSync(),
+            isTrue,
+            reason: brightness.name);
       }
+    });
+
+    test('the tour file has a 3 s scene for each page', () async {
+      final composition = await LottieComposition.fromBytes(
+          File('assets/lottie/tour_light.json').readAsBytesSync());
+      expect(
+          composition.duration, const Duration(seconds: 3) * tourPages.length);
     });
 
     test('every file is a valid Lottie composition that plays for a while',
@@ -91,41 +94,21 @@ void main() {
   });
 
   group('the tour', () {
-    testWidgets('has three pages and finishes after the last', (tester) async {
+    testWidgets('one page whose words follow the animation', (tester) async {
       var done = 0;
       await _pumpTour(tester, onDone: () => done++);
       expect(tourPages, hasLength(3));
-      for (var page = 1; page <= 3; page++) {
-        expect(find.textContaining('$page OF 3'), findsOneWidget);
-        expect(find.text(tourPages[page - 1].title), findsOneWidget);
-        expect(find.byType(Lottie), findsOneWidget);
-        expect(done, 0);
-        await _next(tester);
-      }
-      expect(done, 1);
-    });
-
-    testWidgets('can go back, and has no Back on the first page',
-        (tester) async {
-      await _pumpTour(tester, onDone: () {});
-      expect(find.byKey(const ValueKey('tour-back')), findsNothing);
+      expect(find.byType(Lottie), findsOneWidget);
+      // pumpAndSettle ran the animation to its end: the last scene's words.
+      expect(find.text(tourPages.last.title), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('tour-dot-0')));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(tourPages.first.title), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
+      expect(find.text(tourPages[1].title), findsOneWidget);
+      await tester.pumpAndSettle();
       await _next(tester);
-      expect(find.textContaining('2 OF 3'), findsOneWidget);
-      await tester.tap(find.byKey(const ValueKey('tour-back')));
-      await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 3'), findsOneWidget);
-    });
-
-    testWidgets('swiping moves between pages', (tester) async {
-      await _pumpTour(tester, onDone: () {});
-      await tester.fling(
-          find.text(tourPages[0].title), const Offset(-300, 0), 1200);
-      await tester.pumpAndSettle();
-      expect(find.textContaining('2 OF 3'), findsOneWidget);
-      await tester.fling(
-          find.text(tourPages[1].title), const Offset(300, 0), 1200);
-      await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 3'), findsOneWidget);
+      expect(done, 1);
     });
 
     testWidgets('Skip leaves at once', (tester) async {
@@ -133,14 +116,6 @@ void main() {
       await _pumpTour(tester, onDone: () => done++);
       await tester.tap(find.byKey(const ValueKey('tour-skip')));
       expect(done, 1);
-    });
-
-    testWidgets('the last page offers the finish label', (tester) async {
-      await _pumpTour(tester, onDone: () {});
-      for (var i = 0; i < 4; i++) {
-        await _next(tester);
-      }
-      expect(find.text('Continue'), findsOneWidget);
     });
 
     testWidgets('pictures are hidden from screen readers', (tester) async {
@@ -151,18 +126,19 @@ void main() {
           findsWidgets);
     });
 
-    testWidgets('reduced motion shows a still picture and nothing moves',
+    testWidgets('reduced motion shows a still picture and every scene’s words',
         (tester) async {
       await _pumpTour(tester, onDone: () {}, reduceMotion: true);
       final lottie = tester.widget<Lottie>(find.byType(Lottie));
       expect(lottie.controller, isA<AlwaysStoppedAnimation<double>>());
+      for (final page in tourPages) {
+        expect(find.text(page.title), findsOneWidget);
+      }
     });
 
     testWidgets('with motion, the picture plays once and then stops',
         (tester) async {
       await _pumpTour(tester, onDone: () {});
-      expect(tester.widget<Lottie>(find.byType(Lottie)).repeat, isFalse);
-      // pumpAndSettle returned, so nothing is still animating.
       expect(tester.hasRunningAnimations, isFalse);
     });
 
@@ -176,27 +152,21 @@ void main() {
               brightness: brightness,
               textScale: scale,
               size: const Size(320, 568));
-          for (var i = 0; i < 5; i++) {
-            expect(tester.takeException(), isNull, reason: 'page ${i + 1}');
-            await _next(tester);
-          }
+          expect(tester.takeException(), isNull);
         });
       }
     }
   });
 
   group('in the app', () {
-    testWidgets('onboarding shows the welcome animation, then the tour',
+    testWidgets('onboarding opens on the tour, then asks the level',
         (tester) async {
       await pumpSprichst(tester,
           size: const Size(390, 844),
           brightness: Brightness.light,
           repository: InMemoryLearningRepository());
       expect(find.byType(Lottie), findsOneWidget);
-      expect(find.text('Willkommen bei\nSprichst.'), findsOneWidget);
-      await tester.tap(find.text('Start'));
-      await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 3'), findsOneWidget);
+      expect(find.text('Willkommen bei Sprichst.'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('tour-skip')));
       await tester.pumpAndSettle();
       expect(find.text('Where are you now?'), findsOneWidget);
@@ -213,10 +183,10 @@ void main() {
       await tester.ensureVisible(find.text('How Sprichst works'));
       await tester.tap(find.text('How Sprichst works'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('1 OF 3'), findsOneWidget);
+      expect(find.text('HOW SPRICHST WORKS'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('tour-skip')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('OF 3'), findsNothing);
+      expect(find.text('HOW SPRICHST WORKS'), findsNothing);
       expect(find.text('How Sprichst works'), findsOneWidget);
     });
   });

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sprichst/domain/models/learning_models.dart';
 
+import 'package:sprichst/app/app_controller.dart';
+
 import 'support/fakes.dart';
+import 'support/on_device_fakes.dart';
 
 const _phone = Size(390, 844);
 
@@ -52,24 +55,46 @@ Future<void> _open(WidgetTester tester, String tab) async {
 }
 
 void main() {
-  testWidgets('onboarding records the chosen goal', (tester) async {
+  testWidgets('onboarding records the level and starts the coach download',
+      (tester) async {
     final repository = InMemoryLearningRepository();
+    final runtime = FakeRuntime();
     await pumpSprichst(tester,
-        size: _phone, brightness: Brightness.light, repository: repository);
-    await tester.tap(find.text('Start'));
-    await tester.pumpAndSettle();
+        size: _phone,
+        brightness: Brightness.light,
+        repository: repository,
+        extraOverrides: [onDeviceRuntimeProvider.overrideWithValue(runtime)]);
     await tester.tap(find.byKey(const ValueKey('tour-skip')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('A1'));
+    await tester.tap(find.text('A1'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Continue'));
-    await tester.tap(find.text('Continue')); // level
+    await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Goethe-Zertifikat'));
-    await tester.tap(find.text('Goethe-Zertifikat'));
+    await tester.tap(find.byKey(const ValueKey('download-coach')));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Build my learning plan'));
-    await tester.tap(find.text('Build my learning plan'));
+    expect(repository.profile!.currentLevel, CefrLevel.a1);
+    expect(runtime.installed, isNotEmpty);
+  });
+
+  testWidgets('in a browser, onboarding ends at the level', (tester) async {
+    final repository = InMemoryLearningRepository();
+    await pumpSprichst(tester,
+        size: _phone,
+        brightness: Brightness.light,
+        repository: repository,
+        extraOverrides: [
+          onDeviceRuntimeProvider
+              .overrideWithValue(FakeRuntime()..supported = false)
+        ]);
+    await tester.tap(find.byKey(const ValueKey('tour-skip')));
     await tester.pumpAndSettle();
-    expect(repository.profile!.goal, LearningGoal.goethe);
+    expect(find.text('STEP 1 OF 1'), findsOneWidget);
+    await tester.ensureVisible(find.text('Continue'));
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    expect(repository.profile, isNotNull);
   });
 
   group('Practice hub', () {

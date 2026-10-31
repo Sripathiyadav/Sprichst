@@ -19,6 +19,25 @@ class WortleGame {
   final List<String> guesses = [];
   final List<List<LetterMark>> marks = [];
 
+  /// The position the hint revealed, or null while the hint is unused.
+  int? hinted;
+
+  /// Reveals one letter not yet found in its place: one hint per game, and it
+  /// costs [hintCost] points. Null once used or when the game is over.
+  String? hint() {
+    if (isOver || hinted != null) return null;
+    final found = {
+      for (var g = 0; g < guesses.length; g++)
+        for (var i = 0; i < wordLength; i++)
+          if (marks[g][i] == LetterMark.correct) i,
+    };
+    hinted = [for (var i = 0; i < wordLength; i++) i]
+        .firstWhere((i) => !found.contains(i));
+    return answer[hinted!];
+  }
+
+  static const hintCost = 15;
+
   bool get isWon => guesses.isNotEmpty && guesses.last == answer;
   bool get isLost => !isWon && guesses.length >= maxGuesses;
   bool get isOver => isWon || isLost;
@@ -84,7 +103,10 @@ class WortleGame {
     final used = guesses.length;
     return GameOutcome(
       game: GameId.wortle,
-      score: isWon ? 100 - (used - 1) * 15 : 0,
+      score: isWon
+          ? math.max(
+              10, 100 - (used - 1) * 15 - (hinted == null ? 0 : hintCost))
+          : 0,
       correct: isWon ? 1 : 0,
       total: 1,
       stars: !isWon

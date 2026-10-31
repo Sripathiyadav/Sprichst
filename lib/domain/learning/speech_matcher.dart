@@ -15,7 +15,7 @@ class SpeechMatcher {
     final b = normalise(target);
     if (a.isEmpty && b.isEmpty) return 1;
     if (a.isEmpty || b.isEmpty) return 0;
-    return 1 - _editDistance(a, b) / math.max(a.length, b.length);
+    return 1 - editDistance(a, b) / math.max(a.length, b.length);
   }
 
   /// The best similarity against any of [targets].
@@ -33,7 +33,7 @@ class SpeechMatcher {
       .trim();
 
   /// Levenshtein distance in O(n·m) time and O(m) space.
-  static int _editDistance(String a, String b) {
+  static int editDistance(String a, String b) {
     var previous = List<int>.generate(b.length + 1, (i) => i);
     for (var i = 1; i <= a.length; i++) {
       final current = List<int>.filled(b.length + 1, 0)..[0] = i;

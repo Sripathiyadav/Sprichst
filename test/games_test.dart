@@ -173,7 +173,7 @@ void main() {
       final hinted = WordScrambleGame([word], _rng(), rounds: 1)
         ..hint()
         ..hint();
-      expect(hinted.hintText, 'Ti');
+      expect(hinted.hintsShown, 2);
       hinted.guess('Tisch');
       expect(hinted.score, lessThan(plain.score));
       expect(hinted.score, greaterThan(0));
@@ -190,6 +190,15 @@ void main() {
   });
 
   group('Wortle', () {
+    test('the hint shows one unfound letter, once, and costs points', () {
+      final game = WortleGame('TISCH')..submit('TASSE');
+      expect(game.hint(), 'I'); // T is already found in place
+      expect(game.hinted, 1);
+      expect(game.hint(), isNull);
+      game.submit('TISCH');
+      expect(game.finish().score, 100 - 15 - WortleGame.hintCost);
+    });
+
     test('marks exact, misplaced and absent letters', () {
       expect(WortleGame.evaluate('TISCH', 'TISCH'),
           everyElement(LetterMark.correct));

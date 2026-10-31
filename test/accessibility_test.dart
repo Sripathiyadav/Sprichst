@@ -27,7 +27,7 @@ Future<void> _eachScreen(
   WidgetTester tester,
   Future<void> Function(String screen) check,
 ) async {
-  for (final label in ['Home', 'Learn', 'Practice', 'Coach']) {
+  for (final label in ['Home', 'Learn', 'Practice', 'Coach', 'Progress']) {
     await tester.tap(find.text(label).last);
     await tester.pumpAndSettle();
     await check(label);
@@ -118,15 +118,16 @@ void main() {
       await _eachScreen(tester, (screen) async {
         expect(tester.takeException(), isNull, reason: '$screen at ${scale}x');
       });
-      await tester.tap(find.text('More'));
+      await tester.tap(find.text('Progress').last);
       await tester.pumpAndSettle();
-      for (final label in ['Progress', 'Account']) {
-        await tester.tap(find.text(label).last);
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull, reason: '$label at ${scale}x');
-        await tester.tap(find.byType(BackButton));
-        await tester.pumpAndSettle();
-      }
+      expect(tester.takeException(), isNull, reason: 'Progress at ${scale}x');
+      await tester.tap(find.text('Home').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('home-account')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'Account at ${scale}x');
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Learn').last);
       await tester.pumpAndSettle();

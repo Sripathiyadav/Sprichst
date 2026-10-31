@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
+import '../../data/on_device/model_catalogue.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
-import '../../shared/widgets/lottie_view.dart';
 import 'intro_tour.dart';
 
 class OnboardingView extends ConsumerStatefulWidget {
@@ -18,10 +20,12 @@ class OnboardingView extends ConsumerStatefulWidget {
 class _OnboardingViewState extends ConsumerState<OnboardingView> {
   var _step = 0;
   var _level = CefrLevel.preA1;
-  var _goal = LearningGoal.everyday;
 
   @override
   Widget build(BuildContext context) {
+    final models = ref.watch(modelManagerProvider);
+    // In a browser there is no model to download, so the level is the last step.
+    final steps = models.isSupported ? 2 : 1;
     return GlassPage(
       body: CenteredScroll(
         child: AnimatedSwitcher(
@@ -30,33 +34,24 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
             0 => _Welcome(
                 key: const ValueKey(0),
                 onStart: () => setState(() => _step = 1)),
-            1 => IntroTour(
+            1 => _LevelStep(
                 key: const ValueKey(1),
-                onDone: () => setState(() => _step = 2),
-              ),
-            2 => _LevelStep(
-                key: const ValueKey(2),
+                steps: steps,
                 selected: _level,
                 onSelect: (value) => setState(() => _level = value),
-                onNext: () => setState(() => _step = 3),
+                onNext: steps == 1 ? _finish : () => setState(() => _step = 2),
               ),
-            _ => _GoalStep(
-                key: const ValueKey(3),
-                selected: _goal,
-                onSelect: (value) => setState(() => _goal = value),
-                onFinish: _finish,
-              ),
+            _ => _ModelStep(key: const ValueKey(2), onFinish: _finish),
           },
         ),
       ),
     );
   }
 
+  /// The goal starts as everyday German; it can be changed in Account.
   Future<void> _finish() async {
     try {
-      await ref
-          .read(appControllerProvider)
-          .completeOnboarding(level: _level, goal: _goal);
+      await ref.read(appControllerProvider).completeOnboarding(level: _level);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -67,6 +62,7 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
   }
 }
 
+/// The first screen: the name, then the tour animation with its words.
 class _Welcome extends StatelessWidget {
   const _Welcome({super.key, required this.onStart});
   final VoidCallback onStart;
@@ -77,40 +73,31 @@ class _Welcome extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Wordmark(size: 32),
-          const SizedBox(height: AppSpacing.lg),
-          const Center(
-            child: SprichstLottie('welcome_intro', width: 200, height: 200),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text('Willkommen bei\nSprichst.',
-              locale: const Locale('de'),
-              style: Theme.of(context).textTheme.displaySmall),
           const SizedBox(height: AppSpacing.md),
-          Text('Learn German from your first words to confident conversation.',
-              style: Theme.of(context).textTheme.bodyLarge),
-          const SizedBox(height: AppSpacing.xs),
+          Text('Willkommen bei Sprichst.',
+              locale: const Locale('de'),
+              style: Theme.of(context).textTheme.headlineMedium),
           Text('More languages coming soon.',
               key: const ValueKey('welcome-more-languages'),
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
                   ?.copyWith(color: context.tokens.inkMuted)),
-          const SizedBox(height: AppSpacing.xxl),
-          PrimaryButton(label: 'Start', onPressed: onStart),
-          const SizedBox(height: AppSpacing.xs),
-          Text('A quick tour of how it works, then two questions.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: context.tokens.inkMuted)),
+          const SizedBox(height: AppSpacing.lg),
+          IntroTour(finishLabel: 'Start', onDone: onStart),
         ],
       );
 }
 
 class _StepHeader extends StatelessWidget {
-  const _StepHeader({required this.step, required this.title, this.hint});
+  const _StepHeader(
+      {required this.step,
+      required this.steps,
+      required this.title,
+      this.hint});
 
   final int step;
+  final int steps;
   final String title;
   final String? hint;
 
@@ -121,9 +108,9 @@ class _StepHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SkillMeter(
-            label: 'STEP $step OF 2',
-            value: step / 2,
-            valueLabel: '$step / 2',
+            label: 'STEP $step OF $steps',
+            value: step / steps,
+            valueLabel: '$step / $steps',
             compact: true),
         const SizedBox(height: AppSpacing.lg),
         Semantics(
@@ -145,9 +132,11 @@ class _StepHeader extends StatelessWidget {
 class _LevelStep extends StatelessWidget {
   const _LevelStep(
       {super.key,
+      required this.steps,
       required this.selected,
       required this.onSelect,
       required this.onNext});
+  final int steps;
   final CefrLevel selected;
   final ValueChanged<CefrLevel> onSelect;
   final VoidCallback onNext;
@@ -157,8 +146,9 @@ class _LevelStep extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _StepHeader(
+          _StepHeader(
               step: 1,
+              steps: steps,
               title: 'Where are you now?',
               hint: 'Choose a starting point. You can change it later.'),
           for (final level in CefrLevel.values)
@@ -178,36 +168,70 @@ class _LevelStep extends StatelessWidget {
       );
 }
 
-class _GoalStep extends StatelessWidget {
-  const _GoalStep({
-    super.key,
-    required this.selected,
-    required this.onSelect,
-    required this.onFinish,
-  });
+/// Puts the coach on the phone. The download carries on in the background
+/// after onboarding (Coach shows its progress), so nobody waits here for
+/// gigabytes. Skipping is fine: a model or an AI key can be added any time.
+class _ModelStep extends ConsumerWidget {
+  const _ModelStep({super.key, required this.onFinish});
 
-  final LearningGoal selected;
-  final ValueChanged<LearningGoal> onSelect;
   final VoidCallback onFinish;
 
   @override
-  Widget build(BuildContext context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _StepHeader(
-              step: 2,
-              title: 'What do you want German for?',
-              hint:
-                  'Your lessons, vocabulary and practice follow this goal. You can change it any time.'),
-          GoalPicker(selected: selected, onSelect: onSelect),
-          const SizedBox(height: AppSpacing.md),
-          PrimaryButton(
-              label: 'Build my learning plan',
+  Widget build(BuildContext context, WidgetRef ref) {
+    final models = ref.watch(modelManagerProvider)..ensureLoaded();
+    final tutor = models.recommendedTutorModel;
+    final installed = models.isInstalled(tutor.id);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _StepHeader(
+            step: 2,
+            steps: 2,
+            title: 'Put the coach on this phone',
+            hint:
+                'Download it once. Then the coach works offline and nothing you say leaves your phone.'),
+        SoftCard(
+          child: Row(children: [
+            const Icon(Icons.phone_android),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                  '${tutor.label} · ${formatBytes(tutor.downloadBytes)}'
+                  '${installed ? ' · on this phone' : ''}',
+                  style: Theme.of(context).textTheme.titleSmall),
+            ),
+          ]),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text('Best on Wi-Fi. You can keep learning while it downloads.',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: context.tokens.inkMuted)),
+        const SizedBox(height: AppSpacing.lg),
+        PrimaryButton(
+          key: const ValueKey('download-coach'),
+          label: installed ? 'Continue' : 'Download and start',
+          block: true,
+          onPressed: () {
+            if (!installed) unawaited(models.download(tutor.id));
+            onFinish();
+          },
+        ),
+        if (!installed) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Center(
+            child: TextButton(
+              key: const ValueKey('skip-download'),
               onPressed: onFinish,
-              block: true),
+              child: const Text('Not now — I’ll use my own AI key'),
+            ),
+          ),
         ],
-      );
+      ],
+    );
+  }
 }
 
 /// The learning goals as selectable tiles (a single choice).

@@ -161,22 +161,6 @@ def parse_poly(d):
         pts.append([x, y])
     return pts
 
-def welcome_intro(c):
-    """The orbit mark assembles: the orbit swings in, the S is revealed from its centre, the disc lands on the orbit. 1.8 s."""
-    op = 108
-    KS = {'a': [512, 512, 0], 'p': [256, 256, 0], 's': [50, 50, 100]}   # icon space (1024) -> 512 canvas
-    cx, cy, r = ORBIT_DISC
-    layers = []
-    layers.append(layer(0, 'disc', [group('disc', [ellipse(2 * r, (cx, cy)), fill(c['coral'])],
-                                          tr(p=anim([(58, [cx, cy - 70]), (78, [cx, cy])]), a=(cx, cy), s=anim([(58, [0, 0]), (74, [116, 116]), (82, [100, 100])])))], op, KS))
-    reveal = anim([(14, [circle_path(512, 520, 1)]), (62, [circle_path(512, 520, 430)])], 'standard')
-    layers.append(layer(0, 'S', [group('S', [shape(parse_poly(ORBIT_S), closed=True), fill(c['ink'])])], op, KS,
-                        masks=[{'inv': False, 'mode': 'a', 'pt': reveal, 'o': val(100), 'x': val(0), 'nm': 'reveal'}]))
-    segs = [shape(parse_poly(d), closed=True) for d in ORBIT_SEGMENTS]
-    layers.append(layer(0, 'orbit', [group('orbit', segs + [fill(c['ink'])],
-                                           tr(p=(512, 512), a=(512, 512), r=anim([(0, -50), (40, 0)]), o=anim([(0, 0), (16, 100)])))], op, KS))
-    return comp('Sprichst — welcome intro', 512, 512, op, layers)
-
 def nav_indicator(c):
     """Navigation indicator pill grows behind the selected tab icon. 0.4 s."""
     op = 24
@@ -250,15 +234,7 @@ def answer_incorrect(c):
         layer(0, 'disc', [group('disc', [ellipse(44), fill(c['danger_soft'])], tr(s=anim([(0, [0, 0]), (10, [100, 100])])))], op, {'p': shake}),
     ])
 
-def loading(c):
-    """Coral arc travelling around a hairline ring. 1 s loop."""
-    op = 60
-    return comp('Sprichst — loading', 88, 88, op, [
-        layer(0, 'arc', [group('arc', [ellipse(84), trim(28), stroke(c['coral'], 3)])], op, {'p': [44, 44, 0], 'r': anim([(0, 0), (60, 360)], 'linear')}),
-        layer(0, 'ring', [group('ring', [ellipse(84), stroke(c['line'], 1)])], op, {'p': [44, 44, 0]}),
-    ])
-
-# ---------------------------------------------------------------- tour illustrations (240 x 180, 3 s, play once and hold)
+# ---------------------------------------------------------------- tour illustrations (240 x 180, 3 s each)
 TOUR_W, TOUR_H, TOUR_OP = 240, 180, 180
 
 def _loop(fade_in=6):
@@ -314,28 +290,6 @@ def tour_coach(c):
     L.append(layer(0, 'typing', [group('typing', typing[::-1], tr(p=(78, 148), s=anim([(64, [0, 0]), (76, [106, 106]), (82, [100, 100])])))], TOUR_OP, {'o': _loop()}))
     return comp('Sprichst — tour: coach', TOUR_W, TOUR_H, TOUR_OP, L)
 
-def tour_review(c):
-    """Spaced review: each return comes later than the last, so the arcs grow."""
-    xs = [32, 66, 112, 168, 212]
-    y = 112
-    L = []
-    for j in range(4):
-        r = (xs[j + 1] - xs[j]) / 2
-        v, i, o = arc((xs[j] + xs[j + 1]) / 2, y, r, 180, 360)
-        t0 = 14 + 24 * j
-        L.append(layer(0, f'gap {j}', [group('gap', [shape(v, i, o), trim(anim([(t0, 0), (t0 + 22, 100)])), stroke(c['coral'] if j == 3 else c['line'], 2.5)])],
-                       TOUR_OP, {'o': _loop()}))
-    L.append(layer(0, 'baseline', [group('baseline', [shape([[xs[0], y], [xs[-1], y]]), trim(anim([(0, 0), (100, 100)], 'in_out')), stroke(c['line'], 1.5)])],
-                   TOUR_OP, {'o': _loop()}))
-    dots = []
-    for j, x in enumerate(xs):
-        t0 = 4 + 24 * j
-        last = j == len(xs) - 1
-        dots.append(group(f'dot{j}', [ellipse(14 + 2 * j, (x, y)), fill(c['coral'] if last else c['mark'])],
-                          tr(p=(x, y), a=(x, y), s=anim([(t0, [0, 0]), (t0 + 10, [118, 118]), (t0 + 16, [100, 100])]))))
-    L.append(layer(0, 'dots', dots, TOUR_OP, {'o': _loop()}))
-    return comp('Sprichst — tour: spaced review', TOUR_W, TOUR_H, TOUR_OP, L)
-
 def tour_private(c):
     """The phone with its lock: what you type stays on the phone unless you choose otherwise."""
     L = []
@@ -353,27 +307,6 @@ def tour_private(c):
                    TOUR_OP, {'p': [120, 90, 0], 'o': _loop(), 's': anim([(0, [92, 92, 100]), (16, [100, 100, 100])])}))
     return comp('Sprichst — tour: private', TOUR_W, TOUR_H, TOUR_OP, L)
 
-def tour_design(c):
-    """The design: a few plain shapes, one coral accent, settling into place."""
-    L = []
-    spec = [('square', [-70, 100], [96, 98], 'ink'), ('circle', [310, 84], [138, 86], 'coral'), ('triangle', [120, -40], [180, 108], 'success')]
-    for k, (kind, p0, p1, col) in enumerate(spec):
-        t0 = 6 + 12 * k
-        if kind == 'square':
-            geo = [rect(58, 58, 10)]
-        elif kind == 'circle':
-            geo = [ellipse(62)]
-        else:
-            geo = [shape([[0, -30], [30, 24], [-30, 24]], closed=True)]
-        L.append(layer(0, kind, [group(kind, geo + [fill(c[col])])], TOUR_OP,
-                       {'p': anim([(t0, p0 + [0]), (t0 + 30, p1 + [0])]), 'r': anim([(t0, -120 if k != 1 else 0), (t0 + 30, 0)]), 'o': _loop(4)}))
-    L.append(layer(0, 'ring', [group('ring', [ellipse(anim([(48, [60, 60]), (110, [120, 120])])), stroke(c['coral'], 1.5, o=anim([(0, 0, 'linear'), (47, 0, 'linear'), (48, 80, 'linear'), (110, 0)]))])],
-                   TOUR_OP, {'p': [138, 86, 0]}))
-    L.append(layer(0, 'baseline', [group('baseline', [shape([[40, 150], [200, 150]]), trim(anim([(30, 0), (90, 100)], 'in_out')), stroke(c['line'], 1.5)])],
-                   TOUR_OP, {'o': _loop()}))
-    return comp('Sprichst — tour: design', TOUR_W, TOUR_H, TOUR_OP, L)
-
-# ---------------------------------------------------------------- state and feedback animations
 def _state_frame(c, glyph_layers, op=72):
     """96 x 96: hairline ring, coral disc at the upper right, and the glyph. Lottie draws the first layer on top."""
     L = list(glyph_layers)
@@ -444,11 +377,20 @@ def download_model(c):
         layer(0, 'tray', [group('tray', [shape([[8, 26], [8, 32], [32, 32], [32, 26]]), stroke(c['ink'], 3)])], op),
     ])
 
-ANIMS = {'welcome_intro': welcome_intro, 'nav_indicator': nav_indicator, 'lesson_complete': lesson_complete,
+def tour(c):
+    """The whole tour in one file: lessons, coach, private, 3 s each, looping. Each
+    scene's layers are shifted in time (st) and shown only in their own window (ip/op)."""
+    L = []
+    for k, scene in enumerate([tour_lessons, tour_coach, tour_private]):
+        for layer_ in scene(c)['layers']:
+            layer_.update(ip=k * TOUR_OP, op=(k + 1) * TOUR_OP, st=k * TOUR_OP)
+            L.append(layer_)
+    return comp('Sprichst — tour', TOUR_W, TOUR_H, 3 * TOUR_OP, L)
+
+ANIMS = {'nav_indicator': nav_indicator, 'lesson_complete': lesson_complete,
          'achievement_unlocked': achievement_unlocked, 'streak_kept': streak_kept, 'answer_correct': answer_correct,
-         'answer_incorrect': answer_incorrect, 'loading': loading,
-         'tour_lessons': tour_lessons, 'tour_coach': tour_coach, 'tour_review': tour_review,
-         'tour_private': tour_private, 'tour_design': tour_design,
+         'answer_incorrect': answer_incorrect,
+         'tour': tour,
          'empty_state': empty_state, 'error_state': error_state, 'offline_state': offline_state,
          'level_up': level_up, 'coach_thinking': coach_thinking, 'download_model': download_model}
 

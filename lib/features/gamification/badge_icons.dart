@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/learning/achievements.dart' as game;
-
 /// Maps a badge's icon key to a symbol.
 IconData badgeIcon(String key) => switch (key) {
       'flag' => Icons.flag_rounded,
@@ -17,5 +15,3 @@ IconData badgeIcon(String key) => switch (key) {
       'star' => Icons.star_rounded,
       _ => Icons.emoji_events_rounded,
     };
-
-IconData iconOf(game.Achievement badge) => badgeIcon(badge.icon);

@@ -42,6 +42,10 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
   var _transcribing = false;
   var _startingRecording = false;
 
+  /// When the coach last answered in this visit, to count the minutes spent
+  /// talking.
+  DateTime? _lastReplyAt;
+
   @override
   void initState() {
     super.initState();
@@ -106,7 +110,12 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                     const WebAiNotice(),
                     const _OfflineSetupBanner(),
                     if (_messages.isEmpty)
-                      _CoachEmptyState(onVoiceMode: _openVoiceMode)
+                      _CoachEmptyState(
+                        onVoiceMode: _openVoiceMode,
+                        onSituation: _sending || _recording || _transcribing
+                            ? null
+                            : _startSituation,
+                      )
                     else
                       for (final message in _messages)
                         Padding(
@@ -264,12 +273,21 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     });
   }
 
+  /// Starts a conversation from one of the suggested situations: the learner's
+  /// opening line is sent as if they had typed it.
+  void _startSituation(CoachSituation situation) {
+    _text.text = situation.opener;
+    _send();
+  }
+
   /// Opens the hands-free conversation and keeps what was said in the chat.
   Future<void> _openVoiceMode() async {
+    final clock = Stopwatch()..start();
     final turns = await Navigator.of(context).push<List<VoiceTurn>>(
       MaterialPageRoute(builder: (_) => const VoiceModeView()),
     );
     if (!mounted || turns == null || turns.isEmpty) return;
+    ref.read(appControllerProvider).recordStudyTime(clock.elapsed);
     setState(() {
       for (final turn in turns) {
         _messages
@@ -296,7 +314,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
       if (!await _audioRecorder.hasPermission()) {
         _showMessage(
           'Microphone access is off. Turn it on for Sprichst in your device '
-          'settings to practise speaking.',
+          'settings to practise speaking, or type your answer instead.',
         );
         return;
       }
@@ -450,6 +468,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         return;
       }
 
+      _countTalkingTime(app);
+
       setState(() {
         // A correction is only shown when the provider returned one, with the
         // fields it returned.
@@ -516,6 +536,19 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
         });
       }
     }
+  }
+
+  /// Adds the time since the coach's last answer (at most three minutes, so a
+  /// break is not counted) to today's minutes. The first answer of a visit
+  /// counts one minute.
+  void _countTalkingTime(AppController app) {
+    final now = DateTime.now();
+    final last = _lastReplyAt;
+    _lastReplyAt = now;
+    const cap = Duration(minutes: 3);
+    final spent =
+        last == null ? const Duration(minutes: 1) : now.difference(last);
+    app.recordStudyTime(spent > cap ? cap : spent, now: now);
   }
 
   Future<void> _speakMessage(_Message message) async {
@@ -634,24 +667,75 @@ class _OfflineSetupBanner extends ConsumerWidget {
   }
 }
 
+/// A conversation to start with one tap: the label, and the learner's first
+/// line in German.
+class CoachSituation {
+  const CoachSituation(this.label, this.opener);
+
+  final String label;
+  final String opener;
+}
+
+const coachSituations = <CoachSituation>[
+  CoachSituation(
+      'At the café', 'Hallo! Ich möchte gern einen Kaffee bestellen.'),
+  CoachSituation(
+      'Introduce yourself', 'Hallo! Ich möchte mich kurz vorstellen.'),
+  CoachSituation('Weekend plans',
+      'Ich möchte über meine Pläne für das Wochenende sprechen.'),
+  CoachSituation(
+      'At the doctor’s', 'Guten Tag, ich habe heute einen Termin beim Arzt.'),
+  CoachSituation(
+      'Flat viewing', 'Guten Tag, ich komme wegen der Wohnungsbesichtigung.'),
+];
+
 class _CoachEmptyState extends StatelessWidget {
-  const _CoachEmptyState({required this.onVoiceMode});
+  const _CoachEmptyState({required this.onVoiceMode, this.onSituation});
 
   final VoidCallback onVoiceMode;
 
+  /// Null while a message is on its way.
+  final ValueChanged<CoachSituation>? onSituation;
+
   @override
-  Widget build(BuildContext context) => Center(
-        child: SingleChildScrollView(
-          child: StateMessage(
-            kind: StateKind.empty,
-            title: 'Start a German conversation',
-            message:
-                'Write a sentence, or just talk. Voice mode listens, answers aloud and listens again.',
-            actionLabel: 'Start voice conversation',
-            onAction: onVoiceMode,
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        StateMessage(
+          kind: StateKind.empty,
+          title: 'Start a German conversation',
+          message:
+              'Write a sentence, or just talk. Voice mode listens, answers aloud and listens again.',
+          actionLabel: 'Start voice conversation',
+          onAction: onVoiceMode,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text('OR PICK A SITUATION', style: theme.textTheme.labelSmall),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Wrap(
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
+            children: [
+              for (final situation in coachSituations)
+                ActionChip(
+                  key: ValueKey('situation-${situation.label}'),
+                  label: Text(situation.label),
+                  tooltip: situation.opener,
+                  onPressed: onSituation == null
+                      ? null
+                      : () => onSituation!(situation),
+                ),
+            ],
           ),
         ),
-      );
+      ],
+    );
+  }
 }
 
 enum _Kind { learner, tutor, correction, notice }

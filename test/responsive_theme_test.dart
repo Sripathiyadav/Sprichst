@@ -52,16 +52,18 @@ void main() {
             expect(tester.takeException(), isNull, reason: label);
           }
         } else {
-          await tester.tap(find.text('More'));
+          // Progress is the fifth tab; Account opens from the avatar.
+          await tester.tap(find.text('Progress').last);
           await tester.pumpAndSettle();
-          for (final label in ['Progress', 'Account']) {
-            await tester.tap(find.text(label).last);
-            await tester.pumpAndSettle();
-            expect(find.byType(BackButton), findsOneWidget);
-            expect(tester.takeException(), isNull, reason: label);
-            await tester.tap(find.byType(BackButton));
-            await tester.pumpAndSettle();
-          }
+          expect(tester.takeException(), isNull, reason: 'Progress');
+          await tester.tap(find.text('Home').last);
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const ValueKey('home-account')));
+          await tester.pumpAndSettle();
+          expect(find.byType(BackButton), findsOneWidget);
+          expect(tester.takeException(), isNull, reason: 'Account');
+          await tester.tap(find.byType(BackButton));
+          await tester.pumpAndSettle();
         }
       });
     }
@@ -74,18 +76,13 @@ void main() {
           brightness: Brightness.dark,
           repository: InMemoryLearningRepository());
       // No profile yet: onboarding.
-      expect(find.text('Start'), findsOneWidget);
-      await _tapVisible(tester, find.text('Start'));
-      // The tour, page by page, with nothing overflowing at any size.
-      for (var page = 0; page < 3; page++) {
-        expect(find.textContaining('${page + 1} OF 3'), findsOneWidget);
-        expect(tester.takeException(), isNull, reason: 'tour page ${page + 1}');
-        await _tapVisible(tester, find.byKey(const ValueKey('tour-next')));
-      }
+      // The tour, the level, then the model, with nothing overflowing.
+      expect(tester.takeException(), isNull, reason: 'tour');
+      await _tapVisible(tester, find.byKey(const ValueKey('tour-next')));
       await _tapVisible(tester, find.text('Continue')); // level
-      expect(find.text('What do you want German for?'), findsOneWidget);
+      expect(find.text('Put the coach on this phone'), findsOneWidget);
       expect(tester.takeException(), isNull);
-      await _tapVisible(tester, find.text('Build my learning plan'));
+      await _tapVisible(tester, find.byKey(const ValueKey('skip-download')));
 
       // Lesson: intro then first exercise.
       await tester.tap(find.text('Learn').last);

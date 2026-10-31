@@ -11,6 +11,7 @@ import '../data/ai/hybrid_ai_repository.dart';
 import '../data/on_device/model_manager.dart';
 import '../data/on_device/on_device_ai_repository.dart';
 import '../data/on_device/on_device_runtime.dart';
+import '../data/study_time_store.dart';
 import '../data/firestore/firestore_learning_repository.dart';
 import '../domain/games/game_models.dart';
 import '../domain/games/word_pool.dart';
@@ -25,6 +26,7 @@ import '../domain/learning/learner_insights.dart';
 import '../domain/learning/exercise_evaluator.dart';
 import '../domain/learning/learning_path.dart';
 import '../domain/learning/progress_tracker.dart';
+import '../domain/learning/study_time.dart';
 import '../domain/learning/tutor_context_builder.dart';
 import '../domain/models/curriculum.dart';
 import '../domain/models/dialogue_models.dart';
@@ -82,11 +84,17 @@ final Provider<AIRepository> aiRepositoryProvider =
 /// The shell reads it, switches, and clears it.
 final shellTabRequestProvider = StateProvider<int?>((ref) => null);
 
+/// Where the minutes studied each day are kept: on this device, per learner.
+final studyTimeStoreProvider = Provider<StudyTimeStore>((ref) =>
+    SharedPrefsStudyTimeStore(
+        () => ref.read(authRepositoryProvider).currentUser?.uid));
+
 final appControllerProvider = ChangeNotifierProvider<AppController>((ref) {
   final ai = ref.watch(aiRepositoryProvider);
   final controller = AppController(
     learningRepository: ref.watch(learningRepositoryProvider),
     aiRepository: ai,
+    studyTimeStore: ref.watch(studyTimeStoreProvider),
   );
   // The repository follows the learner's setting. It is wired here, in one
   // direction only: reading the controller from inside the repository's own
@@ -102,12 +110,15 @@ final appControllerProvider = ChangeNotifierProvider<AppController>((ref) {
 class AppController extends ChangeNotifier {
   AppController(
       {required LearningRepository learningRepository,
-      required AIRepository aiRepository})
+      required AIRepository aiRepository,
+      StudyTimeStore? studyTimeStore})
       : _learningRepository = learningRepository,
-        _aiRepository = aiRepository;
+        _aiRepository = aiRepository,
+        _studyTimeStore = studyTimeStore ?? MemoryStudyTimeStore();
 
   final LearningRepository _learningRepository;
   final AIRepository _aiRepository;
+  final StudyTimeStore _studyTimeStore;
   final ProgressTracker _tracker = const ProgressTracker();
   final LearningPath _path = const LearningPath();
   final AdaptivePlanner _planner = const AdaptivePlanner();
@@ -122,6 +133,9 @@ class AppController extends ChangeNotifier {
 
   bool isLoading = true;
   LearningProfile? profile;
+
+  /// Minutes studied on each recent day, on this device only.
+  StudyTime studyTime = const StudyTime();
   Curriculum curriculum = Curriculum(const []);
   List<Dialogue> dialogues = const [];
   String? error;
@@ -213,10 +227,6 @@ class AppController extends ChangeNotifier {
     );
   }
 
-  Quest? questNamed(String id) => Achievements.todaysQuests(DateTime.now())
-      .where((q) => q.id == id)
-      .firstOrNull;
-
   /// The learning state the AI tutor is given.
   TutorContext get tutorContext {
     final current = _requireProfile();
@@ -242,6 +252,7 @@ class AppController extends ChangeNotifier {
       curriculum = Curriculum(await _learningRepository.loadLessons());
       dialogues = await _learningRepository.loadDialogues();
       profile = await _learningRepository.loadProfile();
+      await _loadStudyTime();
     } catch (_) {
       error = 'We could not restore your saved learning state.';
     } finally {
@@ -269,6 +280,7 @@ class AppController extends ChangeNotifier {
   void clearSession() {
     isLoading = true;
     profile = null;
+    studyTime = const StudyTime();
     curriculum = Curriculum(const []);
     error = null;
     notifyListeners();
@@ -300,6 +312,9 @@ class AppController extends ChangeNotifier {
     final current = profile;
     if (current == null) return;
     await _commit(_withNextLesson(current.resetLearningProgress()));
+    studyTime = const StudyTime();
+    await _clearStudyTime();
+    notifyListeners();
   }
 
   LearningProfile _withNextLesson(LearningProfile learner) => learner.copyWith(
@@ -308,6 +323,8 @@ class AppController extends ChangeNotifier {
 
   Future<void> deleteLearningData() async {
     await _learningRepository.deleteLearningData();
+    await _clearStudyTime();
+    studyTime = const StudyTime();
     profile = null;
     curriculum = Curriculum(const []);
     notifyListeners();
@@ -325,9 +342,11 @@ class AppController extends ChangeNotifier {
     } catch (_) {}
   }
 
-  /// Applies a finished lesson.
+  /// Applies a finished lesson. [spent] is how long the learner worked on it;
+  /// it goes into the week's minutes.
   Future<SessionOutcome> completeLesson(
-      Lesson lesson, List<ExerciseResult> results) async {
+      Lesson lesson, List<ExerciseResult> results,
+      {Duration spent = Duration.zero}) async {
     final before = _requireProfile();
     final now = DateTime.now();
     final update =
@@ -335,14 +354,16 @@ class AppController extends ChangeNotifier {
     final scored = results.where((r) => !r.isRetry);
     await _commitWithRewards(
       update.profile,
-      QuestEvent(lessons: 1, correct: scored.where((r) => r.isCorrect).length),
+      QuestEvent(lessons: 1, correctIds: _correctIds(scored)),
       now,
+      spent: spent,
     );
     return (xpEarned: update.xpEarned, leveledUpTo: update.leveledUpTo);
   }
 
   /// Applies a practice or review session.
-  Future<SessionOutcome> completePractice(List<ExerciseResult> results) async {
+  Future<SessionOutcome> completePractice(List<ExerciseResult> results,
+      {Duration spent = Duration.zero}) async {
     final before = _requireProfile();
     final now = DateTime.now();
     final update =
@@ -350,14 +371,21 @@ class AppController extends ChangeNotifier {
     final scored = results.where((r) => !r.isRetry);
     await _commitWithRewards(
       update.profile,
-      QuestEvent(correct: scored.where((r) => r.isCorrect).length),
+      QuestEvent(correctIds: _correctIds(scored)),
       now,
+      spent: spent,
     );
     return (xpEarned: update.xpEarned, leveledUpTo: null);
   }
 
+  static List<String> _correctIds(Iterable<ExerciseResult> results) => [
+        for (final r in results)
+          if (r.isCorrect) r.exercise.id
+      ];
+
   /// Applies a finished flashcard session.
-  Future<SessionOutcome> completeFlashcards(List<CardReview> reviews) async {
+  Future<SessionOutcome> completeFlashcards(List<CardReview> reviews,
+      {Duration spent = Duration.zero}) async {
     final before = _requireProfile();
     final now = DateTime.now();
     final update = _tracker.completeFlashcards(before, reviews, now: now);
@@ -370,12 +398,14 @@ class AppController extends ChangeNotifier {
         clearedCards: reviews.length < FlashcardDeck.defaultSessionLimit,
       ),
       now,
+      spent: spent,
     );
     return (xpEarned: update.xpEarned, leveledUpTo: null);
   }
 
   /// Applies a finished mini-game.
-  Future<SessionOutcome> completeGame(GameOutcome outcome) async {
+  Future<SessionOutcome> completeGame(GameOutcome outcome,
+      {Duration spent = Duration.zero}) async {
     final before = _requireProfile();
     final now = DateTime.now();
     final update = _tracker.completeGame(before, outcome, now: now);
@@ -383,28 +413,52 @@ class AppController extends ChangeNotifier {
       update.profile,
       QuestEvent(games: 1, correct: outcome.correct),
       now,
+      spent: spent,
     );
     return (xpEarned: update.xpEarned, leveledUpTo: null);
   }
 
-  /// Changes what the learner is working towards. The recommended lesson
-  /// follows the goal.
-  Future<void> setGoal(LearningGoal goal) {
-    final current = _requireProfile();
-    if (current.goal == goal) return Future.value();
-    return _commit(_withNextLesson(current.copyWith(goal: goal)));
-  }
-
-  /// Saves [next] together with quest progress and any badges it has earned.
+  /// Saves [next] together with quest progress and any badges it has earned,
+  /// and adds [spent] to today's minutes.
   Future<void> _commitWithRewards(
     LearningProfile next,
     QuestEvent event,
-    DateTime now,
-  ) async {
+    DateTime now, {
+    Duration spent = Duration.zero,
+  }) async {
     final reward = Achievements.apply(next, event, now);
     await _commit(reward.profile);
     lastReward = reward.hasNews ? reward : null;
+    await recordStudyTime(spent, now: now);
     notifyListeners();
+  }
+
+  /// Adds [spent] to the minutes studied today, for time that is not a scored
+  /// session (a coach conversation, writing practice). Best effort: the chart
+  /// is a nicety and must never stop anyone from studying.
+  Future<void> recordStudyTime(Duration spent, {DateTime? now}) async {
+    if (spent <= Duration.zero || profile == null) return;
+    studyTime = studyTime.add(spent, now ?? DateTime.now());
+    notifyListeners();
+    try {
+      await _studyTimeStore.save(studyTime);
+    } catch (_) {}
+  }
+
+  /// Reads the week's minutes. A failure leaves the chart empty; it never
+  /// stops the app from opening.
+  Future<void> _loadStudyTime() async {
+    try {
+      studyTime = await _studyTimeStore.load();
+    } catch (_) {
+      studyTime = const StudyTime();
+    }
+  }
+
+  Future<void> _clearStudyTime() async {
+    try {
+      await _studyTimeStore.clear();
+    } catch (_) {}
   }
 
   /// A practice session chosen from the learner's history, optionally limited

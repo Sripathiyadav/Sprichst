@@ -30,6 +30,9 @@ class _MockExamViewState extends ConsumerState<MockExamView> {
   ExamReport? _report;
   var _xp = 0;
 
+  /// Time on this screen, for the week's minutes.
+  final _clock = Stopwatch()..start();
+
   @override
   Widget build(BuildContext context) {
     final goal = ref.watch(appControllerProvider).profile!.goal;
@@ -76,7 +79,8 @@ class _MockExamViewState extends ConsumerState<MockExamView> {
     final app = ref.read(appControllerProvider);
     var xp = 0;
     try {
-      xp = (await app.completePractice(results)).xpEarned;
+      xp =
+          (await app.completePractice(results, spent: _clock.elapsed)).xpEarned;
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

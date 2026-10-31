@@ -5,6 +5,7 @@ class GamificationState {
     this.questDay,
     this.questProgress = const {},
     this.questsDone = const [],
+    this.questAnswered = const [],
     this.gameBest = const {},
     this.gamesPlayed = 0,
   });
@@ -18,6 +19,10 @@ class GamificationState {
   final Map<String, int> questProgress;
   final List<String> questsDone;
 
+  /// Exercises already counted towards today's correct-answers quest, so
+  /// redoing the same questions does not count again.
+  final List<String> questAnswered;
+
   /// Game id → best score.
   final Map<String, int> gameBest;
   final int gamesPlayed;
@@ -27,6 +32,7 @@ class GamificationState {
     String? questDay,
     Map<String, int>? questProgress,
     List<String>? questsDone,
+    List<String>? questAnswered,
     Map<String, int>? gameBest,
     int? gamesPlayed,
   }) =>
@@ -35,6 +41,7 @@ class GamificationState {
         questDay: questDay ?? this.questDay,
         questProgress: questProgress ?? this.questProgress,
         questsDone: questsDone ?? this.questsDone,
+        questAnswered: questAnswered ?? this.questAnswered,
         gameBest: gameBest ?? this.gameBest,
         gamesPlayed: gamesPlayed ?? this.gamesPlayed,
       );

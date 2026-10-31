@@ -180,13 +180,9 @@ class _LearningShell extends StatelessWidget {
     (label: 'Account', icon: Icons.person_outline, selected: Icons.person),
   ];
 
-  /// Phones have room for four destinations; the rest live behind "More".
-  static const _primaryCount = 4;
-  static const _moreDestination = (
-    label: 'More',
-    icon: Icons.more_horiz,
-    selected: Icons.more_horiz,
-  );
+  /// Phones show the first five; Account opens from the avatar at the top of
+  /// each page, as on the rail it has its own place.
+  static const _primaryCount = 5;
 
   static const _pages = <Widget>[
     HomeView(),
@@ -248,15 +244,12 @@ class _LearningShell extends StatelessWidget {
     }
 
     final bar = NavigationBar(
-      selectedIndex: math.min(selectedIndex, _primaryCount),
+      selectedIndex: math.min(selectedIndex, _primaryCount - 1),
       onDestinationSelected: select,
       backgroundColor: glassy ? Colors.transparent : null,
       elevation: 0,
       destinations: [
-        for (final item in [
-          ..._destinations.take(_primaryCount),
-          _moreDestination,
-        ])
+        for (final item in _destinations.take(_primaryCount))
           NavigationDestination(
             icon: Icon(item.icon),
             selectedIcon: _Selected(item.selected),
@@ -275,11 +268,8 @@ class _LearningShell extends StatelessWidget {
             child: useRail
                 ? IndexedStack(index: selectedIndex, children: _pages)
                 : IndexedStack(
-                    index: math.min(selectedIndex, _primaryCount),
-                    children: [
-                      ..._pages.take(_primaryCount),
-                      const _MoreView(),
-                    ],
+                    index: math.min(selectedIndex, _primaryCount - 1),
+                    children: _pages.take(_primaryCount).toList(),
                   ),
           ),
         ],
@@ -357,63 +347,4 @@ class _RailMark extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The phone-only overflow destination: opens the screens that do not fit in
-/// the bottom bar.
-class _MoreView extends StatelessWidget {
-  const _MoreView();
-
-  @override
-  Widget build(BuildContext context) => PageFrame(
-        title: 'More',
-        subtitle: 'Your progress, account, and app settings.',
-        child: ListView(
-          children: const [
-            _MoreTile(
-              icon: Icons.insights_outlined,
-              title: 'Progress',
-              subtitle: 'See your skills, XP, and milestones.',
-              page: ProgressView(),
-            ),
-            SizedBox(height: AppSpacing.sm),
-            _MoreTile(
-              icon: Icons.person_outline,
-              title: 'Account',
-              subtitle: 'Learning preferences, AI, privacy, and support.',
-              page: AccountView(),
-            ),
-          ],
-        ),
-      );
-}
-
-class _MoreTile extends StatelessWidget {
-  const _MoreTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.page,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Widget page;
-
-  @override
-  Widget build(BuildContext context) => SoftCard(
-        padding: EdgeInsets.zero,
-        child: ListTile(
-          leading: Icon(icon),
-          title: Text(title),
-          subtitle: Text(subtitle),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => GlassPage(body: page),
-            ),
-          ),
-        ),
-      );
 }
