@@ -104,8 +104,13 @@ void main() {
     final curriculum = Curriculum(seedLessons);
 
     test('groups lessons into units by level and title', () {
-      expect(curriculum.units.map((u) => u.title).take(4),
-          ['First steps', 'Daily life', 'Sentences', 'Goethe A1']);
+      expect(curriculum.units.map((u) => u.title).take(5), [
+        'First steps',
+        'Daily life',
+        'Sentences',
+        'People and things',
+        'Numbers and time'
+      ]);
       expect(curriculum.units.first.lessons, hasLength(3));
     });
 

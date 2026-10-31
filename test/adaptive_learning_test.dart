@@ -62,22 +62,15 @@ void main() {
     });
 
     test('finishing a level shakily revisits its weakest lesson instead', () {
-      // Miss every exercise in four of the seven A1 lessons: average accuracy
-      // is well under the promotion bar.
-      const weakLessons = {
-        'a1_word_order',
-        'a1_sein',
-        'a1_haben',
-        'a1_accusative'
-      };
+      // Miss every exercise in every other A1 lesson: average accuracy is
+      // well under the promotion bar.
       var profile = _learner(CefrLevel.a1);
-      for (final lesson in _course.lessonsAt(CefrLevel.a1)) {
+      final a1 = _course.lessonsAt(CefrLevel.a1).toList();
+      for (var i = 0; i < a1.length; i++) {
         profile = _complete(
           profile,
-          lesson.id,
-          wrong: weakLessons.contains(lesson.id)
-              ? {for (final e in lesson.exercises) e.id}
-              : const {},
+          a1[i].id,
+          wrong: i.isEven ? {for (final e in a1[i].exercises) e.id} : const {},
         );
       }
 
