@@ -26,7 +26,7 @@ A 7" and 10" tablet set is optional; phone screenshots are enough to publish.
 Sprichst helps you learn German by actually using it.
 
 SHORT LESSONS, A CLEAR PATH
-48 lessons from your very first words (Pre-A1) to B2, with a plan that follows
+Over 200 lessons from your very first words (Pre-A1) to B2, with a plan that follows
 your level and your goal: everyday life, travel, work, the Goethe-Zertifikat or
 TestDaF. Every answer is explained, and the next lesson is chosen for you.
 

@@ -22,8 +22,38 @@
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Sprichst: learn German with lessons, flashcards, games and a personal tutor.">
+  <!-- Link previews (LinkedIn, WhatsApp, X, Slack). Crawlers need absolute URLs. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sprichst">
+  <meta property="og:url" content="https://sprichst.app/">
+  <meta property="og:title" content="Sprichst: learn German, speak German">
+  <meta property="og:description" content="Free German course from A1 to B2, with flashcards, games and a tutor that runs on your phone.">
+  <meta property="og:image" content="https://sprichst.app/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Sprichst — Deutsch lernen. Deutsch sprechen.">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- What the app is, for search engines and AI assistants. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Sprichst",
+    "url": "https://sprichst.app/",
+    "sameAs": ["https://play.google.com/store/apps/details?id=com.sprichst.app"],
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web, Android, iOS",
+    "inLanguage": ["en", "de"],
+    "description": "Free German course from beginner to B2: over 200 lessons, flashcards, games, exam practice and a tutor that runs on your phone.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "educationalLevel": ["A1", "A2", "B1", "B2"],
+    "teaches": "German as a foreign language",
+    "image": "https://sprichst.app/og-image.png"
+  }
+  </script>
   <!-- Do not tell other sites which page the learner came from. -->
   <meta name="referrer" content="no-referrer">
 
@@ -42,8 +72,13 @@
   <style>
     body { margin: 0; background: #f2eae1; color: #1f1d1c; font-family: system-ui, sans-serif; }
     @media (prefers-color-scheme: dark) { body { background: #1f1d1c; color: #f2eae1; } }
-    #boot { position: fixed; inset: 0; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 16px; }
+    #boot { position: fixed; inset: 0; overflow: auto; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 32px; padding: 16px; box-sizing: border-box; }
+    #boot > div { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    #boot main { width: 100%; max-width: 34rem; box-sizing: border-box; font-size: 14px; line-height: 1.5; opacity: .75; }
+    #boot h1 { font-size: 16px; margin: 0 0 4px; }
+    #boot ul { padding-left: 1.2em; margin: 8px 0; }
+    #boot a { color: inherit; }
     #boot b { font-size: 28px; letter-spacing: .5px; }
     #boot i { width: 28px; height: 28px; border-radius: 50%; border: 3px solid currentColor;
               border-top-color: transparent; animation: spin .9s linear infinite; opacity: .6; }
@@ -52,7 +87,23 @@
   </style>
 </head>
 <body>
-  <div id="boot" role="status" aria-live="polite"><b>Sprichst</b><i aria-hidden="true"></i><span>Loading…</span></div>
+  <div id="boot">
+    <div role="status" aria-live="polite"><b>Sprichst</b><i aria-hidden="true"></i><span>Loading…</span></div>
+    <!-- Readable for people on slow connections and for crawlers that do not run JavaScript. -->
+    <main>
+      <h1>Sprichst: learn German, speak German</h1>
+      <p>A free German course from your first word to B2, with a tutor that runs on your phone.</p>
+      <ul>
+        <li>Over 200 short lessons: 100 at A1, 100 at A2, then B1 and B2, each with examples, exercises and new words.</li>
+        <li>Flashcards that come back just before you forget them.</li>
+        <li>Five games: Artikel-Rausch (der, die, das), Memory, Buchstabensalat, Wortle and Gespräch.</li>
+        <li>Practice for the Goethe A1–B2 and TestDaF exams, writing practice and a translator.</li>
+        <li>An AI coach for conversation that runs offline on your phone, or with your own AI key. No Sprichst server sees your chats.</li>
+        <li>No ads, no analytics, no tracking.</li>
+      </ul>
+      <p><a href="legal/privacy-policy.html">Privacy</a> · <a href="legal/terms-of-service.html">Terms</a> · <a href="legal/impressum.html">Impressum</a> · <a href="llms.txt">About Sprichst for AI assistants</a></p>
+    </main>
+  </div>
   <noscript>Sprichst needs JavaScript to run. Please turn it on and reload the page.</noscript>
   <script src="flutter_bootstrap.js" async></script>
 </body>

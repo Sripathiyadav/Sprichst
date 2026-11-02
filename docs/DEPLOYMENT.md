@@ -9,7 +9,7 @@ it afterwards without spending money you do not have to.
 | --- | --- |
 | `flutter analyze` | no issues |
 | `flutter test` | all 540+ tests pass |
-| Course content (`scripts/validate_curriculum.py`) | valid: 48 lessons, 261 exercises |
+| Course content (`scripts/validate_curriculum.py`) | valid: 222 lessons, 1131 exercises |
 | Third-party notices (`--check`) | current, no unknown licences |
 | **Web**, release build | builds; the sign-in screen loads in a browser with no console errors |
 | **Android**, debug and release | both build; runs on the API 35 emulator; Google sign-in is configured (see 3.2) |

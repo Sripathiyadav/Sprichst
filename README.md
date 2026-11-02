@@ -6,6 +6,8 @@
 
 Flutter · Firebase · on-device AI · bring-your-own-key AI · no tracking, no ads
 
+**[Get it on Google Play](https://play.google.com/store/apps/details?id=com.sprichst.app)** · **[Open on the web](https://sprichst.app)**
+
 [Overview](#-overview) · [Screens](#-screens) · [How it works](#-how-it-works) · [Prerequisites](#-prerequisites) · [Install](#-installation) · [Testing](#-testing) · [Next steps](#-next-steps) · [Contact](#-contact)
 
 </div>
@@ -18,7 +20,7 @@ Sprichst is a German-learning app built around a **curriculum and a learning eng
 
 | 🎯 | What you get |
 | --- | --- |
-| 📚 **Lessons** | 48 lessons from Pre-A1 to B2, 308 words, 13 dialogues, Goethe and TestDaF exam tracks |
+| 📚 **Lessons** | 222 lessons from Pre-A1 to B2, 878 words, 13 dialogues, Goethe and TestDaF exam tracks |
 | 🤖 **AI coach** | Chat and voice practice with corrections, reasons, and an **English translation of every question** so new words come with meanings |
 | 🧠 **Smart practice** | A deterministic planner picks the next review, weak-skill drill or lesson from *your own answers*; spaced repetition brings things back |
 | ⌨️ **Writing practice** | Type German sentences with **ä ö ü ß** keys at hand, with live feedback, speed and accuracy |
@@ -226,7 +228,7 @@ The full plan is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**. In short:
 2. ✅ Legal fields are filled and the policies are public at `https://sprichst.app/legal/`. Have the terms read by a lawyer.
 3. 🔑 **Play App Signing fingerprints** in Firebase after the first upload, and an **Apple Developer account** for iOS and macOS.
 4. ✅ The web build is live on Firebase Hosting (`scripts/deploy_web.sh`).
-5. 🤖 **Android closed test** (12 testers, 14 days; see `store/play/LISTING.md`) and **TestFlight**, then public launch.
+5. ✅ **Android is live on [Google Play](https://play.google.com/store/apps/details?id=com.sprichst.app).** 🤖 Next: **TestFlight**, then the iOS launch.
 6. 💡 **Ideas after launch:** XP and a daily quest for writing practice, typing speed over time, more B1/B2 lessons, a Windows build, a translated app interface.
 
 ---

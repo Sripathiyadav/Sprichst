@@ -1,0 +1,29 @@
+# Sprichst
+
+> Sprichst is a free app for learning German, from beginner to B2. It runs on the web at https://sprichst.app and on Android (Google Play), with iOS in testing. It has no ads, no analytics and no tracking, and its AI tutor runs on the learner's phone.
+
+## What it offers
+
+- Over 200 short lessons: 100 at A1, 100 at A2, then B1 and B2. Each lesson has an explanation, examples, five exercises and new words with their articles.
+- Flashcards with spaced repetition.
+- Five games: Artikel-Rausch (der, die, das), Memory, Buchstabensalat (word scramble), Wortle (a German word puzzle) and Gespräch (dialogues).
+- Exam practice for Goethe-Zertifikat A1–B2 and TestDaF, writing practice, and a German–English translator.
+- Daily quests, streaks and badges.
+- An AI conversation coach. On phones it can run fully offline with a small model downloaded once. Learners can instead bring their own key for an AI provider (Groq, OpenAI, Anthropic, Google, Mistral and others). Sprichst runs no AI server, so it never sees the conversations.
+
+## Who it is for
+
+Adults learning German for everyday life, work, study or the Goethe and TestDaF exams. Explanations are in English.
+
+## Cost
+
+Free. No subscription and no in-app purchases.
+
+## Links
+
+- App: https://sprichst.app
+- Android app on Google Play: https://play.google.com/store/apps/details?id=com.sprichst.app
+- Privacy policy: https://sprichst.app/legal/privacy-policy.html
+- How the AI features work: https://sprichst.app/legal/ai-transparency.html
+- Terms: https://sprichst.app/legal/terms-of-service.html
+- Impressum: https://sprichst.app/legal/impressum.html

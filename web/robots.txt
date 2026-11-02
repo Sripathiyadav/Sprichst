@@ -1,0 +1,5 @@
+# Everyone, including search engines and AI crawlers, may read the site.
+User-agent: *
+Allow: /
+
+Sitemap: https://sprichst.app/sitemap.xml
