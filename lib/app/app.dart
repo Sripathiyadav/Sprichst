@@ -7,6 +7,8 @@ import 'package:sprichst/features/auth/auth_view_model.dart';
 import '../features/ai_coach/ai_coach_view.dart';
 import '../features/account/account_view.dart';
 import '../features/auth/auth_view.dart';
+import '../features/auth/guest_mode.dart';
+import '../features/auth/guest_upgrade_view.dart';
 import '../features/home/home_view.dart';
 import '../features/learn/learn_view.dart';
 import '../features/onboarding/onboarding_view.dart';
@@ -32,6 +34,9 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
   final _navigatorKey = GlobalKey<NavigatorState>();
   var _selectedIndex = 0;
   String? _initializedForUserId;
+
+  /// Stands in for a uid while learning without an account.
+  static const _guestSession = '_guest';
 
   @override
   void initState() {
@@ -70,6 +75,7 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
     final isOnboarded =
         ref.watch(appControllerProvider.select((app) => app.isOnboarded));
     final authState = ref.watch(authViewModelProvider);
+    final guest = ref.watch(guestModeProvider);
     ref.listen<int?>(shellTabRequestProvider, (_, requested) {
       if (requested == null) return;
       setState(() => _selectedIndex = requested);
@@ -91,7 +97,17 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
         loading: () => const _SplashView(),
         error: (_, __) => const AuthView(),
         data: (user) {
-          if (user == null) {
+          // A guest who just signed in: move their progress first.
+          if (user != null && guest == true) {
+            // Sign-in may start on a pushed page (the after-lesson prompt).
+            Future.microtask(() =>
+                _navigatorKey.currentState?.popUntil((route) => route.isFirst));
+            return const GuestUpgradeView();
+          }
+          if (user == null && guest == null) return const _SplashView();
+
+          final sessionId = user?.uid ?? (guest == true ? _guestSession : null);
+          if (sessionId == null) {
             if (_initializedForUserId != null) {
               _initializedForUserId = null;
               Future.microtask(_endSession);
@@ -99,8 +115,8 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
             return const AuthView();
           }
 
-          if (_initializedForUserId != user.uid) {
-            _initializedForUserId = user.uid;
+          if (_initializedForUserId != sessionId) {
+            _initializedForUserId = sessionId;
             Future.microtask(
                 () => ref.read(appControllerProvider).initialize());
             return const _SplashView();

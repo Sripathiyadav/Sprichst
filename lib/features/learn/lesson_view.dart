@@ -7,6 +7,8 @@ import '../../app/theme/breakpoints.dart';
 import '../../domain/learning/exercise_evaluator.dart';
 import '../../domain/models/learning_models.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../auth/guest_mode.dart';
+import '../auth/guest_sync_card.dart';
 import '../practice/practice_session_view.dart';
 import 'exercises/exercise_runner.dart';
 
@@ -129,6 +131,34 @@ class _LessonViewState extends ConsumerState<LessonView> {
     setState(() => _stage = _Stage.practice);
   }
 
+  /// A guest's first finished lesson: suggest an account once, so the
+  /// progress is not lost with the device.
+  void _offerAccount() {
+    if (ref.read(guestModeProvider) != true) return;
+    final hints = ref.read(guestHintsProvider.notifier);
+    if (hints.hasSeen(GuestHints.firstLesson)) return;
+    hints.markSeen(GuestHints.firstLesson);
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const GuestSyncCard(),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Not now'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _finish(List<ExerciseResult> results) async {
     try {
       final app = ref.read(appControllerProvider);
@@ -143,6 +173,7 @@ class _LessonViewState extends ConsumerState<LessonView> {
         _outcome = outcome;
         _stage = _Stage.complete;
       });
+      _offerAccount();
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

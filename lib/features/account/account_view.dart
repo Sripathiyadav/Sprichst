@@ -22,6 +22,8 @@ import '../../domain/models/learning_models.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../shared/widgets/app_widgets.dart';
 import '../auth/auth_view_model.dart';
+import '../auth/guest_mode.dart';
+import '../auth/guest_sync_card.dart';
 import '../legal/legal_view.dart';
 import 'appearance_page.dart';
 
@@ -30,9 +32,14 @@ class AccountView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(appControllerProvider).profile!;
+    final profile = ref.watch(appControllerProvider).profile;
+    // Gone while the session ends (sign-out, erase); the page is closing.
+    if (profile == null) return const SizedBox.shrink();
     final user = ref.watch(authViewModelProvider).valueOrNull;
-    final email = user?.email ?? 'Signed-in learner';
+    final guest = ref.watch(guestModeProvider) == true;
+    final email = guest
+        ? 'Guest · progress on this device'
+        : user?.email ?? 'Signed-in learner';
 
     return PageFrame(
       title: 'Account',
@@ -68,6 +75,10 @@ class AccountView extends ConsumerWidget {
               ],
             ),
           ),
+          if (guest) ...[
+            const SizedBox(height: AppSpacing.md),
+            const GuestSyncCard(),
+          ],
           const SizedBox(height: AppSpacing.xl),
           SettingsSection(
             title: 'Learning',
@@ -142,21 +153,22 @@ class AccountView extends ConsumerWidget {
               ),
             ],
           ),
-          SettingsSection(
-            title: 'Account',
-            children: [
-              SettingsTile(
-                icon: Icons.logout,
-                title: 'Sign out',
-                subtitle: 'Keep your saved learning data and sign in later.',
-                onTap: () async {
-                  // Send waiting progress while the account is still signed in.
-                  await ref.read(appControllerProvider).flushPendingChanges();
-                  await ref.read(authViewModelProvider.notifier).signOut();
-                },
-              ),
-            ],
-          ),
+          if (!guest)
+            SettingsSection(
+              title: 'Account',
+              children: [
+                SettingsTile(
+                  icon: Icons.logout,
+                  title: 'Sign out',
+                  subtitle: 'Keep your saved learning data and sign in later.',
+                  onTap: () async {
+                    // Send waiting progress while the account is still signed in.
+                    await ref.read(appControllerProvider).flushPendingChanges();
+                    await ref.read(authViewModelProvider.notifier).signOut();
+                  },
+                ),
+              ],
+            ),
           SettingsSection(
             title: 'Danger zone',
             description:
@@ -170,14 +182,24 @@ class AccountView extends ConsumerWidget {
                 destructive: true,
                 onTap: () => _resetLearningProgress(context, ref),
               ),
-              SettingsTile(
-                icon: Icons.delete_forever_outlined,
-                title: 'Delete account',
-                subtitle:
-                    'Delete your current learning data and Firebase account.',
-                destructive: true,
-                onTap: () => _deleteAccount(context, ref),
-              ),
+              if (guest)
+                SettingsTile(
+                  icon: Icons.delete_forever_outlined,
+                  title: 'Erase progress on this device',
+                  subtitle:
+                      'Remove everything and go back to the sign-in screen.',
+                  destructive: true,
+                  onTap: () => _eraseGuest(context, ref),
+                )
+              else
+                SettingsTile(
+                  icon: Icons.delete_forever_outlined,
+                  title: 'Delete account',
+                  subtitle:
+                      'Delete your current learning data and Firebase account.',
+                  destructive: true,
+                  onTap: () => _deleteAccount(context, ref),
+                ),
             ],
           ),
         ],
@@ -230,6 +252,25 @@ class AccountView extends ConsumerWidget {
         );
       }
     }
+  }
+
+  Future<void> _eraseGuest(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showSprichstConfirmation(
+      context,
+      title: 'Erase progress on this device?',
+      message:
+          'Your lessons, reviews, XP and streak are only on this device, so they cannot be brought back.',
+      confirmLabel: 'Erase',
+      destructive: true,
+    );
+    if (!confirmed || !context.mounted) return;
+    // Close this page first: leaving guest mode swaps the controller out, and
+    // nothing may still be showing the profile. Then erase straight from
+    // storage.
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    await ref.read(guestRepositoryProvider).deleteLearningData();
+    await ref.read(studyTimeStoreProvider).clear();
+    await ref.read(guestModeProvider.notifier).end();
   }
 
   Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {

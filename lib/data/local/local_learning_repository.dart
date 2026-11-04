@@ -10,7 +10,10 @@ import '../curriculum_parser.dart';
 import '../profile_codec.dart';
 
 class LocalLearningRepository implements LearningRepository {
-  static const _profileKey = 'sprichst_profile_v1';
+  LocalLearningRepository({this.profileKey = 'sprichst_profile_v1'});
+
+  /// Where the profile is kept in `shared_preferences`.
+  final String profileKey;
 
   List<Lesson>? _lessons;
   List<Dialogue>? _dialogues;
@@ -18,7 +21,7 @@ class LocalLearningRepository implements LearningRepository {
   @override
   Future<LearningProfile?> loadProfile() async {
     final preferences = await SharedPreferences.getInstance();
-    final raw = preferences.getString(_profileKey);
+    final raw = preferences.getString(profileKey);
     if (raw == null) return null;
     return ProfileCodec.decode(
       jsonDecode(raw) as Map<String, dynamic>,
@@ -30,7 +33,7 @@ class LocalLearningRepository implements LearningRepository {
   Future<void> saveProfile(LearningProfile profile) async {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(
-      _profileKey,
+      profileKey,
       jsonEncode(ProfileCodec.encode(
         profile,
         encodeDate: (date) => date.toIso8601String(),
@@ -41,7 +44,7 @@ class LocalLearningRepository implements LearningRepository {
   @override
   Future<void> deleteLearningData() async {
     final preferences = await SharedPreferences.getInstance();
-    await preferences.remove(_profileKey);
+    await preferences.remove(profileKey);
   }
 
   @override

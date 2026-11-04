@@ -6,6 +6,7 @@ import '../../shared/widgets/app_widgets.dart';
 import '../legal/legal_view.dart';
 import 'auth_errors.dart';
 import 'auth_view_model.dart';
+import 'guest_mode.dart';
 
 class AuthView extends ConsumerWidget {
   const AuthView({super.key});
@@ -50,7 +51,7 @@ class AuthView extends ConsumerWidget {
                   style: theme.textTheme.headlineMedium,
                 ),
                 const SizedBox(height: AppSpacing.xxxl),
-                Text('SIGN IN TO CONTINUE', style: theme.textTheme.labelSmall),
+                Text('GET STARTED', style: theme.textTheme.labelSmall),
                 const SizedBox(height: AppSpacing.sm),
                 PrimaryButton(
                   label: 'Continue with Google',
@@ -60,6 +61,21 @@ class AuthView extends ConsumerWidget {
                       : () => ref
                           .read(authViewModelProvider.notifier)
                           .signInWithGoogle(),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: isSigningIn
+                        ? null
+                        : () => ref.read(guestModeProvider.notifier).start(),
+                    child: const Text('Continue without an account'),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'Your progress stays on this device only. Add an account any time to sync it.',
+                  style: theme.textTheme.bodySmall?.copyWith(color: t.inkMuted),
                 ),
                 if (error != null) ...[
                   const SizedBox(height: AppSpacing.md),

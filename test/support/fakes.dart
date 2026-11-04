@@ -6,6 +6,7 @@ import 'package:flutter/material.dart' show ListView, Offset;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sprichst/app/app.dart';
 import 'package:sprichst/app/app_controller.dart';
 import 'package:sprichst/data/ai/cloud_ai_settings.dart';
@@ -17,6 +18,7 @@ import 'package:sprichst/domain/models/learning_models.dart';
 import 'package:sprichst/domain/repositories/auth_repository.dart';
 import 'package:sprichst/domain/repositories/learning_repository.dart';
 import 'package:sprichst/features/auth/auth_view_model.dart';
+import 'package:sprichst/features/auth/guest_mode.dart';
 
 import 'on_device_fakes.dart';
 
@@ -98,14 +100,22 @@ class InMemoryLearningRepository implements LearningRepository {
   Future<List<Dialogue>> loadDialogues() async => loadCourseDialogues();
 }
 
+/// With [guest], [learning] is the account and guest mode picks between the
+/// two, as in the app; without it, [learning] is used for everything.
 List<Override> testOverrides(InMemoryLearningRepository learning,
         {bool signedIn = true,
-        FakeAuthRepository? auth,
+        AuthRepository? auth,
+        InMemoryLearningRepository? guest,
         List<Override> extra = const []}) =>
     [
       authRepositoryProvider
           .overrideWithValue(auth ?? FakeAuthRepository(signedIn: signedIn)),
-      learningRepositoryProvider.overrideWithValue(learning),
+      if (guest == null)
+        learningRepositoryProvider.overrideWithValue(learning)
+      else ...[
+        accountRepositoryProvider.overrideWithValue(learning),
+        guestRepositoryProvider.overrideWithValue(guest),
+      ],
       aiRepositoryProvider.overrideWithValue(MockAIRepository()),
       onDeviceRuntimeProvider.overrideWithValue(FakeRuntime()),
       studyTimeStoreProvider.overrideWithValue(MemoryStudyTimeStore()),
@@ -141,10 +151,14 @@ Future<void> pumpSprichst(
   required Brightness brightness,
   required InMemoryLearningRepository repository,
   bool signedIn = true,
-  FakeAuthRepository? auth,
+  AuthRepository? auth,
+  InMemoryLearningRepository? guest,
   double textScale = 1,
   List<Override> extraOverrides = const [],
+  Map<String, Object> storage = const {},
 }) async {
+  // Guest mode and its hints are read from storage at start.
+  SharedPreferences.setMockInitialValues(storage);
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   tester.platformDispatcher.platformBrightnessTestValue = brightness;
@@ -165,7 +179,7 @@ Future<void> pumpSprichst(
   });
   await tester.pumpWidget(ProviderScope(
     overrides: testOverrides(repository,
-        signedIn: signedIn, auth: auth, extra: extraOverrides),
+        signedIn: signedIn, auth: auth, guest: guest, extra: extraOverrides),
     child: const SprichstApp(),
   ));
   await tester.pumpAndSettle();

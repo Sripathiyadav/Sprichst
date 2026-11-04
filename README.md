@@ -16,7 +16,7 @@ Flutter · Firebase · on-device AI · bring-your-own-key AI · no tracking, no 
 
 ## ✨ Overview
 
-Sprichst is a German-learning app built around a **curriculum and a learning engine**, not a generic chatbot. A learner signs in with Google, picks a goal and a starting level, and is then shown **one clear next step** every day.
+Sprichst is a German-learning app built around a **curriculum and a learning engine**, not a generic chatbot. A learner signs in with Google (or continues without an account, keeping progress on the device until they add one), picks a goal and a starting level, and is then shown **one clear next step** every day.
 
 | 🎯 | What you get |
 | --- | --- |

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../auth/guest_mode.dart';
+import '../auth/guest_sync_card.dart';
 import '../../app/app_controller.dart';
 import '../../app/theme/app_theme.dart';
 import '../../app/theme/breakpoints.dart';
@@ -121,6 +123,19 @@ class _HomeViewState extends ConsumerState<HomeView>
           padding: pageListPadding(context),
           children: [
             const WebAiNotice(),
+            if (ref.watch(guestModeProvider) == true &&
+                !(ref
+                        .watch(guestHintsProvider)
+                        ?.contains(GuestHints.homeBanner) ??
+                    true)) ...[
+              GuestSyncCard(
+                key: const ValueKey('home-guest-sync'),
+                onDismiss: () => ref
+                    .read(guestHintsProvider.notifier)
+                    .markSeen(GuestHints.homeBanner),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+            ],
             _Today(
               profile: profile,
               streak: streak,

@@ -33,10 +33,20 @@ import '../domain/models/dialogue_models.dart';
 import '../domain/models/learning_models.dart';
 import '../domain/repositories/learning_repository.dart';
 import '../features/auth/auth_view_model.dart';
+import '../features/auth/guest_mode.dart';
 import '../shared/input_rules.dart';
 
-final learningRepositoryProvider = Provider<LearningRepository>((ref) {
+/// The signed-in learner's progress, in Firestore with a copy on the device.
+final accountRepositoryProvider = Provider<LearningRepository>((ref) {
   return FirestoreLearningRepository();
+});
+
+/// Where progress is read and written right now: on this device for a guest,
+/// in the account otherwise.
+final learningRepositoryProvider = Provider<LearningRepository>((ref) {
+  return ref.watch(guestModeProvider) == true
+      ? ref.watch(guestRepositoryProvider)
+      : ref.watch(accountRepositoryProvider);
 });
 
 /// Where the AI gateway is, remembered on this device.
@@ -85,9 +95,10 @@ final Provider<AIRepository> aiRepositoryProvider =
 final shellTabRequestProvider = StateProvider<int?>((ref) => null);
 
 /// Where the minutes studied each day are kept: on this device, per learner.
-final studyTimeStoreProvider = Provider<StudyTimeStore>((ref) =>
-    SharedPrefsStudyTimeStore(
-        () => ref.read(authRepositoryProvider).currentUser?.uid));
+final studyTimeStoreProvider =
+    Provider<StudyTimeStore>((ref) => SharedPrefsStudyTimeStore(
+        // A guest has no uid; nothing is recorded when nobody is learning.
+        () => ref.read(authRepositoryProvider).currentUser?.uid ?? 'guest'));
 
 final appControllerProvider = ChangeNotifierProvider<AppController>((ref) {
   final ai = ref.watch(aiRepositoryProvider);
