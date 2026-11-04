@@ -227,7 +227,7 @@ The full plan is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**. In short:
 1. ✅ App id is `com.sprichst.app` on Android, iOS and macOS, registered in Firebase. Check it is free in Play Console before the first upload; it is permanent after that.
 2. ✅ Legal fields are filled and the policies are public at `https://sprichst.app/legal/`. Have the terms read by a lawyer.
 3. 🔑 **Play App Signing fingerprints** in Firebase after the first upload, and an **Apple Developer account** for iOS and macOS.
-4. ✅ The web build is live on Firebase Hosting (`scripts/deploy_web.sh`).
+4. ✅ The web build is live on Firebase Hosting (`scripts/deploy_web.sh`) at [sprichst.app](https://sprichst.app), the main address. The same site also answers at [sprichst.de](https://sprichst.de), [sprichst.eu](https://sprichst.eu) and [sprichst-74bed.firebaseapp.com](https://sprichst-74bed.firebaseapp.com).
 5. ✅ **Android is live on [Google Play](https://play.google.com/store/apps/details?id=com.sprichst.app).** 🤖 Next: **TestFlight**, then the iOS launch.
 6. 💡 **Ideas after launch:** XP and a daily quest for writing practice, typing speed over time, more B1/B2 lessons, a Windows build, a translated app interface.
 
