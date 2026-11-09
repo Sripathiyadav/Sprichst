@@ -377,6 +377,49 @@ def download_model(c):
         layer(0, 'tray', [group('tray', [shape([[8, 26], [8, 32], [32, 32], [32, 26]]), stroke(c['ink'], 3)])], op),
     ])
 
+def coach_intro(c):
+    """First visit to the coach: the settings button at the top right is tapped,
+    the two ways to power the coach pop up (your own key, or a model downloaded
+    to the phone), then a short exchange starts. 3 s, once; holds the last frame."""
+    op = 180
+    hold = lambda t0: anim([(0, 0, 'linear'), (t0, 0, 'linear'), (t0 + 8, 100, 'linear'), (op, 100)])
+    pop = lambda t0, p: tr(p=p, s=anim([(t0, [0, 0]), (t0 + 12, [108, 108]), (t0 + 18, [100, 100])]))
+    L = []
+    # the app bar, with the settings button at its right end
+    L.append(layer(0, 'bar', [group('bar', [rect(224, 30, 15, (120, 22)), fill(c['surface']), stroke(c['line'], 1.5)])], op))
+    # the settings button is the app's "tune" icon: three sliders whose knobs slide when tapped
+    tune = []
+    for k, (y, x0, x1) in enumerate(((-6, 4, -3), (0, -4, 4), (6, 2, -4))):
+        tune.append(group(f'knob{k}', [rect(4, 7, 1.5), fill(c['ink'])], tr(p=anim([(24, [x0, y], 'in_out'), (48, [x1, y])]))))
+        tune.append(group(f'track{k}', [shape([[-9, y], [9, y]]), stroke(c['ink'], 2)]))
+    L.append(layer(0, 'tune', [group('tune', tune, tr(p=(214, 22)))], op))
+    # two taps on the settings button
+    for j, t0 in enumerate((14, 30)):
+        L.append(layer(0, f'tap {j}', [group('tap', [ellipse(anim([(t0, [14, 14]), (t0 + 22, [40, 40])]), (214, 22)),
+                                                   stroke(c['coral'], 2, o=anim([(0, 0, 'linear'), (t0 - 1, 0, 'linear'), (t0, 90, 'linear'), (t0 + 22, 0)]))])], op))
+    # option 1: your own key
+    key = [group('card', [rect(96, 46, 14), fill(c['surface']), stroke(c['line'], 1.5)]),
+           group('ring', [ellipse(14, (-14, 0)), stroke(c['coral'], 3)]),
+           group('shaft', [shape([[-7, 0], [16, 0]]), shape([[10, 0], [10, 6]]), shape([[16, 0], [16, 6]]), stroke(c['coral'], 3)])]
+    L.append(layer(0, 'key', [group('key', key[::-1], pop(56, (66, 78)))], op, {'o': hold(56)}))
+    # option 2: a model on the phone
+    dl = [group('card', [rect(96, 46, 14), fill(c['surface']), stroke(c['line'], 1.5)]),
+          group('arrow', [shape([[0, -11], [0, 3]]), shape([[-6, -3], [0, 3], [6, -3]]), stroke(c['coral'], 3)],
+                tr(p=anim([(80, [0, -4], 'in_out'), (96, [0, 2], 'in_out'), (112, [0, 0])]))),
+          group('tray', [shape([[-11, 5], [-11, 11], [11, 11], [11, 5]]), stroke(c['ink'], 3)])]
+    L.append(layer(0, 'download', [group('download', dl[::-1], pop(68, (174, 78)))], op, {'o': hold(68)}))
+    # then the conversation starts
+    def bubble(name, cx, w, fill_hex, line_hex, bar_hex, t0, left):
+        tail = [[-w / 2 + 10, 9], [-w / 2 + 4, 18], [-w / 2 + 22, 9]] if left else [[w / 2 - 10, 9], [w / 2 - 4, 18], [w / 2 - 22, 9]]
+        items = [group('body', [rect(w, 26, 13), shape(tail, closed=True), fill(fill_hex)] + ([stroke(line_hex, 1.5)] if line_hex else [])),
+                 group('line', [rect(w - 34, 7, 3.5), fill(bar_hex)])]
+        return layer(0, name, [group(name, items[::-1], pop(t0, (cx, 134)))], op, {'o': hold(t0)})
+    L.append(bubble('coach', 70, 100, c['surface'], c['line'], c['line'], 110, True))
+    L.append(bubble('learner', 176, 84, c['coral'], None, c['canvas'], 134, False))
+    # Lottie draws the first layer on top, so the bar (the base) goes last.
+    L.append(L.pop(0))
+    return comp('Sprichst - coach intro', 240, 160, op, L)
+
 def tour(c):
     """The whole tour in one file: lessons, coach, private, 3 s each, looping. Each
     scene's layers are shifted in time (st) and shown only in their own window (ip/op)."""
@@ -392,7 +435,7 @@ ANIMS = {'nav_indicator': nav_indicator, 'lesson_complete': lesson_complete,
          'answer_incorrect': answer_incorrect,
          'tour': tour,
          'empty_state': empty_state, 'error_state': error_state, 'offline_state': offline_state,
-         'level_up': level_up, 'coach_thinking': coach_thinking, 'download_model': download_model}
+         'level_up': level_up, 'coach_thinking': coach_thinking, 'coach_intro': coach_intro, 'download_model': download_model}
 
 os.makedirs(OUT, exist_ok=True)
 for name, fn in ANIMS.items():

@@ -26,7 +26,25 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
     final models = ref.watch(modelManagerProvider);
     // In a browser there is no model to download, so the level is the last step.
     final steps = models.isSupported ? 2 : 1;
+    final next = steps == 1 ? _finish : () => setState(() => _step = 2);
     return GlassPage(
+      // Six levels push a scrolling Continue below the fold on most phones.
+      bottomNavigationBar: _step == 1
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl, AppSpacing.sm, AppSpacing.xl, AppSpacing.md),
+                child: Center(
+                  heightFactor: 1,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: PrimaryButton(
+                        label: 'Continue', onPressed: next, block: true),
+                  ),
+                ),
+              ),
+            )
+          : null,
       body: CenteredScroll(
         child: AnimatedSwitcher(
           duration: motionDuration(context, 250),
@@ -39,7 +57,6 @@ class _OnboardingViewState extends ConsumerState<OnboardingView> {
                 steps: steps,
                 selected: _level,
                 onSelect: (value) => setState(() => _level = value),
-                onNext: steps == 1 ? _finish : () => setState(() => _step = 2),
               ),
             _ => _ModelStep(key: const ValueKey(2), onFinish: _finish),
           },
@@ -134,12 +151,10 @@ class _LevelStep extends StatelessWidget {
       {super.key,
       required this.steps,
       required this.selected,
-      required this.onSelect,
-      required this.onNext});
+      required this.onSelect});
   final int steps;
   final CefrLevel selected;
   final ValueChanged<CefrLevel> onSelect;
-  final VoidCallback onNext;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -162,8 +177,6 @@ class _LevelStep extends StatelessWidget {
                 onTap: () => onSelect(level),
               ),
             ),
-          const SizedBox(height: AppSpacing.md),
-          PrimaryButton(label: 'Continue', onPressed: onNext, block: true),
         ],
       );
 }

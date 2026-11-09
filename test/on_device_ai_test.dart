@@ -129,6 +129,16 @@ void main() {
       expect(m.activeTutor?.id, 'qwen2.5-0.5b');
     });
 
+    test('the first tutor downloaded becomes the chosen one', () async {
+      final m = await manager(FakeRuntime(ram: 3800));
+      expect(m.selectedTutor.id, 'gemma-3-1b'); // recommended, not here
+      expect(await m.download('qwen2.5-0.5b'), isTrue);
+      expect(m.selectedTutor.id, 'qwen2.5-0.5b');
+      // Once the chosen one is here, another download does not take over.
+      expect(await m.download('qwen2.5-1.5b'), isTrue);
+      expect(m.selectedTutor.id, 'qwen2.5-0.5b');
+    });
+
     test('download success, failure message and delete', () async {
       final runtime = FakeRuntime();
       final m = await manager(runtime);

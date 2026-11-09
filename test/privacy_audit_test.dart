@@ -166,6 +166,8 @@ void main() {
       'openrouter.ai',
       '127.0.0.1', 'localhost', '10.0.2.2', '192.168.1.20', // development
       'developer.android.com', // comments
+      // The developer's profiles, opened in the browser from Contact developer.
+      'www.linkedin.com', 'www.instagram.com',
     };
 
     test('code only names hosts that are documented', () {

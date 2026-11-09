@@ -146,6 +146,15 @@ class ModelManager extends ChangeNotifier {
         notifyListeners();
       });
       _installed.add(id);
+      // The chosen model is not here yet: the one just downloaded is what
+      // runs, so show it as chosen too.
+      if (tutorModels.any((m) => m.id == id) &&
+          !isInstalled(selectedTutor.id)) {
+        await selectTutor(id);
+      } else if (speechRecognitionModels.any((m) => m.id == id) &&
+          !isInstalled(selectedSpeechModel.id)) {
+        await selectSpeechModel(id);
+      }
       return true;
     } on DownloadCancelled {
       return false;

@@ -309,6 +309,7 @@ class _WritingInputState extends ConsumerState<WritingInput> {
           maxLines: 14,
           keyboardType: TextInputType.multiline,
           textCapitalization: TextCapitalization.sentences,
+          autocorrect: false,
           style: theme.textTheme.bodyLarge,
           decoration: const InputDecoration(
             labelText: 'Your text',

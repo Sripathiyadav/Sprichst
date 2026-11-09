@@ -13,6 +13,7 @@ import '../onboarding/intro_tour.dart' show IntroTourPage;
 import '../onboarding/onboarding_view.dart' show GoalPicker;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/app_info.dart';
@@ -129,8 +130,7 @@ class AccountView extends ConsumerWidget {
               SettingsTile(
                 icon: Icons.privacy_tip_outlined,
                 title: 'Privacy & data',
-                subtitle:
-                    'See what stays on your account, device, and AI gateway.',
+                subtitle: 'See what stays on your account and this device.',
                 onTap: () => _push(context, const _PrivacyAndDataPage()),
               ),
               SettingsTile(
@@ -142,7 +142,8 @@ class AccountView extends ConsumerWidget {
               SettingsTile(
                 icon: Icons.support_agent_outlined,
                 title: 'Contact developer',
-                subtitle: 'Report a problem or share feedback.',
+                subtitle:
+                    'Email your feedback, or say hi on LinkedIn, Instagram or GitHub.',
                 onTap: () => _push(context, const _ContactPage()),
               ),
               SettingsTile(
@@ -162,6 +163,14 @@ class AccountView extends ConsumerWidget {
                   title: 'Sign out',
                   subtitle: 'Keep your saved learning data and sign in later.',
                   onTap: () async {
+                    final confirmed = await showSprichstConfirmation(
+                      context,
+                      title: 'Sign out?',
+                      message:
+                          'Your progress stays saved in your account. Sign in again to pick up where you left off.',
+                      confirmLabel: 'Sign out',
+                    );
+                    if (!confirmed) return;
                     // Send waiting progress while the account is still signed in.
                     await ref.read(appControllerProvider).flushPendingChanges();
                     await ref.read(authViewModelProvider.notifier).signOut();
@@ -335,12 +344,19 @@ enum _FeedbackType {
   final IconData icon;
 }
 
-/// Feedback delivery is not configured, so this builds a complete report and
-/// copies it to the clipboard instead of pretending to send it.
+/// App feedback goes straight to the developer by email; anything else goes
+/// through their social profiles. Both open outside the app.
+abstract final class DeveloperContact {
+  static const email = 'sripathiyadav66@gmail.com';
+  static const linkedIn = 'https://www.linkedin.com/in/sripathi-yadav/';
+  static const instagram = 'https://www.instagram.com/sri.in.germany/';
+  static const gitHub = 'https://github.com/Sripathiyadav';
+}
+
 class _ContactPage extends ConsumerStatefulWidget {
   const _ContactPage({this.type = _FeedbackType.bug, this.draft = ''});
 
-  /// What the report is about to begin with, and a starting text.
+  /// What the message is about to begin with, and a starting text.
   final _FeedbackType type;
   final String draft;
 
@@ -362,7 +378,7 @@ class _ContactPageState extends ConsumerState<_ContactPage> {
   Widget build(BuildContext context) => SettingsPage(
         title: 'Contact developer',
         subtitle:
-            'Describe what happened or what you would like. Sprichst prepares a report you can send to the developer.',
+            'Feedback about the app goes straight to the developer by email. For anything else, find them on LinkedIn, Instagram or GitHub.',
         children: [
           SettingsSection(
             title: 'What is this about?',
@@ -390,29 +406,70 @@ class _ContactPageState extends ConsumerState<_ContactPage> {
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton.icon(
-              onPressed: _message.text.trim().isEmpty ? null : _copy,
-              icon: const Icon(Icons.copy_outlined),
-              label: const Text('Copy report'),
+              onPressed: _message.text.trim().isEmpty ? null : _email,
+              icon: const Icon(Icons.mail_outline),
+              label: const Text('Send by email'),
             ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          SettingsSection(
+            title: 'Something else? Say hi',
+            children: [
+              SettingsTile(
+                icon: Icons.work_outline,
+                title: 'LinkedIn',
+                subtitle: 'sripathi-yadav',
+                onTap: () => _open(Uri.parse(DeveloperContact.linkedIn)),
+              ),
+              SettingsTile(
+                icon: Icons.photo_camera_outlined,
+                title: 'Instagram',
+                subtitle: '@sri.in.germany',
+                onTap: () => _open(Uri.parse(DeveloperContact.instagram)),
+              ),
+              SettingsTile(
+                icon: Icons.code,
+                title: 'GitHub',
+                subtitle: 'Sripathiyadav',
+                onTap: () => _open(Uri.parse(DeveloperContact.gitHub)),
+              ),
+            ],
           ),
         ],
       );
 
-  Future<void> _copy() async {
+  Future<void> _email() {
     final profile = ref.read(appControllerProvider).profile;
-    final report = [
-      '[${_type.label}] ${AppInfo.name} ${AppInfo.version}',
-      'Platform: ${Theme.of(context).platform.name}',
-      if (profile != null) 'Level: ${profile.currentLevel.label}',
-      '',
+    final body = [
       _message.text.trim(),
+      '',
+      '—',
+      '${AppInfo.name} ${AppInfo.version} · ${Theme.of(context).platform.name}'
+          '${profile != null ? ' · Level ${profile.currentLevel.label}' : ''}',
     ].join('\n');
-    await Clipboard.setData(ClipboardData(text: report));
+    // Built by hand: Uri(queryParameters:) encodes spaces as "+", which mail
+    // apps show literally.
+    return _open(Uri.parse('mailto:${DeveloperContact.email}'
+        '?subject=${Uri.encodeComponent('[${_type.label}] ${AppInfo.name}')}'
+        '&body=${Uri.encodeComponent(body)}'));
+  }
+
+  Future<void> _open(Uri uri) async {
+    var opened = false;
+    try {
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+    if (opened || !mounted) return;
+    // No mail app or browser: hand over the address so it can still be used.
+    final mail = uri.scheme == 'mailto';
+    final target = mail ? DeveloperContact.email : '$uri';
+    await Clipboard.setData(ClipboardData(text: target));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text(
-              'Report copied. Paste it into an email or message to the developer.')),
+      SnackBar(
+          content: Text(mail
+              ? 'No mail app found. Copied $target, so you can email it from any app.'
+              : 'Could not open the link. Copied $target.')),
     );
   }
 }
@@ -847,31 +904,6 @@ class AIAndVoicePageState extends ConsumerState<AIAndVoicePage> {
                     _save(profile.copyWith(voicePauseMs: value.first)),
               ),
             ),
-          ],
-        ),
-        SettingsSection(
-          title: 'Advanced',
-          description:
-              'Model selection is constrained by the gateway configuration, so credentials and provider access remain private.',
-          children: [
-            SwitchListTile.adaptive(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              title: const Text('Show advanced controls'),
-              subtitle: const Text(
-                  'Show the gateway-selected model and technical context.'),
-              value: profile.advancedAiControls,
-              onChanged: (value) => _save(
-                profile.copyWith(advancedAiControls: value),
-              ),
-            ),
-            if (profile.advancedAiControls)
-              SettingsTile(
-                icon: Icons.memory_outlined,
-                title: 'Configured model',
-                subtitle:
-                    '${profile.aiModel} · managed by the Sprichst AI gateway',
-              ),
           ],
         ),
         // Only for developers: a debug build, or someone who set an address.

@@ -142,6 +142,11 @@ void main() {
     await _pump(tester, _learner());
     await tester.tap(find.text('Coach').last);
     await tester.pumpAndSettle();
+    // Close the first-visit guide above the situations.
+    await tester.ensureVisible(find.text('Got it'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Got it'));
+    await tester.pumpAndSettle();
     expect(find.text('OR PICK A SITUATION'), findsOneWidget);
     final cafe = coachSituations.first;
     final chip = find.byKey(ValueKey('situation-${cafe.label}'));

@@ -15,6 +15,7 @@ import '../account/web_ai_notice.dart';
 import '../../shared/widgets/lottie_view.dart';
 import '../account/account_view.dart' show AIAndVoicePage;
 import '../account/on_device_ai_page.dart';
+import 'coach_intro_card.dart';
 import 'services/audio_player_service.dart';
 import 'services/audio_recorder_service.dart';
 import 'voice/voice_mode_view.dart';
@@ -54,6 +55,9 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
     ref.read(appControllerProvider).startNewConversation();
   }
 
+  void _openSettings() => Navigator.of(context)
+      .push(MaterialPageRoute<void>(builder: (_) => const AIAndVoicePage()));
+
   @override
   void dispose() {
     _text.dispose();
@@ -87,8 +91,7 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
           ),
           IconButton(
             tooltip: 'Coach settings',
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                builder: (_) => const AIAndVoicePage())),
+            onPressed: _openSettings,
             icon: const Icon(Icons.tune),
           ),
         ],
@@ -105,6 +108,8 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                 child: ListView(
                   controller: _scroll,
                   children: [
+                    if (_messages.isEmpty)
+                      CoachIntroCard(onOpenSettings: _openSettings),
                     const _ProviderChip(),
                     const SizedBox(height: AppSpacing.sm),
                     const WebAiNotice(),
@@ -159,6 +164,9 @@ class _AICoachViewState extends ConsumerState<AICoachView> {
                           controller: _text,
                           minLines: 1,
                           maxLines: 3,
+                          // The coach corrects German; the phone's
+                          // autocorrect would "fix" it into English first.
+                          autocorrect: false,
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(
                                 InputLimits.message),

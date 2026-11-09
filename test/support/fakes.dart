@@ -48,6 +48,7 @@ class FakeAuthRepository implements AuthRepository {
   /// When set, [signInWithGoogle] throws it.
   final Object? signInError;
   var signInAttempts = 0;
+  var signOuts = 0;
 
   @override
   User? get currentUser => signedIn ? FakeUser() : null;
@@ -69,7 +70,7 @@ class FakeAuthRepository implements AuthRepository {
   Future<void> deleteCurrentUser() async {}
 
   @override
-  Future<void> signOut() async {}
+  Future<void> signOut() async => signOuts++;
 
   @override
   Future<String?> idToken() async => null;

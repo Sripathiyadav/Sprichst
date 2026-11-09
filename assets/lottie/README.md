@@ -1,6 +1,6 @@
 # Sprichst Lottie animations
 
-Thirteen animations drawn from the design-system tokens (coral, charcoal, cream), each in a `_light` and a `_dark` file. Backgrounds are transparent, and frame rate is 60 fps.
+Fourteen animations drawn from the design-system tokens (coral, charcoal, cream), each in a `_light` and a `_dark` file. Backgrounds are transparent, and frame rate is 60 fps.
 
 | File | Size | Length | Plays when | Reduced-motion fallback |
 |---|---|---|---|---|
@@ -17,6 +17,7 @@ Thirteen animations drawn from the design-system tokens (coral, charcoal, cream)
 | `level_up` | 72² | 1.2 s, once | The lesson summary when a new level is reached. | Last frame. |
 | `coach_thinking` | 56×28 | 1.2 s loop | In the coach's send button while a reply is on its way. | First dots, still. |
 | `download_model` | 40² | 1 s loop | Next to a model's progress bar while it downloads. | Still arrow. |
+| `coach_intro` | 240×160 | 3 s, once | The Coach guide on first visit (replays when the tab is shown). The settings button is tapped, a key and a download card pop up, then a short exchange starts. | Last frame. |
 
 Choose the file by theme, for example `Theme.of(context).brightness == Brightness.dark ? 'assets/lottie/lesson_complete_dark.json' : 'assets/lottie/lesson_complete_light.json'`.
 

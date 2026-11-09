@@ -332,12 +332,12 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
-/// Progress through the current CEFR level as a speedometer: a 240 degree dial
-/// with ticks, a coral arc and a needle, the level in the gap beneath. The
-/// needle sweeps from zero to [progress] when the gauge is built, and again
-/// whenever [replay] changes (Home bumps it on every refresh). Under reduced
-/// motion it simply shows the value. The words are in the semantics label, so
-/// the dial is never the only way to read it.
+/// Progress through the current CEFR level as a half doughnut: a coral arc
+/// over the top half of a ring, with the level in the middle. The arc grows
+/// from zero to [progress] when the gauge is built, and again whenever
+/// [replay] changes (Home bumps it on every refresh). Under reduced motion it
+/// simply shows the value. The words are in the semantics label, so the arc is
+/// never the only way to read it.
 class LevelGauge extends StatelessWidget {
   const LevelGauge({
     super.key,
@@ -366,22 +366,19 @@ class LevelGauge extends StatelessWidget {
       label: 'Level $short, $percent percent of its lessons done',
       excludeSemantics: true,
       child: AspectRatio(
-        aspectRatio: .95,
+        aspectRatio: 1.6,
         child: TweenAnimationBuilder<double>(
           key: ValueKey('gauge-$replay'),
           tween: Tween(begin: still ? value : 0, end: value),
           duration: still ? Duration.zero : const Duration(milliseconds: 1100),
           curve: Curves.easeOutCubic,
-          builder: (context, shown, _) => LayoutBuilder(
-            builder: (context, box) => CustomPaint(
-              key: const ValueKey('level-gauge'),
-              painter: _GaugePainter(
-                value: shown,
-                track: t.surfaceSunken,
-                tick: t.lineStrong,
-                arc: t.coral,
-                needle: t.ink,
-              ),
+          builder: (context, shown, _) => CustomPaint(
+            key: const ValueKey('level-gauge'),
+            painter: _HalfDoughnutPainter(
+                value: shown, track: t.ghost, arc: t.coral),
+            child: Padding(
+              // Keeps the words inside the ring's hole.
+              padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
               child: Align(
                 alignment: Alignment.bottomCenter,
                 // Scales down with the gauge, so enlarged text stays inside.
@@ -393,7 +390,7 @@ class LevelGauge extends StatelessWidget {
                       Text(short,
                           style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w700, color: t.ink)),
-                      Text('${(shown * 100).round()}%',
+                      Text('LEVEL · ${(shown * 100).round()}%',
                           style: theme.textTheme.labelSmall
                               ?.copyWith(color: t.inkMuted)),
                     ],
@@ -408,77 +405,35 @@ class LevelGauge extends StatelessWidget {
   }
 }
 
-class _GaugePainter extends CustomPainter {
-  _GaugePainter({
-    required this.value,
-    required this.track,
-    required this.tick,
-    required this.arc,
-    required this.needle,
-  });
+class _HalfDoughnutPainter extends CustomPainter {
+  _HalfDoughnutPainter(
+      {required this.value, required this.track, required this.arc});
 
   final double value;
   final Color track;
-  final Color tick;
   final Color arc;
-  final Color needle;
-
-  static const _start = 150 * math.pi / 180;
-  static const _sweep = 240 * math.pi / 180;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final stroke = size.width * .09;
-    final center = Offset(size.width / 2, size.height * .46);
-    final radius = size.width / 2 - stroke;
+    final stroke = size.width * .11;
+    final radius =
+        math.min(size.width / 2, size.height - stroke / 2) - stroke / 2;
+    // The ring's centre sits on the bottom edge, so only its top half shows.
+    final center = Offset(size.width / 2, size.height - stroke / 2);
     final rect = Rect.fromCircle(center: center, radius: radius);
-
-    final base = Paint()
+    final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       ..strokeCap = StrokeCap.round;
-    canvas.drawArc(rect, _start, _sweep, false, base..color = track);
+    canvas.drawArc(rect, math.pi, math.pi, false, paint..color = track);
     if (value > 0) {
-      canvas.drawArc(rect, _start, _sweep * value, false, base..color = arc);
+      canvas.drawArc(rect, math.pi, math.pi * value, false, paint..color = arc);
     }
-
-    // Eleven ticks just inside the dial, like a speedometer's scale.
-    final ticks = Paint()
-      ..color = tick
-      ..strokeWidth = 1.5
-      ..strokeCap = StrokeCap.round;
-    for (var i = 0; i <= 10; i++) {
-      final a = _start + _sweep * i / 10;
-      final inner = radius - stroke * 1.1;
-      final outer = radius - stroke * (i % 5 == 0 ? 1.9 : 1.6);
-      canvas.drawLine(
-        center + Offset(math.cos(a), math.sin(a)) * inner,
-        center + Offset(math.cos(a), math.sin(a)) * outer,
-        ticks,
-      );
-    }
-
-    // The needle and its hub.
-    final angle = _start + _sweep * value;
-    final tip = center +
-        Offset(math.cos(angle), math.sin(angle)) * (radius - stroke * 2.3);
-    canvas.drawLine(
-        center,
-        tip,
-        Paint()
-          ..color = needle
-          ..strokeWidth = stroke * .3
-          ..strokeCap = StrokeCap.round);
-    canvas.drawCircle(center, stroke * .55, Paint()..color = needle);
   }
 
   @override
-  bool shouldRepaint(_GaugePainter old) =>
-      old.value != value ||
-      old.track != track ||
-      old.arc != arc ||
-      old.needle != needle ||
-      old.tick != tick;
+  bool shouldRepaint(_HalfDoughnutPainter old) =>
+      old.value != value || old.track != track || old.arc != arc;
 }
 
 /// A small label for status, category or provider, with an optional icon.

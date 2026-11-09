@@ -32,6 +32,7 @@ class SprichstApp extends ConsumerStatefulWidget {
 class _SprichstAppState extends ConsumerState<SprichstApp>
     with WidgetsBindingObserver {
   final _navigatorKey = GlobalKey<NavigatorState>();
+  final _pages = _PushedPages();
   var _selectedIndex = 0;
   String? _initializedForUserId;
 
@@ -84,6 +85,7 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
 
     return MaterialApp(
       navigatorKey: _navigatorKey,
+      navigatorObservers: [_pages],
       title: 'Sprichst',
       debugShowCheckedModeBanner: false,
       theme: SprichstTheme.build(Brightness.light, glass: glass),
@@ -100,8 +102,7 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
           // A guest who just signed in: move their progress first.
           if (user != null && guest == true) {
             // Sign-in may start on a pushed page (the after-lesson prompt).
-            Future.microtask(() =>
-                _navigatorKey.currentState?.popUntil((route) => route.isFirst));
+            Future.microtask(_closePages);
             return const GuestUpgradeView();
           }
           if (user == null && guest == null) return const _SplashView();
@@ -138,9 +139,42 @@ class _SprichstAppState extends ConsumerState<SprichstApp>
   /// Clears session state and drops any pushed routes (settings pages, dialogs)
   /// so none can linger above the sign-in screen after sign-out or deletion.
   void _endSession() {
-    _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+    _closePages();
     _selectedIndex = 0;
     ref.read(appControllerProvider).clearSession();
+  }
+
+  /// Removes every pushed page at once. Popping would animate them out, and
+  /// a page still on screen would rebuild after its profile is gone.
+  void _closePages() {
+    final navigator = _navigatorKey.currentState;
+    if (navigator == null) return;
+    for (final route in _pages.stack.skip(1).toList().reversed) {
+      navigator.removeRoute(route);
+    }
+  }
+}
+
+/// The routes on the app's navigator, bottom first.
+class _PushedPages extends NavigatorObserver {
+  final stack = <Route<dynamic>>[];
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      stack.add(route);
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      stack.remove(route);
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      stack.remove(route);
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    final i = oldRoute == null ? -1 : stack.indexOf(oldRoute);
+    if (i >= 0 && newRoute != null) stack[i] = newRoute;
   }
 }
 

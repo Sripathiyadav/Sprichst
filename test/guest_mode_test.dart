@@ -195,4 +195,24 @@ void main() {
     expect(guest.profile, isNull);
     expect(find.text('Continue without an account'), findsOneWidget);
   });
+
+  testWidgets('signing out with a settings page open does not crash',
+      (tester) async {
+    final auth = _Auth()..signIn();
+    await _pump(tester,
+        account: InMemoryLearningRepository(_learner('Ada')),
+        guest: InMemoryLearningRepository(),
+        auth: auth);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Coach').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Coach settings'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AIAndVoicePage), findsOneWidget);
+
+    await auth.signOut();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Continue without an account'), findsOneWidget);
+  });
 }

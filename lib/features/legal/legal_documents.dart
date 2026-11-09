@@ -66,7 +66,7 @@ const legalDocuments = <LegalDocument>[
   LegalDocument(
     id: 'security-summary',
     title: 'Security',
-    summary: 'How your data and the AI server are protected.',
+    summary: 'How your data and your AI keys are protected.',
     icon: Icons.shield_outlined,
   ),
   LegalDocument(
